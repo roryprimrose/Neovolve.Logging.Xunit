@@ -2,7 +2,7 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard1.1</TargetFramework>
-    <Authors>Rory Primrose</Authors>
+    <Authors>rprimrose</Authors>
     <Company>Neovolve</Company>
     <Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
@@ -10,6 +10,9 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <IncludeSymbols>true</IncludeSymbols>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageProjectUrl>https://github.com/roryprimrose/Neovolve.UnitTest.Logging</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/roryprimrose/Neovolve.UnitTest.Logging/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/roryprimrose/Neovolve.UnitTest.Logging</RepositoryUrl>
   </PropertyGroup>
 
   <ItemGroup>
