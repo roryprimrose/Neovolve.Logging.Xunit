@@ -1,4 +1,4 @@
-namespace Neovolve.UnitTest.Logging.UnitTests
+﻿namespace Neovolve.UnitTest.UnitTests.Logging
 {
     using System;
     using System.Collections.Generic;
