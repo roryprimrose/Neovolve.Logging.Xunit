@@ -25,7 +25,7 @@ namespace Neovolve.UnitTest.Logging.UnitTests
                 Name = Guid.NewGuid().ToString()
             };
             var exception = GetThrownException();
-            var log = LogFactory.BuildLog(_output);
+            var log = _output.BuildLogger();
             log.Log(level, eventId, state, exception, (data, ex) => state.ToString());
         }
 

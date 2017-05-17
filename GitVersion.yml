@@ -1,0 +1,4 @@
+mode: ContinuousDeployment
+branches: 
+  hotfix:
+    tag: useBranchName
