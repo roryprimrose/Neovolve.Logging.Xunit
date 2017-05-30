@@ -73,6 +73,7 @@
 
             public void Dispose()
             {
+                // No-op
             }
         }
     }

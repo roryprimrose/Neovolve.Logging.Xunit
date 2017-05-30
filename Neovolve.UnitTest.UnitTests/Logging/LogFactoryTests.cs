@@ -17,7 +17,7 @@
 
         [Theory]
         [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
-        public void LogTests(LogLevel level)
+        public void BuildLoggerTests(LogLevel level)
         {
             var eventId = new EventId(Environment.TickCount);
             var state = new
@@ -25,8 +25,26 @@
                 Name = Guid.NewGuid().ToString()
             };
             var exception = GetThrownException();
-            var log = _output.BuildLogger();
-            log.Log(level, eventId, state, exception, (data, ex) => state.ToString());
+
+            var actual = _output.BuildLogger();
+
+            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
+        }
+
+        [Theory]
+        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
+        public void BuildLoggerForTypeTests(LogLevel level)
+        {
+            var eventId = new EventId(Environment.TickCount);
+            var state = new
+            {
+                Name = Guid.NewGuid().ToString()
+            };
+            var exception = GetThrownException();
+
+            var actual = _output.BuildLoggerFor<LogFactoryTests>();
+
+            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
         }
 
         public static List<object[]> ResolveLevels()

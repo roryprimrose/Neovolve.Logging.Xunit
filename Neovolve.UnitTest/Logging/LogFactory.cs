@@ -33,5 +33,26 @@
                 }
             }
         }
+
+        /// <summary>
+        ///     Builds a logger using the specified output.
+        /// </summary>
+        /// <typeparam name="T">The type to create the logger for.</typeparam>
+        /// <param name="output">The test output logger.</param>
+        /// <returns>The logger.</returns>
+        public static ILogger BuildLogFor<T>(ITestOutputHelper output = null)
+        {
+            using (var factory = new LoggerFactory())
+            {
+                using (var provider = new OutputLoggerProvider(output))
+                {
+                    factory.AddProvider(provider);
+
+                    var logger = factory.CreateLogger<T>();
+
+                    return logger;
+                }
+            }
+        }
     }
 }

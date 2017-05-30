@@ -30,5 +30,21 @@
 
             return LogFactory.BuildLog(output, memberName);
         }
+        /// <summary>
+        ///     Builds a logger from the specified test output helper for the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type to create the logger for.</typeparam>
+        /// <param name="output">The test output helper.</param>
+        /// <returns>The logger.</returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ILogger BuildLoggerFor<T>(this ITestOutputHelper output)
+        {
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
+
+            return LogFactory.BuildLogFor<T>(output);
+        }
     }
 }
