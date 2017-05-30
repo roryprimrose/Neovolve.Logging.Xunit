@@ -37,7 +37,7 @@
         /// <param name="output">The test output helper.</param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ILogger BuildLoggerFor<T>(this ITestOutputHelper output)
+        public static ILogger<T> BuildLoggerFor<T>(this ITestOutputHelper output)
         {
             if (output == null)
             {
