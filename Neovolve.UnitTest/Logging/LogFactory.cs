@@ -46,7 +46,7 @@
         /// <typeparam name="T">The type to create the logger for.</typeparam>
         /// <param name="output">The test output logger.</param>
         /// <returns>The logger.</returns>
-        public static ICacheLogger BuildLogFor<T>(ITestOutputHelper output = null)
+        public static ICacheLogger<T> BuildLogFor<T>(ITestOutputHelper output = null)
         {
             var logEntries = new List<LogEntry>();
 
@@ -59,7 +59,7 @@
 
                 var logger = factory.CreateLogger<T>();
 
-                var cacheLogger = new CacheLoggerWrapper(logger, logEntries);
+                var cacheLogger = new CacheLoggerWrapper<T>(logger, logEntries);
 
                 return cacheLogger;
             }

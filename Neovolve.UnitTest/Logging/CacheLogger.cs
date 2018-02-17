@@ -8,6 +8,23 @@
     ///     The <see cref="CacheLogger" />
     ///     class is used to provide logging implementation for caching log entries.
     /// </summary>
+    /// <typeparam name="T">The type of class using the cache.</typeparam>
+    public class CacheLogger<T> : CacheLogger, ILogger<T>
+    {
+        /// <summary>
+        ///     Creates a new instance of the <see cref="CacheLogger" /> class.
+        /// </summary>
+        /// <param name="logEntries">The log entries.</param>
+        public CacheLogger(IList<LogEntry> logEntries)
+            : base(logEntries)
+        {
+        }
+    }
+
+    /// <summary>
+    ///     The <see cref="CacheLogger" />
+    ///     class is used to provide logging implementation for caching log entries.
+    /// </summary>
     public class CacheLogger : ILogger
     {
         private readonly IList<LogEntry> _logEntries;

@@ -5,6 +5,14 @@
     using System.Collections.ObjectModel;
     using Microsoft.Extensions.Logging;
 
+    internal class CacheLoggerWrapper<T> : CacheLoggerWrapper, ICacheLogger<T>
+    {
+        public CacheLoggerWrapper(ILogger logger, IList<LogEntry> logEntries)
+            : base(logger, logEntries)
+        {
+        }
+    }
+
     internal class CacheLoggerWrapper : ICacheLogger
     {
         private readonly IList<LogEntry> _logEntries;
