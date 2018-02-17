@@ -2,7 +2,6 @@
 {
     using System;
     using System.Runtime.CompilerServices;
-    using Microsoft.Extensions.Logging;
     using Neovolve.UnitTest.Logging;
 
     /// <summary>
@@ -21,7 +20,7 @@
         /// </param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ILogger BuildLogger(this ITestOutputHelper output, [CallerMemberName] string memberName = "")
+        public static ICacheLogger BuildLogger(this ITestOutputHelper output, [CallerMemberName] string memberName = "")
         {
             if (output == null)
             {
@@ -30,6 +29,7 @@
 
             return LogFactory.BuildLog(output, memberName);
         }
+
         /// <summary>
         ///     Builds a logger from the specified test output helper for the specified type.
         /// </summary>
@@ -37,7 +37,7 @@
         /// <param name="output">The test output helper.</param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ILogger<T> BuildLoggerFor<T>(this ITestOutputHelper output)
+        public static ICacheLogger BuildLoggerFor<T>(this ITestOutputHelper output)
         {
             if (output == null)
             {

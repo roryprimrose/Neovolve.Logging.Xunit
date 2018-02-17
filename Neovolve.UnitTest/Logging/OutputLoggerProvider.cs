@@ -21,15 +21,15 @@
         }
 
         /// <inheritdoc />
-        public void Dispose()
-        {
-            // no-op
-        }
-
-        /// <inheritdoc />
         public ILogger CreateLogger(string categoryName)
         {
             return new OutputLogger(categoryName, _output);
+        }
+
+        /// <inheritdoc />
+        public void Dispose()
+        {
+            // no-op
         }
     }
 }

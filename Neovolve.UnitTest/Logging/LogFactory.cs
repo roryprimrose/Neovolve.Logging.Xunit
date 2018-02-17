@@ -1,5 +1,6 @@
 ﻿namespace Neovolve.UnitTest.Logging
 {
+    using System.Collections.Generic;
     using System.Runtime.CompilerServices;
     using Microsoft.Extensions.Logging;
     using Xunit.Abstractions;
@@ -19,18 +20,23 @@
         ///     <see cref="CallerMemberNameAttribute" />.
         /// </param>
         /// <returns>The logger.</returns>
-        public static ILogger BuildLog(ITestOutputHelper output = null, [CallerMemberName] string memberName = null)
+        public static ICacheLogger BuildLog(ITestOutputHelper output = null,
+            [CallerMemberName] string memberName = null)
         {
+            var logEntries = new List<LogEntry>();
+
             using (var factory = new LoggerFactory())
+            using (var cacheProvider = new CacheLoggerProvider(logEntries))
+            using (var outputProvider = new OutputLoggerProvider(output))
             {
-                using (var provider = new OutputLoggerProvider(output))
-                {
-                    factory.AddProvider(provider);
+                factory.AddProvider(cacheProvider);
+                factory.AddProvider(outputProvider);
 
-                    var logger = factory.CreateLogger(memberName);
+                var logger = factory.CreateLogger(memberName);
 
-                    return logger;
-                }
+                var cacheLogger = new CacheLoggerWrapper(logger, logEntries);
+
+                return cacheLogger;
             }
         }
 
@@ -40,18 +46,22 @@
         /// <typeparam name="T">The type to create the logger for.</typeparam>
         /// <param name="output">The test output logger.</param>
         /// <returns>The logger.</returns>
-        public static ILogger<T> BuildLogFor<T>(ITestOutputHelper output = null)
+        public static ICacheLogger BuildLogFor<T>(ITestOutputHelper output = null)
         {
+            var logEntries = new List<LogEntry>();
+
             using (var factory = new LoggerFactory())
+            using (var cacheProvider = new CacheLoggerProvider(logEntries))
+            using (var outputProvider = new OutputLoggerProvider(output))
             {
-                using (var provider = new OutputLoggerProvider(output))
-                {
-                    factory.AddProvider(provider);
+                factory.AddProvider(cacheProvider);
+                factory.AddProvider(outputProvider);
 
-                    var logger = factory.CreateLogger<T>();
+                var logger = factory.CreateLogger<T>();
 
-                    return logger;
-                }
+                var cacheLogger = new CacheLoggerWrapper(logger, logEntries);
+
+                return cacheLogger;
             }
         }
     }

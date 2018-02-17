@@ -46,7 +46,8 @@
         {
             var formattedMessage = formatter(state, exception);
 
-            if (!string.IsNullOrEmpty(formattedMessage) || exception != null)
+            if (!string.IsNullOrEmpty(formattedMessage) ||
+                exception != null)
             {
                 WriteMessage(logLevel, _name, eventId.Id, formattedMessage, exception);
             }

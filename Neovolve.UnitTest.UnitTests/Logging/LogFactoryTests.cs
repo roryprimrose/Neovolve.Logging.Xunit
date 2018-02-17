@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using FluentAssertions;
     using Microsoft.Extensions.Logging;
     using Xunit;
     using Xunit.Abstractions;
@@ -15,38 +16,6 @@
             _output = output;
         }
 
-        [Theory]
-        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
-        public void BuildLoggerTests(LogLevel level)
-        {
-            var eventId = new EventId(Environment.TickCount);
-            var state = new
-            {
-                Name = Guid.NewGuid().ToString()
-            };
-            var exception = GetThrownException();
-
-            var actual = _output.BuildLogger();
-
-            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
-        }
-
-        [Theory]
-        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
-        public void BuildLoggerForTypeTests(LogLevel level)
-        {
-            var eventId = new EventId(Environment.TickCount);
-            var state = new
-            {
-                Name = Guid.NewGuid().ToString()
-            };
-            var exception = GetThrownException();
-
-            var actual = _output.BuildLoggerFor<LogFactoryTests>();
-
-            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
-        }
-
         public static List<object[]> ResolveLevels()
         {
             var values = Enum.GetValues(typeof(LogLevel));
@@ -55,14 +24,68 @@
             foreach (var value in values)
             {
                 var result = new[]
-                {
-                    value
-                };
+                    {value};
 
                 results.Add(result);
             }
 
             return results;
+        }
+
+        [Fact]
+        public void BuildLoggerForTypeCachesLogEntriesTests()
+        {
+            var logLevel = LogLevel.Information;
+            var eventId = new EventId(Environment.TickCount);
+            var state = new
+                {Name = Guid.NewGuid().ToString()};
+            var exception = GetThrownException();
+
+            var actual = _output.BuildLoggerFor<LogFactoryTests>();
+
+            actual.Count.Should().Be(0);
+            actual.Latest.Should().BeNull();
+
+            actual.Log(logLevel, eventId, state, exception, (data, ex) => state.ToString());
+
+            actual.Count.Should().Be(1);
+
+            var latest = actual.Latest;
+
+            latest.Should().NotBeNull();
+            latest.LogLevel.Should().Be(logLevel);
+            latest.EventId.Should().Be(eventId);
+            latest.State.Should().Be(state);
+            latest.Exception.Should().Be(exception);
+            latest.Message.Should().NotBeNullOrWhiteSpace();
+        }
+
+        [Theory]
+        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
+        public void BuildLoggerForTypeTests(LogLevel level)
+        {
+            var eventId = new EventId(Environment.TickCount);
+            var state = new
+                {Name = Guid.NewGuid().ToString()};
+            var exception = GetThrownException();
+
+            var actual = _output.BuildLoggerFor<LogFactoryTests>();
+
+            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
+        }
+
+        [Theory]
+        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
+        public void BuildLoggerTests(LogLevel level)
+        {
+            var eventId = new EventId(Environment.TickCount);
+            var state = new
+                {Name = Guid.NewGuid().ToString()};
+            var exception = GetThrownException();
+
+            var actual = _output.BuildLogger();
+
+            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
         }
 
         private static Exception GetThrownException()
