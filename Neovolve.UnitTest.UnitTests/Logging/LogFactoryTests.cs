@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Linq;
     using FluentAssertions;
     using Microsoft.Extensions.Logging;
     using Xunit;
@@ -38,7 +39,7 @@
             var logLevel = LogLevel.Information;
             var eventId = new EventId(Environment.TickCount);
             var state = new
-                {Name = Guid.NewGuid().ToString()};
+            { Name = Guid.NewGuid().ToString() };
             var exception = GetThrownException();
 
             var actual = _output.BuildLoggerFor<LogFactoryTests>();
@@ -58,6 +59,48 @@
             latest.State.Should().Be(state);
             latest.Exception.Should().Be(exception);
             latest.Message.Should().NotBeNullOrWhiteSpace();
+
+            var entries = actual.Entries;
+
+            entries.Count.Should().Be(actual.Count);
+
+            var entry = entries.First();
+
+            latest.Should().BeEquivalentTo(entry);
+        }
+
+        [Fact]
+        public void BuildLoggerForTypeCanBeginScopeTests()
+        {
+            var state = new
+            { Name = Guid.NewGuid().ToString() };
+
+            var actual = _output.BuildLoggerFor<LogFactoryTests>();
+
+            using (var scope = actual.BeginScope(state))
+            {
+                scope.Dispose();
+            }
+        }
+
+        [Theory]
+        [InlineData(LogLevel.Critical)]
+        [InlineData(LogLevel.Debug)]
+        [InlineData(LogLevel.Error)]
+        [InlineData(LogLevel.Information)]
+        [InlineData(LogLevel.None)]
+        [InlineData(LogLevel.Trace)]
+        [InlineData(LogLevel.Warning)]
+        public void BuildLoggerForTypeReturnsLoggerWithIsEnabledReturnsTrueTest(LogLevel logLevel)
+        {
+            var state = new
+            { Name = Guid.NewGuid().ToString() };
+
+            var logger = _output.BuildLoggerFor<LogFactoryTests>();
+
+            var actual = logger.IsEnabled(logLevel);
+
+            actual.Should().BeTrue();
         }
 
         [Theory]
@@ -66,7 +109,7 @@
         {
             var eventId = new EventId(Environment.TickCount);
             var state = new
-                {Name = Guid.NewGuid().ToString()};
+            { Name = Guid.NewGuid().ToString() };
             var exception = GetThrownException();
 
             var actual = _output.BuildLoggerFor<LogFactoryTests>();
@@ -80,7 +123,7 @@
         {
             var eventId = new EventId(Environment.TickCount);
             var state = new
-                {Name = Guid.NewGuid().ToString()};
+            { Name = Guid.NewGuid().ToString() };
             var exception = GetThrownException();
 
             var actual = _output.BuildLogger();
