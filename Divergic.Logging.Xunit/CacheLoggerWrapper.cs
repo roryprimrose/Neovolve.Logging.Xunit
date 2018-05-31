@@ -1,4 +1,4 @@
-﻿namespace Neovolve.UnitTest.Logging
+﻿namespace Divergic.Logging.Xunit
 {
     using System;
     using System.Collections.Generic;

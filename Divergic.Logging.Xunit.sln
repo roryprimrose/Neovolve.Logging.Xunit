@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26430.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neovolve.UnitTest", "Neovolve.UnitTest\Neovolve.UnitTest.csproj", "{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Divergic.Logging.Xunit", "Divergic.Logging.Xunit\Divergic.Logging.Xunit.csproj", "{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Neovolve.UnitTest.UnitTests", "Neovolve.UnitTest.UnitTests\Neovolve.UnitTest.UnitTests.csproj", "{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Divergic.Logging.Xunit.UnitTests", "Divergic.Logging.Xunit.UnitTests\Divergic.Logging.Xunit.UnitTests.csproj", "{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{78B2ADC7-6CDE-4DEA-88E5-CE0C3F5D4FD8}"
 	ProjectSection(SolutionItems) = preProject

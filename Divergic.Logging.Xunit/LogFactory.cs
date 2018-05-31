@@ -1,9 +1,9 @@
-﻿namespace Neovolve.UnitTest.Logging
+﻿namespace Divergic.Logging.Xunit
 {
     using System.Collections.Generic;
     using System.Runtime.CompilerServices;
+    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
-    using Xunit.Abstractions;
 
     /// <summary>
     ///     The <see cref="LogFactory" />

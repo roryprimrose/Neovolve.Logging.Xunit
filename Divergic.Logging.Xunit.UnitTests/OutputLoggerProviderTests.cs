@@ -1,12 +1,12 @@
-﻿using FluentAssertions;
-using Neovolve.UnitTest.Logging;
-using NSubstitute;
-using System;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Neovolve.UnitTest.UnitTests.Logging
+﻿namespace Divergic.Logging.Xunit.UnitTests
 {
+    using System;
+    using Divergic.Logging.Xunit;
+    using FluentAssertions;
+    using global::Xunit;
+    using global::Xunit.Abstractions;
+    using NSubstitute;
+
     public class OutputLoggerProviderTests
     {
         [Fact]

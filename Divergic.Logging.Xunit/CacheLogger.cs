@@ -1,17 +1,17 @@
-﻿namespace Neovolve.UnitTest.Logging
+﻿namespace Divergic.Logging.Xunit
 {
     using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The <see cref="CacheLogger"/> class is used to provide logging implementation for caching log entries.
+    ///     The <see cref="CacheLogger" /> class is used to provide logging implementation for caching log entries.
     /// </summary>
     /// <typeparam name="T">The type of class using the cache.</typeparam>
     public class CacheLogger<T> : CacheLogger, ILogger<T>
     {
         /// <summary>
-        /// Creates a new instance of the <see cref="CacheLogger"/> class.
+        ///     Creates a new instance of the <see cref="CacheLogger" /> class.
         /// </summary>
         /// <param name="logEntries">The log entries.</param>
         public CacheLogger(IList<LogEntry> logEntries)
@@ -21,14 +21,14 @@
     }
 
     /// <summary>
-    /// The <see cref="CacheLogger"/> class is used to provide logging implementation for caching log entries.
+    ///     The <see cref="CacheLogger" /> class is used to provide logging implementation for caching log entries.
     /// </summary>
     public class CacheLogger : ILogger
     {
         private readonly IList<LogEntry> _logEntries;
 
         /// <summary>
-        /// Creates a new instance of the <see cref="CacheLogger"/> class.
+        ///     Creates a new instance of the <see cref="CacheLogger" /> class.
         /// </summary>
         /// <param name="logEntries">The log entries.</param>
         public CacheLogger(IList<LogEntry> logEntries)
@@ -36,19 +36,19 @@
             _logEntries = logEntries ?? throw new ArgumentNullException(nameof(logEntries));
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public IDisposable BeginScope<TState>(TState state)
         {
             return NoopDisposable.Instance;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public bool IsEnabled(LogLevel logLevel)
         {
             return true;
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void Log<TState>(
             LogLevel logLevel,
             EventId eventId,

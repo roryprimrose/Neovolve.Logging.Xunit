@@ -1,18 +1,18 @@
-﻿namespace Neovolve.UnitTest.Logging
+﻿namespace Divergic.Logging.Xunit
 {
     using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The <see cref="CacheLoggerProvider"/> class is used to provide Xunit logging to <see cref="ILoggerFactory"/>.
+    ///     The <see cref="CacheLoggerProvider" /> class is used to provide Xunit logging to <see cref="ILoggerFactory" />.
     /// </summary>
     public class CacheLoggerProvider : ILoggerProvider
     {
         private readonly IList<LogEntry> _logEntries;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CacheLoggerProvider"/> class.
+        ///     Initializes a new instance of the <see cref="CacheLoggerProvider" /> class.
         /// </summary>
         /// <param name="logEntries">The log entries.</param>
         public CacheLoggerProvider(IList<LogEntry> logEntries)
@@ -20,13 +20,13 @@
             _logEntries = logEntries ?? throw new ArgumentNullException(nameof(logEntries));
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public ILogger CreateLogger(string categoryName)
         {
             return new CacheLogger(_logEntries);
         }
 
-        /// <inheritdoc/>
+        /// <inheritdoc />
         public void Dispose()
         {
             // no-op

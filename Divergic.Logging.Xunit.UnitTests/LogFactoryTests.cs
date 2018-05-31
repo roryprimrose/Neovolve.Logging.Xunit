@@ -1,12 +1,12 @@
-﻿namespace Neovolve.UnitTest.UnitTests.Logging
+﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
     using System.Collections.Generic;
     using System.Linq;
     using FluentAssertions;
+    using global::Xunit;
+    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
-    using Xunit;
-    using Xunit.Abstractions;
 
     public class LogFactoryTests
     {
@@ -39,7 +39,7 @@
             var logLevel = LogLevel.Information;
             var eventId = new EventId(Environment.TickCount);
             var state = new
-            { Name = Guid.NewGuid().ToString() };
+                {Name = Guid.NewGuid().ToString()};
             var exception = GetThrownException();
 
             var actual = _output.BuildLoggerFor<LogFactoryTests>();
@@ -73,7 +73,7 @@
         public void BuildLoggerForTypeCanBeginScopeTests()
         {
             var state = new
-            { Name = Guid.NewGuid().ToString() };
+                {Name = Guid.NewGuid().ToString()};
 
             var actual = _output.BuildLoggerFor<LogFactoryTests>();
 
@@ -94,7 +94,7 @@
         public void BuildLoggerForTypeReturnsLoggerWithIsEnabledReturnsTrueTest(LogLevel logLevel)
         {
             var state = new
-            { Name = Guid.NewGuid().ToString() };
+                {Name = Guid.NewGuid().ToString()};
 
             var logger = _output.BuildLoggerFor<LogFactoryTests>();
 
@@ -109,7 +109,7 @@
         {
             var eventId = new EventId(Environment.TickCount);
             var state = new
-            { Name = Guid.NewGuid().ToString() };
+                {Name = Guid.NewGuid().ToString()};
             var exception = GetThrownException();
 
             var actual = _output.BuildLoggerFor<LogFactoryTests>();
@@ -123,7 +123,7 @@
         {
             var eventId = new EventId(Environment.TickCount);
             var state = new
-            { Name = Guid.NewGuid().ToString() };
+                {Name = Guid.NewGuid().ToString()};
             var exception = GetThrownException();
 
             var actual = _output.BuildLogger();

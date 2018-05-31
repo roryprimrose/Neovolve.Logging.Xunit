@@ -1,13 +1,13 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using ModelBuilder;
-using Neovolve.UnitTest.Logging;
-using System;
-using System.Collections.Generic;
-using Xunit;
-
-namespace Neovolve.UnitTest.UnitTests.Logging
+﻿namespace Divergic.Logging.Xunit.UnitTests
 {
+    using System;
+    using System.Collections.Generic;
+    using Divergic.Logging.Xunit;
+    using FluentAssertions;
+    using global::Xunit;
+    using Microsoft.Extensions.Logging;
+    using ModelBuilder;
+
     public class CacheLoggerTests
     {
         [Fact]
@@ -71,10 +71,7 @@ namespace Neovolve.UnitTest.UnitTests.Logging
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            Func<string, Exception, string> formatter = (string message, Exception error) =>
-            {
-                return data;
-            };
+            Func<string, Exception, string> formatter = (message, error) => { return data; };
             var logs = new List<LogEntry>();
 
             var sut = new CacheLogger<CacheLoggerTests>(logs);
