@@ -1,7 +1,8 @@
 ﻿namespace Divergic.Logging.Xunit
 {
-    using System.Collections.Generic;
+    using System;
     using System.Runtime.CompilerServices;
+    using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
 
@@ -20,23 +21,17 @@
         ///     <see cref="CallerMemberNameAttribute" />.
         /// </param>
         /// <returns>The logger.</returns>
-        public static ICacheLogger BuildLog(ITestOutputHelper output = null,
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ICacheLogger BuildLog(ITestOutputHelper output,
             [CallerMemberName] string memberName = null)
         {
-            var logEntries = new List<LogEntry>();
+            Ensure.Any.IsNotNull(output, nameof(output));
 
-            using (var factory = new LoggerFactory())
-            using (var cacheProvider = new CacheLoggerProvider(logEntries))
-            using (var outputProvider = new OutputLoggerProvider(output))
+            using (var factory = Create(output))
             {
-                factory.AddProvider(cacheProvider);
-                factory.AddProvider(outputProvider);
-
                 var logger = factory.CreateLogger(memberName);
 
-                var cacheLogger = new CacheLoggerWrapper(logger, logEntries);
-
-                return cacheLogger;
+                return logger.WithCache();
             }
         }
 
@@ -46,23 +41,34 @@
         /// <typeparam name="T">The type to create the logger for.</typeparam>
         /// <param name="output">The test output logger.</param>
         /// <returns>The logger.</returns>
-        public static ICacheLogger<T> BuildLogFor<T>(ITestOutputHelper output = null)
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ICacheLogger<T> BuildLogFor<T>(ITestOutputHelper output)
         {
-            var logEntries = new List<LogEntry>();
+            Ensure.Any.IsNotNull(output, nameof(output));
 
-            using (var factory = new LoggerFactory())
-            using (var cacheProvider = new CacheLoggerProvider(logEntries))
-            using (var outputProvider = new OutputLoggerProvider(output))
+            using (var factory = Create(output))
             {
-                factory.AddProvider(cacheProvider);
-                factory.AddProvider(outputProvider);
-
                 var logger = factory.CreateLogger<T>();
 
-                var cacheLogger = new CacheLoggerWrapper<T>(logger, logEntries);
-
-                return cacheLogger;
+                return logger.WithCache();
             }
+        }
+
+        /// <summary>
+        ///     Creates an <see cref="ILoggerFactory" /> instance that is configured for xUnit output.
+        /// </summary>
+        /// <param name="output">The test output.</param>
+        /// <returns>The logger factory.</returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ILoggerFactory Create(ITestOutputHelper output)
+        {
+            Ensure.Any.IsNotNull(output, nameof(output));
+
+            var factory = new LoggerFactory();
+
+            factory.UseXunit(output);
+
+            return factory;
         }
     }
 }

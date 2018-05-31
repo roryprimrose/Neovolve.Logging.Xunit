@@ -5,20 +5,20 @@
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    ///     The <see cref="OutputLogger" />
+    ///     The <see cref="TestOutputLogger" />
     ///     class is used to provide logging implementation for Xunit.
     /// </summary>
-    public class OutputLogger : ILogger
+    public class TestOutputLogger : ILogger
     {
         private readonly string _name;
         private readonly ITestOutputHelper _output;
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="OutputLogger" /> class.
+        ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         /// <param name="output">The test output helper.</param>
-        public OutputLogger(string name, ITestOutputHelper output)
+        public TestOutputLogger(string name, ITestOutputHelper output)
         {
             _name = name;
             _output = output;
@@ -65,16 +65,6 @@
             if (exception != null)
             {
                 _output.WriteLine(Format, logName, logLevel, eventId, exception);
-            }
-        }
-
-        private class NoopDisposable : IDisposable
-        {
-            public static readonly NoopDisposable Instance = new NoopDisposable();
-
-            public void Dispose()
-            {
-                // No-op
             }
         }
     }

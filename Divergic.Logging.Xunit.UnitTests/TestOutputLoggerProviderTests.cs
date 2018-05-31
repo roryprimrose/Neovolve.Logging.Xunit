@@ -7,14 +7,14 @@
     using global::Xunit.Abstractions;
     using NSubstitute;
 
-    public class OutputLoggerProviderTests
+    public class TestOutputLoggerProviderTests
     {
         [Fact]
         public void CanDisposeMultipleTimesTest()
         {
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new OutputLoggerProvider(output))
+            using (var sut = new TestOutputLoggerProvider(output))
             {
                 sut.Dispose();
                 sut.Dispose();
@@ -28,18 +28,18 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new OutputLoggerProvider(output))
+            using (var sut = new TestOutputLoggerProvider(output))
             {
                 var actual = sut.CreateLogger(categoryName);
 
-                actual.Should().BeOfType<OutputLogger>();
+                actual.Should().BeOfType<TestOutputLogger>();
             }
         }
 
         [Fact]
         public void ThrowsExceptionWithNullOutputTest()
         {
-            Action action = () => new OutputLoggerProvider(null);
+            Action action = () => new TestOutputLoggerProvider(null);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -6,7 +6,7 @@
     <Company>Divergic</Company>
     <Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Divergic.Logging.Xunit.xml</DocumentationFile>
+    <DocumentationFile></DocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <IncludeSymbols>true</IncludeSymbols>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -15,7 +15,12 @@
     <RepositoryUrl>https://github.com/Divergic/Divergic.Logging.Xunit</RepositoryUrl>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Divergic.Logging.Xunit.xml</DocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="Ensure.That" Version="8.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging" Version="2.1.0" />
     <PackageReference Include="Xunit.Abstractions" Version="2.0.1" />
   </ItemGroup>

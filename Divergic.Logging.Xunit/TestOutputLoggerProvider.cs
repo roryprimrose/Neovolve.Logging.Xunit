@@ -5,17 +5,17 @@
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    ///     The <see cref="OutputLoggerProvider" /> class is used to provide Xunit logging to <see cref="ILoggerFactory" />.
+    ///     The <see cref="TestOutputLoggerProvider" /> class is used to provide Xunit logging to <see cref="ILoggerFactory" />.
     /// </summary>
-    public class OutputLoggerProvider : ILoggerProvider
+    public class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly ITestOutputHelper _output;
 
         /// <summary>
-        ///     Initializes a new instance of the <see cref="OutputLoggerProvider" /> class.
+        ///     Initializes a new instance of the <see cref="TestOutputLoggerProvider" /> class.
         /// </summary>
         /// <param name="output">The test output helper.</param>
-        public OutputLoggerProvider(ITestOutputHelper output)
+        public TestOutputLoggerProvider(ITestOutputHelper output)
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));
         }
@@ -23,7 +23,7 @@
         /// <inheritdoc />
         public ILogger CreateLogger(string categoryName)
         {
-            return new OutputLogger(categoryName, _output);
+            return new TestOutputLogger(categoryName, _output);
         }
 
         /// <inheritdoc />

@@ -9,7 +9,7 @@
     using ModelBuilder;
     using NSubstitute;
 
-    public class OutputLoggerTests
+    public class TestOutputLoggerTests
     {
         [Fact]
         public void BeginScopeReturnsInstanceTest()
@@ -19,7 +19,7 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new OutputLogger(name, output);
+            var sut = new TestOutputLogger(name, output);
 
             var actual = sut.BeginScope(state);
 
@@ -45,7 +45,7 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new OutputLogger(name, output);
+            var sut = new TestOutputLogger(name, output);
 
             var actual = sut.IsEnabled(logLevel);
 
@@ -71,7 +71,7 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new OutputLogger(name, output);
+            var sut = new TestOutputLogger(name, output);
 
             sut.Log(logLevel, eventId, state, exception, formatter);
 

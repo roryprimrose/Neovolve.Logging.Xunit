@@ -1,12 +1,11 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
-    using System.Collections.Generic;
-    using System.Linq;
     using FluentAssertions;
     using global::Xunit;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
+    using ModelBuilder;
 
     public class LogFactoryTests
     {
@@ -17,130 +16,75 @@
             _output = output;
         }
 
-        public static List<object[]> ResolveLevels()
+
+        [Fact]
+        public void BuildLogForReturnsCacheLoggerTTest()
         {
-            var values = Enum.GetValues(typeof(LogLevel));
-            var results = new List<object[]>(values.Length);
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var data = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            Func<string, Exception, string> formatter = (message, error) => data;
 
-            foreach (var value in values)
-            {
-                var result = new[]
-                    {value};
+            var sut = LogFactory.BuildLogFor<LogFactoryTests>(_output);
 
-                results.Add(result);
-            }
+            sut.Log(logLevel, eventId, state, exception, formatter);
 
-            return results;
+            sut.Should().BeAssignableTo<ICacheLogger<LogFactoryTests>>();
+            sut.Count.Should().Be(1);
         }
 
         [Fact]
-        public void BuildLoggerForTypeCachesLogEntriesTests()
+        public void BuildLogForThrowsExceptionWithNullOutputTest()
         {
-            var logLevel = LogLevel.Information;
-            var eventId = new EventId(Environment.TickCount);
-            var state = new
-                {Name = Guid.NewGuid().ToString()};
-            var exception = GetThrownException();
+            Action action = () => LogFactory.BuildLogFor<LogFactoryTests>(null);
 
-            var actual = _output.BuildLoggerFor<LogFactoryTests>();
-
-            actual.Count.Should().Be(0);
-            actual.Latest.Should().BeNull();
-
-            actual.Log(logLevel, eventId, state, exception, (data, ex) => state.ToString());
-
-            actual.Count.Should().Be(1);
-
-            var latest = actual.Latest;
-
-            latest.Should().NotBeNull();
-            latest.LogLevel.Should().Be(logLevel);
-            latest.EventId.Should().Be(eventId);
-            latest.State.Should().Be(state);
-            latest.Exception.Should().Be(exception);
-            latest.Message.Should().NotBeNullOrWhiteSpace();
-
-            var entries = actual.Entries;
-
-            entries.Count.Should().Be(actual.Count);
-
-            var entry = entries.First();
-
-            latest.Should().BeEquivalentTo(entry);
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
-        public void BuildLoggerForTypeCanBeginScopeTests()
+        public void BuildLogReturnsCacheLoggerTest()
         {
-            var state = new
-                {Name = Guid.NewGuid().ToString()};
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var data = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            Func<string, Exception, string> formatter = (message, error) => data;
 
-            var actual = _output.BuildLoggerFor<LogFactoryTests>();
+            var sut = LogFactory.BuildLog(_output);
 
-            using (var scope = actual.BeginScope(state))
-            {
-                scope.Dispose();
-            }
+            sut.Log(logLevel, eventId, state, exception, formatter);
+
+            sut.Should().BeAssignableTo<ICacheLogger>();
+            sut.Count.Should().Be(1);
         }
 
-        [Theory]
-        [InlineData(LogLevel.Critical)]
-        [InlineData(LogLevel.Debug)]
-        [InlineData(LogLevel.Error)]
-        [InlineData(LogLevel.Information)]
-        [InlineData(LogLevel.None)]
-        [InlineData(LogLevel.Trace)]
-        [InlineData(LogLevel.Warning)]
-        public void BuildLoggerForTypeReturnsLoggerWithIsEnabledReturnsTrueTest(LogLevel logLevel)
+        [Fact]
+        public void BuildLogThrowsExceptionWithNullOutputTest()
         {
-            var state = new
-                {Name = Guid.NewGuid().ToString()};
+            Action action = () => LogFactory.BuildLog(null);
 
-            var logger = _output.BuildLoggerFor<LogFactoryTests>();
-
-            var actual = logger.IsEnabled(logLevel);
-
-            actual.Should().BeTrue();
+            action.Should().Throw<ArgumentNullException>();
         }
 
-        [Theory]
-        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
-        public void BuildLoggerForTypeTests(LogLevel level)
+        [Fact]
+        public void CreateReturnsFactoryTest()
         {
-            var eventId = new EventId(Environment.TickCount);
-            var state = new
-                {Name = Guid.NewGuid().ToString()};
-            var exception = GetThrownException();
+            var sut = LogFactory.Create(_output);
 
-            var actual = _output.BuildLoggerFor<LogFactoryTests>();
+            var logger = sut.CreateLogger<LogFactoryTests>();
 
-            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
+            logger.LogInformation("This should be written to the test out");
         }
 
-        [Theory]
-        [MemberData(nameof(ResolveLevels), MemberType = typeof(LogFactoryTests))]
-        public void BuildLoggerTests(LogLevel level)
+        [Fact]
+        public void CreateThrowsExceptionWithNullOutputTest()
         {
-            var eventId = new EventId(Environment.TickCount);
-            var state = new
-                {Name = Guid.NewGuid().ToString()};
-            var exception = GetThrownException();
+            Action action = () => LogFactory.Create(null);
 
-            var actual = _output.BuildLogger();
-
-            actual.Log(level, eventId, state, exception, (data, ex) => state.ToString());
-        }
-
-        private static Exception GetThrownException()
-        {
-            try
-            {
-                throw new TimeoutException();
-            }
-            catch (Exception ex)
-            {
-                return ex;
-            }
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }
