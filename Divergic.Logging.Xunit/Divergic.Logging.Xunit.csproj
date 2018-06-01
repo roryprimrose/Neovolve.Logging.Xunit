@@ -15,7 +15,6 @@
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Divergic.Logging.Xunit.xml</DocumentationFile>
   </PropertyGroup>
 
