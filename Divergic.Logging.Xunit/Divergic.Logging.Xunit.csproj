@@ -5,7 +5,6 @@
     <Authors>rprimrose</Authors>
     <Company>Divergic</Company>
     <Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
-    <DocumentationFile></DocumentationFile>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <IncludeSymbols>true</IncludeSymbols>
     <NeutralLanguage>en-US</NeutralLanguage>
