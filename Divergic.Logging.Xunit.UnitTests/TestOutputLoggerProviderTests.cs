@@ -1,7 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
-    using Divergic.Logging.Xunit;
     using FluentAssertions;
     using global::Xunit;
     using global::Xunit.Abstractions;
@@ -34,6 +33,30 @@
 
                 actual.Should().BeOfType<TestOutputLogger>();
             }
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void CreateLoggerThrowsExceptionWithInvalidCategoryNameTest(string categoryName)
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            using (var sut = new TestOutputLoggerProvider(output))
+            {
+                Action action = () => sut.CreateLogger(categoryName);
+
+                action.Should().Throw<ArgumentException>();
+            }
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullOutputTest()
+        {
+            Action action = () => new TestOutputLoggerProvider(null);
+
+            action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]

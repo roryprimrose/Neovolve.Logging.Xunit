@@ -1,7 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
-    using Divergic.Logging.Xunit;
     using FluentAssertions;
     using global::Xunit;
     using global::Xunit.Abstractions;
@@ -40,7 +39,6 @@
         [InlineData(LogLevel.Warning)]
         public void IsEnabledReturnsTrueTest(LogLevel logLevel)
         {
-            var state = Guid.NewGuid().ToString();
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
@@ -50,6 +48,49 @@
             var actual = sut.IsEnabled(logLevel);
 
             actual.Should().BeTrue();
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("   ")]
+        public void LogDoesNotWriteEmptyMessageTest(string message)
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            Func<string, Exception, string> formatter = (logState, error) => { return message; };
+            var name = Guid.NewGuid().ToString();
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(name, output);
+
+            sut.Log(logLevel, eventId, state, exception, formatter);
+
+            output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
+            output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, exception);
+        }
+
+        [Fact]
+        public void LogDoesNotWriteNullExceptionTest()
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var data = Guid.NewGuid().ToString();
+            Func<string, Exception, string> formatter = (logState, error) => { return data; };
+            var name = Guid.NewGuid().ToString();
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(name, output);
+
+            sut.Log(logLevel, eventId, state, null, formatter);
+
+            output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
+            output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, data);
         }
 
         [Theory]
@@ -77,6 +118,29 @@
 
             output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, data);
             output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, exception);
+        }
+
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData(" ")]
+        public void ThrowsExceptionWhenCreatedWithInvalidNameTest(string name)
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            Action action = () => new TestOutputLogger(name, null);
+
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Fact]
+        public void ThrowsExceptionWhenCreatedWithNullOutputTest()
+        {
+            var name = Guid.NewGuid().ToString();
+
+            Action action = () => new TestOutputLogger(name, null);
+
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

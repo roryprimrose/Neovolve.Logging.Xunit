@@ -6,6 +6,10 @@
     using EnsureThat;
     using Microsoft.Extensions.Logging;
 
+    /// <summary>
+    ///     The <see cref="CacheLogger" />
+    ///     class provides a cache of log entries written to the logger.
+    /// </summary>
     public class CacheLogger : ICacheLogger
     {
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
@@ -22,7 +26,7 @@
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
         /// </summary>
         /// <param name="logger">The source logger.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
         public CacheLogger(ILogger logger)
         {
             Ensure.Any.IsNotNull(logger, nameof(logger));
@@ -53,7 +57,7 @@
         }
 
         /// <inheritdoc />
-        /// <exception cref="ArgumentNullException">The <paramref name="formatter"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="formatter" /> is <c>null</c>.</exception>
         public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
             Func<TState, Exception, string> formatter)
         {
