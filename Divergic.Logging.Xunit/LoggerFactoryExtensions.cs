@@ -12,14 +12,15 @@
     public static class LoggerFactoryExtensions
     {
         /// <summary>
-        /// Registers the <see cref="TestOutputLoggerProvider"/> in the factory using the specified <see cref="ITestOutputHelper"/>.
+        ///     Registers the <see cref="TestOutputLoggerProvider" /> in the factory using the specified
+        ///     <see cref="ITestOutputHelper" />.
         /// </summary>
         /// <param name="factory">The factory to add the provider to.</param>
         /// <param name="output">The test output reference.</param>
         /// <returns>The logger factory.</returns>
-        /// <exception cref="ArgumentNullException">The <paramref name="factory"/> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentNullException">The <paramref name="output"/> is <c>null</c>.</exception>
-        public static ILoggerFactory UseXunit(this ILoggerFactory factory, ITestOutputHelper output)
+        /// <exception cref="ArgumentNullException">The <paramref name="factory" /> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ILoggerFactory AddXunit(this ILoggerFactory factory, ITestOutputHelper output)
         {
             Ensure.Any.IsNotNull(factory, nameof(factory));
             Ensure.Any.IsNotNull(output, nameof(output));
@@ -29,6 +30,21 @@
             factory.AddProvider(provider);
 
             return factory;
+        }
+
+        /// <summary>
+        ///     Registers the <see cref="TestOutputLoggerProvider" /> in the factory using the specified
+        ///     <see cref="ITestOutputHelper" />.
+        /// </summary>
+        /// <param name="factory">The factory to add the provider to.</param>
+        /// <param name="output">The test output reference.</param>
+        /// <returns>The logger factory.</returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="factory" /> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        [Obsolete("This member is being renamed to AddXunit to be more inline with other provider extensions.", false)]
+        public static ILoggerFactory UseXunit(this ILoggerFactory factory, ITestOutputHelper output)
+        {
+            return AddXunit(factory, output);
         }
     }
 }

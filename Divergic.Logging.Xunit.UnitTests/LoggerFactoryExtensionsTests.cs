@@ -16,7 +16,7 @@
 
             var sut = Substitute.For<ILoggerFactory>();
 
-            sut.UseXunit(output);
+            sut.AddXunit(output);
 
             sut.Received().AddProvider(Arg.Is<ILoggerProvider>(x => x is TestOutputLoggerProvider));
         }
@@ -28,13 +28,47 @@
 
             var sut = (ILoggerFactory) null;
 
-            Action action = () => sut.UseXunit(output);
+            Action action = () => sut.AddXunit(output);
 
             action.Should().Throw<ArgumentNullException>();
         }
 
         [Fact]
         public void AddXunitThrowsExceptionWithNullTestOutputTest()
+        {
+            var sut = Substitute.For<ILoggerFactory>();
+
+            Action action = () => sut.AddXunit(null);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void UseXunitAddsProviderToFactoryTest()
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = Substitute.For<ILoggerFactory>();
+
+            sut.UseXunit(output);
+
+            sut.Received().AddProvider(Arg.Is<ILoggerProvider>(x => x is TestOutputLoggerProvider));
+        }
+
+        [Fact]
+        public void UseXunitThrowsExceptionWithNullFactoryTest()
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = (ILoggerFactory) null;
+
+            Action action = () => sut.UseXunit(output);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void UseXunitThrowsExceptionWithNullTestOutputTest()
         {
             var sut = Substitute.For<ILoggerFactory>();
 

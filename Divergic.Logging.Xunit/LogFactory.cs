@@ -66,7 +66,7 @@
 
             var factory = new LoggerFactory();
 
-            factory.UseXunit(output);
+            factory.AddXunit(output);
 
             return factory;
         }
