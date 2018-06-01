@@ -1,11 +1,11 @@
-﻿using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using System;
-using Xunit;
-using Xunit.Abstractions;
-
-namespace Neovolve.UnitTest.UnitTests.Logging
+﻿namespace Divergic.Logging.Xunit.UnitTests
 {
+    using System;
+    using FluentAssertions;
+    using global::Xunit;
+    using global::Xunit.Abstractions;
+    using Microsoft.Extensions.Logging;
+
     public class TestOutputHelperExtensionsTests
     {
         private readonly ITestOutputHelper _output;

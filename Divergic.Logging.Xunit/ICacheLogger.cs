@@ -1,16 +1,7 @@
-﻿namespace Neovolve.UnitTest.Logging
+﻿namespace Divergic.Logging.Xunit
 {
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
-
-    /// <summary>
-    ///     The <see cref="ICacheLogger" />
-    ///     interface defines the members for recording and accessing log entries.
-    /// </summary>
-    /// <typeparam name="T">The type of class using the cache.</typeparam>
-    public interface ICacheLogger<out T> : ICacheLogger, ILogger<T>
-    {
-    }
 
     /// <summary>
     ///     The <see cref="ICacheLogger" />
@@ -31,6 +22,6 @@
         /// <summary>
         ///     Gets the latest cache entry.
         /// </summary>
-        LogEntry Latest { get; }
+        LogEntry Last { get; }
     }
 }

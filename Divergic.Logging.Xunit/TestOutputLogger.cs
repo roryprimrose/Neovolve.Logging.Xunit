@@ -1,25 +1,31 @@
-﻿namespace Neovolve.UnitTest.Logging
+﻿namespace Divergic.Logging.Xunit
 {
     using System;
+    using EnsureThat;
+    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
-    using Xunit.Abstractions;
 
     /// <summary>
-    ///     The <see cref="OutputLogger" />
+    ///     The <see cref="TestOutputLogger" />
     ///     class is used to provide logging implementation for Xunit.
     /// </summary>
-    public class OutputLogger : ILogger
+    public class TestOutputLogger : ILogger
     {
         private readonly string _name;
         private readonly ITestOutputHelper _output;
 
         /// <summary>
-        ///     Creates a new instance of the <see cref="OutputLogger" /> class.
+        ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         /// <param name="output">The test output helper.</param>
-        public OutputLogger(string name, ITestOutputHelper output)
+        /// <exception cref="ArgumentException">The <paramref name="name" /> is <c>null</c>, empty or whitespace.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public TestOutputLogger(string name, ITestOutputHelper output)
         {
+            Ensure.String.IsNotNullOrWhiteSpace(name, nameof(name));
+            Ensure.Any.IsNotNull(output, nameof(output));
+
             _name = name;
             _output = output;
         }
@@ -55,26 +61,16 @@
 
         private void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
         {
-            const string Format = "{1} [{2}]: {3}";
+            const string format = "{1} [{2}]: {3}";
 
-            if (string.IsNullOrEmpty(message) == false)
+            if (string.IsNullOrWhiteSpace(message) == false)
             {
-                _output.WriteLine(Format, logName, logLevel, eventId, message);
+                _output.WriteLine(format, logName, logLevel, eventId, message);
             }
 
             if (exception != null)
             {
-                _output.WriteLine(Format, logName, logLevel, eventId, exception);
-            }
-        }
-
-        private class NoopDisposable : IDisposable
-        {
-            public static readonly NoopDisposable Instance = new NoopDisposable();
-
-            public void Dispose()
-            {
-                // No-op
+                _output.WriteLine(format, logName, logLevel, eventId, exception);
             }
         }
     }
