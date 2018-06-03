@@ -93,6 +93,25 @@
             output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, data);
         }
 
+        [Fact]
+        public void LogIgnoresNullFormattedMessageTest()
+        {
+            var name = Guid.NewGuid().ToString();
+            var exception = new TimeoutException();
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(name, output);
+
+            var cacheLogger = sut.WithCache();
+
+            cacheLogger.LogInformation(exception, null);
+
+            cacheLogger.Count.Should().Be(1);
+            cacheLogger.Last.Exception.Should().Be(exception);
+            cacheLogger.Last.Message.Should().BeNull();
+        }
+
         [Theory]
         [InlineData(LogLevel.Critical)]
         [InlineData(LogLevel.Debug)]

@@ -9,7 +9,7 @@
     ///     The <see cref="TestOutputLogger" />
     ///     class is used to provide logging implementation for Xunit.
     /// </summary>
-    public class TestOutputLogger : ILogger
+    public class TestOutputLogger : FilterLogger
     {
         private readonly string _name;
         private readonly ITestOutputHelper _output;
@@ -31,46 +31,31 @@
         }
 
         /// <inheritdoc />
-        public IDisposable BeginScope<TState>(TState state)
+        public override IDisposable BeginScope<TState>(TState state)
         {
             return NoopDisposable.Instance;
         }
 
         /// <inheritdoc />
-        public bool IsEnabled(LogLevel logLevel)
+        public override bool IsEnabled(LogLevel logLevel)
         {
             return true;
         }
 
         /// <inheritdoc />
-        public void Log<TState>(
-            LogLevel logLevel,
-            EventId eventId,
-            TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter)
-        {
-            var formattedMessage = formatter(state, exception);
-
-            if (!string.IsNullOrEmpty(formattedMessage) ||
-                exception != null)
-            {
-                WriteMessage(logLevel, _name, eventId.Id, formattedMessage, exception);
-            }
-        }
-
-        private void WriteMessage(LogLevel logLevel, string logName, int eventId, string message, Exception exception)
+        protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
+            Exception exception, Func<TState, Exception, string> formatter)
         {
             const string format = "{1} [{2}]: {3}";
 
             if (string.IsNullOrWhiteSpace(message) == false)
             {
-                _output.WriteLine(format, logName, logLevel, eventId, message);
+                _output.WriteLine(format, _name, logLevel, eventId.Id, message);
             }
 
             if (exception != null)
             {
-                _output.WriteLine(format, logName, logLevel, eventId, exception);
+                _output.WriteLine(format, _name, logLevel, eventId.Id, exception);
             }
         }
     }

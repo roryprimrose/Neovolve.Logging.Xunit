@@ -10,7 +10,7 @@
     ///     The <see cref="CacheLogger" />
     ///     class provides a cache of log entries written to the logger.
     /// </summary>
-    public class CacheLogger : ICacheLogger
+    public class CacheLogger : FilterLogger, ICacheLogger
     {
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
         private readonly ILogger _logger;
@@ -35,7 +35,7 @@
         }
 
         /// <inheritdoc />
-        public IDisposable BeginScope<TState>(TState state)
+        public override IDisposable BeginScope<TState>(TState state)
         {
             if (_logger == null)
             {
@@ -46,7 +46,7 @@
         }
 
         /// <inheritdoc />
-        public bool IsEnabled(LogLevel logLevel)
+        public override bool IsEnabled(LogLevel logLevel)
         {
             if (_logger == null)
             {
@@ -57,25 +57,9 @@
         }
 
         /// <inheritdoc />
-        /// <exception cref="ArgumentNullException">The <paramref name="formatter" /> is <c>null</c>.</exception>
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
-            Func<TState, Exception, string> formatter)
+        protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
+            Exception exception, Func<TState, Exception, string> formatter)
         {
-            Ensure.Any.IsNotNull(formatter, nameof(formatter));
-
-            if (IsEnabled(logLevel) == false)
-            {
-                return;
-            }
-
-            var message = formatter(state, exception);
-
-            if (string.IsNullOrWhiteSpace(message) &&
-                exception == null)
-            {
-                return;
-            }
-
             var entry = new LogEntry(logLevel, eventId, state, exception, message);
 
             _logEntries.Add(entry);
