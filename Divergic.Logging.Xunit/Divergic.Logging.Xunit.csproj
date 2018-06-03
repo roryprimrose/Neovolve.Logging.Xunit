@@ -9,7 +9,8 @@
     <Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
     <Copyright>Copyright © Divergic Ptd Ltd 2018</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
-    <NeutralLanguage>en-US</NeutralLanguage>
+    <NeutralLanguage>en-US</NeutralLanguage>	
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <PackageProjectUrl>https://github.com/Divergic/Divergic.Logging.Xunit</PackageProjectUrl>
     <PackageLicenseUrl>https://github.com/Divergic/Divergic.Logging.Xunit/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/Divergic/Divergic.Logging.Xunit</RepositoryUrl>
