@@ -80,6 +80,22 @@
         }
 
         [Fact]
+        public void LogIgnoresNullFormattedMessageTest()
+        {
+            var exception = new TimeoutException();
+
+            var sut = new CacheLogger();
+
+            var cacheLogger = sut.WithCache();
+
+            cacheLogger.LogInformation(exception, null);
+
+            cacheLogger.Count.Should().Be(1);
+            cacheLogger.Last.Exception.Should().Be(exception);
+            cacheLogger.Last.Message.Should().BeNull();
+        }
+
+        [Fact]
         public void LastReturnsLastLogEntryTest()
         {
             var logLevel = LogLevel.Error;
