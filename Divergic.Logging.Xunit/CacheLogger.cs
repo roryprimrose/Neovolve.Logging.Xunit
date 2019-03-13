@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using EnsureThat;
     using Microsoft.Extensions.Logging;
 
@@ -13,6 +14,7 @@
     public class CacheLogger : FilterLogger, ICacheLogger
     {
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
+        private readonly Stack<Scope> _scopes = new Stack<Scope>();
         private readonly ILogger _logger;
 
         /// <summary>
@@ -37,12 +39,13 @@
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            if (_logger == null)
-            {
-                return NoopDisposable.Instance;
-            }
+            IDisposable innerScope = _logger != null ? _logger.BeginScope(state) : NoopDisposable.Instance;
 
-            return _logger.BeginScope(state);
+            Scope outerScope = new Scope(this, innerScope, state);
+
+            _scopes.Push(outerScope);
+
+            return outerScope;
         }
 
         /// <inheritdoc />
@@ -60,7 +63,7 @@
         protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
             Exception exception, Func<TState, Exception, string> formatter)
         {
-            var entry = new LogEntry(logLevel, eventId, state, exception, message);
+            var entry = new LogEntry(logLevel, eventId, state, exception, message, _scopes.Select(s => s.State).ToArray());
 
             _logEntries.Add(entry);
 
@@ -92,6 +95,40 @@
                 }
 
                 return _logEntries[count - 1];
+            }
+        }
+
+        private class Scope : IDisposable
+        {
+            private readonly CacheLogger _cacheLogger;
+            private readonly IDisposable _innerScope;
+            private bool _isDisposed;
+
+            public Scope(CacheLogger cacheLogger, IDisposable innerScope, object state)
+            {
+                _cacheLogger = cacheLogger;
+                _innerScope = innerScope;
+                _isDisposed = false;
+
+                State = state;
+            }
+            public object State { get; }
+
+            public void Dispose()
+            {
+                if (_isDisposed)
+                {
+                    return;
+                }
+
+                if (_cacheLogger._scopes.Count > 0)
+                {
+                    _cacheLogger._scopes.Pop();
+                }
+
+                _innerScope.Dispose();
+
+                _isDisposed = true;
             }
         }
     }

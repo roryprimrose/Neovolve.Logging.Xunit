@@ -1,18 +1,21 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
+    using System.Collections.Generic;
     using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
 
     /// <summary>
     ///     The <see cref="TestOutputLogger" />
     ///     class is used to provide logging implementation for Xunit.
     /// </summary>
-    public class TestOutputLogger : FilterLogger
+    public class TestOutputLogger : FilterLogger, IDisposable
     {
         private readonly string _name;
         private readonly ITestOutputHelper _output;
+        private readonly Stack<object> _scopes;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
@@ -28,12 +31,15 @@
 
             _name = name;
             _output = output;
+            _scopes = new Stack<object>();
         }
 
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            return NoopDisposable.Instance;
+            _scopes.Push(state);
+
+            return this;
         }
 
         /// <inheritdoc />
@@ -56,6 +62,19 @@
             if (exception != null)
             {
                 _output.WriteLine(format, _name, logLevel, eventId.Id, exception);
+            }
+
+            if (_scopes.Count > 0)
+            {
+                _output.WriteLine(JsonConvert.SerializeObject(_scopes, Formatting.Indented));
+            }
+        }
+
+        void IDisposable.Dispose()
+        {
+            if (_scopes.Count > 0)
+            {
+                _scopes.Pop();
             }
         }
     }

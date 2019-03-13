@@ -10,15 +10,20 @@
 
     public class TestOutputLoggerTests
     {
+        private readonly ITestOutputHelper _output;
+
+        public TestOutputLoggerTests(ITestOutputHelper output)
+        {
+            _output = output;
+        }
+
         [Fact]
         public void BeginScopeReturnsInstanceTest()
         {
             var name = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var sut = new TestOutputLogger(name, output);
+            var sut = new TestOutputLogger(name, _output);
 
             var actual = sut.BeginScope(state);
 
@@ -41,9 +46,7 @@
         {
             var name = Guid.NewGuid().ToString();
 
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var sut = new TestOutputLogger(name, output);
+            var sut = new TestOutputLogger(name, _output);
 
             var actual = sut.IsEnabled(logLevel);
 
@@ -99,9 +102,7 @@
             var name = Guid.NewGuid().ToString();
             var exception = new TimeoutException();
 
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var sut = new TestOutputLogger(name, output);
+            var sut = new TestOutputLogger(name, _output);
 
             var cacheLogger = sut.WithCache();
 

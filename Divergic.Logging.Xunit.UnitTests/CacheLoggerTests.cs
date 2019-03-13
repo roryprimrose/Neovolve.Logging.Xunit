@@ -23,7 +23,7 @@
         }
 
         [Fact]
-        public void BeginScopeReturnsInstanceWhenSourceLoggerProvidedTest()
+        public void BeginScopeReturnsWrappedInstanceWhenSourceLoggerProvidedTest()
         {
             var state = Guid.NewGuid().ToString();
 
@@ -36,7 +36,8 @@
 
             var actual = sut.BeginScope(state);
 
-            actual.Should().Be(scope);
+            actual.Should().NotBeNull();
+            actual.Should().NotBeSameAs(scope);
         }
 
         [Fact]
@@ -309,6 +310,21 @@
             Action action = () => new CacheLogger(null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void LogEntryContainsSnapshotOfActiveScopes()
+        {
+            var sut = new CacheLogger();
+
+            var state = Guid.NewGuid();
+
+            using (sut.BeginScope(state))
+            {
+                sut.LogDebug(Guid.NewGuid().ToString());
+            }
+
+            sut.Last.Scopes.Single().Should().Be(state);
         }
     }
 }
