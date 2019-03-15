@@ -14,7 +14,7 @@
     public class CacheLogger : FilterLogger, ICacheLogger
     {
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
-        private readonly Stack<Scope> _scopes = new Stack<Scope>();
+        private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
         private readonly ILogger _logger;
 
         /// <summary>
@@ -39,13 +39,13 @@
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            IDisposable innerScope = _logger != null ? _logger.BeginScope(state) : NoopDisposable.Instance;
+            var scope = _logger?.BeginScope(state) ?? NoopDisposable.Instance;
 
-            Scope outerScope = new Scope(this, innerScope, state);
+            var cacheScope = new CacheScope(scope, state, () => _scopes.Pop());
 
-            _scopes.Push(outerScope);
+            _scopes.Push(cacheScope);
 
-            return outerScope;
+            return cacheScope;
         }
 
         /// <inheritdoc />
@@ -98,37 +98,29 @@
             }
         }
 
-        private class Scope : IDisposable
+        private class CacheScope : IDisposable
         {
-            private readonly CacheLogger _cacheLogger;
-            private readonly IDisposable _innerScope;
-            private bool _isDisposed;
+            private IDisposable _scope;
+            private Action _onScopeEnd;
 
-            public Scope(CacheLogger cacheLogger, IDisposable innerScope, object state)
+            public CacheScope(IDisposable scope, object state, Action onScopeEnd)
             {
-                _cacheLogger = cacheLogger;
-                _innerScope = innerScope;
-                _isDisposed = false;
-
+                _scope = scope;
                 State = state;
+                _onScopeEnd = onScopeEnd;
             }
+
             public object State { get; }
 
             public void Dispose()
             {
-                if (_isDisposed)
-                {
-                    return;
-                }
+                // Pass on the end scope request
+                _scope?.Dispose();
+                _scope = null;
 
-                if (_cacheLogger._scopes.Count > 0)
-                {
-                    _cacheLogger._scopes.Pop();
-                }
-
-                _innerScope.Dispose();
-
-                _isDisposed = true;
+                // Clean up the scope in the cache logger
+                _onScopeEnd?.Invoke();
+                _onScopeEnd = null;
             }
         }
     }

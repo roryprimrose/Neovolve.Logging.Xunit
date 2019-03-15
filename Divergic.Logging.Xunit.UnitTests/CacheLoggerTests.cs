@@ -17,9 +17,10 @@
 
             var sut = new CacheLogger();
 
-            var actual = sut.BeginScope(state);
-
-            actual.Should().NotBeNull();
+            using (var actual = sut.BeginScope(state))
+            {
+                actual.Should().NotBeNull();
+            }
         }
 
         [Fact]
