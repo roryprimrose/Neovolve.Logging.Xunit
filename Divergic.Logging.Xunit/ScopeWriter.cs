@@ -44,7 +44,7 @@
         {
             if (_state == null)
             {
-                return "Scope";
+                return "Scope " + (_depth + 1);
             }
 
             if (_state is string state)
