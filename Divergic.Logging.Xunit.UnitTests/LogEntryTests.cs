@@ -16,7 +16,7 @@
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
-            var scopes = new object[] { Guid.NewGuid().ToString() };
+            var scopes = new object[] {Guid.NewGuid().ToString()};
 
             var sut = new LogEntry(level, eventId, state, exception, message, scopes);
 

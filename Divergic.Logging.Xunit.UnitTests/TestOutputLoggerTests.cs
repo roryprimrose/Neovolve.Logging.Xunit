@@ -62,7 +62,6 @@
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             Func<string, Exception, string> formatter = (logState, error) => { return message; };
             var name = Guid.NewGuid().ToString();
 
@@ -70,10 +69,9 @@
 
             var sut = new TestOutputLogger(name, output);
 
-            sut.Log(logLevel, eventId, state, exception, formatter);
+            sut.Log(logLevel, eventId, state, null, formatter);
 
-            output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
-            output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, exception);
+            output.DidNotReceive().WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
         }
 
         [Fact]
@@ -93,7 +91,7 @@
             sut.Log(logLevel, eventId, state, null, formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
-            output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, data);
+            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, data);
         }
 
         [Fact]
@@ -136,8 +134,8 @@
 
             sut.Log(logLevel, eventId, state, exception, formatter);
 
-            output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, data);
-            output.Received().WriteLine("{1} [{2}]: {3}", name, logLevel, eventId.Id, exception);
+            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, data);
+            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, exception);
         }
 
         [Theory]

@@ -20,10 +20,10 @@
         /// <param name="message">The message.</param>
         /// <param name="scopes">The currently active scopes.</param>
         public LogEntry(
-            LogLevel logLevel, 
-            EventId eventId, 
-            object state, 
-            Exception exception, 
+            LogLevel logLevel,
+            EventId eventId,
+            object state,
+            Exception exception,
             string message,
             IReadOnlyCollection<object> scopes)
         {
@@ -56,7 +56,7 @@
         public string Message { get; }
 
         /// <summary>
-        ///     Gets the scopes active at the time of the call to <see cref="ILogger.Log{TState}"/>
+        ///     Gets the scopes active at the time of the call to <see cref="ILogger.Log{TState}" />
         /// </summary>
         public IReadOnlyCollection<object> Scopes { get; }
 

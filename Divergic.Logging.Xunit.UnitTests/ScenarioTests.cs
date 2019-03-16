@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace Divergic.Logging.Xunit.UnitTests
+﻿namespace Divergic.Logging.Xunit.UnitTests
 {
-    using System.Linq;
-    using FluentAssertions;
     using global::Xunit;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;

@@ -114,39 +114,6 @@
             sut.Last.Scopes.Should().HaveCount(1);
             sut.Last.Scopes.Single().Should().Be(state);
         }
-        
-        [Fact]
-        public void LogEntriesIdentifyAllRecordedScopesTest()
-        {
-            var firstScopeState = Guid.NewGuid().ToString();
-            var secondScopeState = Guid.NewGuid().ToString();
-            var message = Guid.NewGuid().ToString();
-
-            var sut = new CacheLogger();
-
-            sut.LogInformation("Before any scopes");
-
-            using (sut.BeginScope(firstScopeState))
-            {
-                sut.LogInformation(message);
-                
-                using (sut.BeginScope(secondScopeState))
-                {
-                    sut.LogInformation(message);
-                }
-            }
-
-            var entries = sut.Entries.ToList();
-            
-            entries.Should().HaveCount(3);
-            entries[0].Scopes.Should().BeEmpty();
-            entries[1].Scopes.Should().HaveCount(1);
-            entries[1].Scopes.First().Should().Be(firstScopeState);
-            entries[2].Scopes.Should().HaveCount(2);
-            entries[2].Scopes.First().Should().Be(secondScopeState);
-            entries[2].Scopes.Skip(1).First().Should().Be(firstScopeState);
-
-        }
 
         [Fact]
         public void LastLogEntryCapturesScopeStateWhenSourceLoggerBeginScopeReturnsNullTest()
@@ -346,6 +313,38 @@
                     Arg.Any<Func<string, Exception, string>>());
             sut.Entries.Should().BeEmpty();
             sut.Last.Should().BeNull();
+        }
+
+        [Fact]
+        public void LogEntriesIdentifyAllRecordedScopesTest()
+        {
+            var firstScopeState = Guid.NewGuid().ToString();
+            var secondScopeState = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+
+            var sut = new CacheLogger();
+
+            sut.LogInformation("Before any scopes");
+
+            using (sut.BeginScope(firstScopeState))
+            {
+                sut.LogInformation(message);
+
+                using (sut.BeginScope(secondScopeState))
+                {
+                    sut.LogInformation(message);
+                }
+            }
+
+            var entries = sut.Entries.ToList();
+
+            entries.Should().HaveCount(3);
+            entries[0].Scopes.Should().BeEmpty();
+            entries[1].Scopes.Should().HaveCount(1);
+            entries[1].Scopes.First().Should().Be(firstScopeState);
+            entries[2].Scopes.Should().HaveCount(2);
+            entries[2].Scopes.First().Should().Be(secondScopeState);
+            entries[2].Scopes.Skip(1).First().Should().Be(firstScopeState);
         }
 
         [Fact]

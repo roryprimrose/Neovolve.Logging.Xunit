@@ -14,8 +14,8 @@
     public class CacheLogger : FilterLogger, ICacheLogger
     {
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
-        private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
         private readonly ILogger _logger;
+        private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
@@ -60,10 +60,20 @@
         }
 
         /// <inheritdoc />
-        protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
-            Exception exception, Func<TState, Exception, string> formatter)
+        protected override void WriteLogEntry<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            string message,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            var entry = new LogEntry(logLevel, eventId, state, exception, message, _scopes.Select(s => s.State).ToArray());
+            var entry = new LogEntry(logLevel,
+                eventId,
+                state,
+                exception,
+                message,
+                _scopes.Select(s => s.State).ToArray());
 
             _logEntries.Add(entry);
 
@@ -95,32 +105,6 @@
                 }
 
                 return _logEntries[count - 1];
-            }
-        }
-
-        private class CacheScope : IDisposable
-        {
-            private IDisposable _scope;
-            private Action _onScopeEnd;
-
-            public CacheScope(IDisposable scope, object state, Action onScopeEnd)
-            {
-                _scope = scope;
-                State = state;
-                _onScopeEnd = onScopeEnd;
-            }
-
-            public object State { get; }
-
-            public void Dispose()
-            {
-                // Pass on the end scope request
-                _scope?.Dispose();
-                _scope = null;
-
-                // Clean up the scope in the cache logger
-                _onScopeEnd?.Invoke();
-                _onScopeEnd = null;
             }
         }
     }

@@ -5,17 +5,17 @@
     using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
-    using Newtonsoft.Json;
 
     /// <summary>
     ///     The <see cref="TestOutputLogger" />
     ///     class is used to provide logging implementation for Xunit.
     /// </summary>
-    public class TestOutputLogger : FilterLogger, IDisposable
+    public class TestOutputLogger : FilterLogger
     {
+        public const int PaddingSpaces = 3;
         private readonly string _name;
         private readonly ITestOutputHelper _output;
-        private readonly Stack<object> _scopes;
+        private readonly Stack<ScopeWriter> _scopes;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
@@ -31,15 +31,17 @@
 
             _name = name;
             _output = output;
-            _scopes = new Stack<object>();
+            _scopes = new Stack<ScopeWriter>();
         }
 
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            _scopes.Push(state);
+            var scopeWriter = new ScopeWriter(_output, state, _scopes.Count, () => _scopes.Pop());
 
-            return this;
+            _scopes.Push(scopeWriter);
+
+            return scopeWriter;
         }
 
         /// <inheritdoc />
@@ -49,32 +51,25 @@
         }
 
         /// <inheritdoc />
-        protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
-            Exception exception, Func<TState, Exception, string> formatter)
+        protected override void WriteLogEntry<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            string message,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            const string format = "{1} [{2}]: {3}";
+            const string Format = "{0}{2} [{3}]: {4}";
+            var padding = new string(' ', _scopes.Count * PaddingSpaces);
 
             if (string.IsNullOrWhiteSpace(message) == false)
             {
-                _output.WriteLine(format, _name, logLevel, eventId.Id, message);
+                _output.WriteLine(Format, padding, _name, logLevel, eventId.Id, message);
             }
 
             if (exception != null)
             {
-                _output.WriteLine(format, _name, logLevel, eventId.Id, exception);
-            }
-
-            if (_scopes.Count > 0)
-            {
-                _output.WriteLine(JsonConvert.SerializeObject(_scopes, Formatting.Indented));
-            }
-        }
-
-        void IDisposable.Dispose()
-        {
-            if (_scopes.Count > 0)
-            {
-                _scopes.Pop();
+                _output.WriteLine(Format, padding, _name, logLevel, eventId.Id, exception);
             }
         }
     }

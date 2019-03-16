@@ -22,8 +22,7 @@
         /// </param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ICacheLogger BuildLog(ITestOutputHelper output,
-            [CallerMemberName] string memberName = null)
+        public static ICacheLogger BuildLog(ITestOutputHelper output, [CallerMemberName] string memberName = null)
         {
             Ensure.Any.IsNotNull(output, nameof(output));
 
