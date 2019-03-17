@@ -11,6 +11,8 @@
         private readonly Action _onScopeEnd;
         private readonly ITestOutputHelper _outputHelper;
         private readonly object _state;
+        private string _scopeMessage;
+        private string _structuredStateData;
 
         public ScopeWriter(ITestOutputHelper outputHelper, object state, int depth, Action onScopeEnd)
         {
@@ -19,54 +21,74 @@
             _depth = depth;
             _onScopeEnd = onScopeEnd;
 
-            WriteScopeBoundary(false);
+            DetermineScopeStateMessage();
+
+            var scopeStartMessage = BuildScopeStateMessage(false);
+
+            _outputHelper.WriteLine(scopeStartMessage);
+
+            if (string.IsNullOrWhiteSpace(_structuredStateData) == false)
+            {
+                var padding = BuildPadding(_depth + 1);
+
+                _outputHelper.WriteLine(padding + "Scope data: " + _structuredStateData);
+            }
         }
 
         public void Dispose()
         {
-            WriteScopeBoundary(true);
+            var scopeStartMessage = BuildScopeStateMessage(true);
+
+            _outputHelper.WriteLine(scopeStartMessage);
 
             _onScopeEnd?.Invoke();
         }
 
         private string BuildScopeStateMessage(bool isScopeEnd)
         {
-            var padding = new string(' ', _depth * TestOutputLogger.PaddingSpaces);
+            var padding = BuildPadding(_depth);
             var endScopeMarker = isScopeEnd ? "/" : string.Empty;
             const string Format = "{0}<{1}{2}>";
 
-            var message = DetermineScopeStateMessage();
-
-            return string.Format(CultureInfo.InvariantCulture, Format, padding, endScopeMarker, message);
+            return string.Format(CultureInfo.InvariantCulture, Format, padding, endScopeMarker, _scopeMessage);
         }
 
-        private string DetermineScopeStateMessage()
+        private string BuildPadding(int depth)
         {
+            return new string(' ', depth * TestOutputLogger.PaddingSpaces);
+        }
+
+        private void DetermineScopeStateMessage()
+        {
+            const string ScopeMarker = "Scope: ";
+            var defaultScopeMessage = "Scope " + (_depth + 1);
+
             if (_state == null)
             {
-                return "Scope " + (_depth + 1);
+                _scopeMessage = defaultScopeMessage;
             }
-
-            if (_state is string state)
+            else if (_state is string state)
             {
-                return state;
+                if (string.IsNullOrWhiteSpace(state))
+                {
+                    _scopeMessage = defaultScopeMessage;
+                }
+                else
+                {
+                    _scopeMessage = ScopeMarker + state;
+                }
             }
-
-            if (_state.GetType().IsValueType)
+            else if (_state.GetType().IsValueType)
             {
-                return _state.ToString();
+                _scopeMessage = ScopeMarker + _state;
             }
+            else
+            {
+                // The data is probably a complex object or a structured log entry
+                _structuredStateData = JsonConvert.SerializeObject(_state);
 
-            var data = JsonConvert.SerializeObject(_state);
-
-            return data;
-        }
-
-        private void WriteScopeBoundary(bool isScopeEnd)
-        {
-            var message = BuildScopeStateMessage(isScopeEnd);
-
-            _outputHelper.WriteLine(message);
+                _scopeMessage = defaultScopeMessage;
+            }
         }
     }
 }

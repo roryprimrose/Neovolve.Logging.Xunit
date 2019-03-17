@@ -42,8 +42,11 @@
             logger.LogInformation("After first scope");
         }
 
-        [Fact]
-        public void TestOutputWritesMessagesUsingScopesWithoutState()
+        [Theory]
+        [InlineData(null)]
+        [InlineData("")]
+        [InlineData("  ")]
+        public void TestOutputWritesMessagesUsingScopesWithoutState(string scopeState)
         {
             var logger = _output.BuildLogger();
 
@@ -54,11 +57,11 @@
             logger.LogTrace("Writing trace message");
             logger.LogWarning("Writing warning message");
 
-            using (logger.BeginScope((object) null))
+            using (logger.BeginScope((object) scopeState))
             {
                 logger.LogInformation("Inside first scope");
 
-                using (logger.BeginScope((object) null))
+                using (logger.BeginScope((object) scopeState))
                 {
                     logger.LogInformation("Inside second scope");
                 }
