@@ -12,6 +12,9 @@
     /// </summary>
     public class TestOutputLogger : FilterLogger
     {
+        /// <summary>
+        /// Identifies the number of spaces to use for indenting scopes.
+        /// </summary>
         public const int PaddingSpaces = 3;
         private readonly string _name;
         private readonly ITestOutputHelper _output;
