@@ -3,7 +3,7 @@
     using System;
     using System.Runtime.CompilerServices;
     using Divergic.Logging.Xunit;
-    
+
     /// <summary>
     ///     The <see cref="TestOutputHelperExtensions" /> class provides extension methods for the
     ///     <see cref="ITestOutputHelper" />.

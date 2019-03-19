@@ -15,7 +15,7 @@
         /// </summary>
         /// <param name="logger">The source logger.</param>
         /// <returns>The cache logger.</returns>
-        /// <exception cref="ArgumentNullException">The <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
         public static ICacheLogger WithCache(this ILogger logger)
         {
             Ensure.Any.IsNotNull(logger, nameof(logger));
@@ -31,7 +31,7 @@
         /// <typeparam name="T">The type of generic logger.</typeparam>
         /// <param name="logger">The source logger.</param>
         /// <returns>The cache logger.</returns>
-        /// <exception cref="ArgumentNullException">The <paramref name="logger"/> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
         public static ICacheLogger<T> WithCache<T>(this ILogger<T> logger)
         {
             Ensure.Any.IsNotNull(logger, nameof(logger));

@@ -1,6 +1,7 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
+    using System.Collections.Generic;
     using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
@@ -11,8 +12,10 @@
     /// </summary>
     public class TestOutputLogger : FilterLogger
     {
+        public const int PaddingSpaces = 3;
         private readonly string _name;
         private readonly ITestOutputHelper _output;
+        private readonly Stack<ScopeWriter> _scopes;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
@@ -28,12 +31,17 @@
 
             _name = name;
             _output = output;
+            _scopes = new Stack<ScopeWriter>();
         }
 
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            return NoopDisposable.Instance;
+            var scopeWriter = new ScopeWriter(_output, state, _scopes.Count, () => _scopes.Pop());
+
+            _scopes.Push(scopeWriter);
+
+            return scopeWriter;
         }
 
         /// <inheritdoc />
@@ -43,19 +51,25 @@
         }
 
         /// <inheritdoc />
-        protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
-            Exception exception, Func<TState, Exception, string> formatter)
+        protected override void WriteLogEntry<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            string message,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            const string format = "{1} [{2}]: {3}";
+            const string Format = "{0}{2} [{3}]: {4}";
+            var padding = new string(' ', _scopes.Count * PaddingSpaces);
 
             if (string.IsNullOrWhiteSpace(message) == false)
             {
-                _output.WriteLine(format, _name, logLevel, eventId.Id, message);
+                _output.WriteLine(Format, padding, _name, logLevel, eventId.Id, message);
             }
 
             if (exception != null)
             {
-                _output.WriteLine(format, _name, logLevel, eventId.Id, exception);
+                _output.WriteLine(Format, padding, _name, logLevel, eventId.Id, exception);
             }
         }
     }

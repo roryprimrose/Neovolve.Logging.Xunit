@@ -17,13 +17,31 @@
 
             var sut = new CacheLogger();
 
-            var actual = sut.BeginScope(state);
-
-            actual.Should().NotBeNull();
+            using (var actual = sut.BeginScope(state))
+            {
+                actual.Should().NotBeNull();
+            }
         }
 
         [Fact]
-        public void BeginScopeReturnsInstanceWhenSourceLoggerProvidedTest()
+        public void BeginScopeReturnsInstanceWhenSourceLoggerBeginScopeReturnsNullTest()
+        {
+            var state = Guid.NewGuid().ToString();
+
+            var logger = Substitute.For<ILogger>();
+
+            logger.BeginScope(state).Returns((IDisposable) null);
+
+            var sut = new CacheLogger(logger);
+
+            using (var actual = sut.BeginScope(state))
+            {
+                actual.Should().NotBeNull();
+            }
+        }
+
+        [Fact]
+        public void BeginScopeReturnsWrappedInstanceWhenSourceLoggerProvidedTest()
         {
             var state = Guid.NewGuid().ToString();
 
@@ -36,7 +54,8 @@
 
             var actual = sut.BeginScope(state);
 
-            actual.Should().Be(scope);
+            actual.Should().NotBeNull();
+            actual.Should().NotBeSameAs(scope);
         }
 
         [Fact]
@@ -80,19 +99,42 @@
         }
 
         [Fact]
-        public void LogIgnoresNullFormattedMessageTest()
+        public void LastLogEntryCapturesScopeStateWhenNoLoggerProvidedTest()
         {
-            var exception = new TimeoutException();
+            var state = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
 
             var sut = new CacheLogger();
 
-            var cacheLogger = sut.WithCache();
+            using (sut.BeginScope(state))
+            {
+                sut.LogInformation(message);
+            }
 
-            cacheLogger.LogInformation(exception, null);
+            sut.Last.Scopes.Should().HaveCount(1);
+            sut.Last.Scopes.Single().Should().Be(state);
+        }
 
-            cacheLogger.Count.Should().Be(1);
-            cacheLogger.Last.Exception.Should().Be(exception);
-            cacheLogger.Last.Message.Should().BeNull();
+        [Fact]
+        public void LastLogEntryCapturesScopeStateWhenSourceLoggerBeginScopeReturnsNullTest()
+        {
+            var state = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+
+            var logger = Substitute.For<ILogger>();
+
+            logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
+            logger.BeginScope(state).Returns((IDisposable) null);
+
+            var sut = new CacheLogger(logger);
+
+            using (sut.BeginScope(state))
+            {
+                sut.LogInformation(message);
+            }
+
+            sut.Last.Scopes.Should().HaveCount(1);
+            sut.Last.Scopes.Single().Should().Be(state);
         }
 
         [Fact]
@@ -235,8 +277,12 @@
 
             sut.Log(logLevel, eventId, state, null, formatter);
 
-            source.DidNotReceive().Log(Arg.Any<LogLevel>(), Arg.Any<EventId>(), Arg.Any<string>(), Arg.Any<Exception>(),
-                Arg.Any<Func<string, Exception, string>>());
+            source.DidNotReceive()
+                .Log(Arg.Any<LogLevel>(),
+                    Arg.Any<EventId>(),
+                    Arg.Any<string>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<string, Exception, string>>());
             sut.Entries.Should().BeEmpty();
             sut.Last.Should().BeNull();
         }
@@ -259,10 +305,77 @@
 
             sut.Log(logLevel, eventId, state, exception, formatter);
 
-            source.DidNotReceive().Log(Arg.Any<LogLevel>(), Arg.Any<EventId>(), Arg.Any<string>(), Arg.Any<Exception>(),
-                Arg.Any<Func<string, Exception, string>>());
+            source.DidNotReceive()
+                .Log(Arg.Any<LogLevel>(),
+                    Arg.Any<EventId>(),
+                    Arg.Any<string>(),
+                    Arg.Any<Exception>(),
+                    Arg.Any<Func<string, Exception, string>>());
             sut.Entries.Should().BeEmpty();
             sut.Last.Should().BeNull();
+        }
+
+        [Fact]
+        public void LogEntriesIdentifyAllRecordedScopesTest()
+        {
+            var firstScopeState = Guid.NewGuid().ToString();
+            var secondScopeState = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+
+            var sut = new CacheLogger();
+
+            sut.LogInformation("Before any scopes");
+
+            using (sut.BeginScope(firstScopeState))
+            {
+                sut.LogInformation(message);
+
+                using (sut.BeginScope(secondScopeState))
+                {
+                    sut.LogInformation(message);
+                }
+            }
+
+            var entries = sut.Entries.ToList();
+
+            entries.Should().HaveCount(3);
+            entries[0].Scopes.Should().BeEmpty();
+            entries[1].Scopes.Should().HaveCount(1);
+            entries[1].Scopes.First().Should().Be(firstScopeState);
+            entries[2].Scopes.Should().HaveCount(2);
+            entries[2].Scopes.First().Should().Be(secondScopeState);
+            entries[2].Scopes.Skip(1).First().Should().Be(firstScopeState);
+        }
+
+        [Fact]
+        public void LogEntryContainsSnapshotOfActiveScopes()
+        {
+            var sut = new CacheLogger();
+
+            var state = Guid.NewGuid();
+
+            using (sut.BeginScope(state))
+            {
+                sut.LogDebug(Guid.NewGuid().ToString());
+            }
+
+            sut.Last.Scopes.Single().Should().Be(state);
+        }
+
+        [Fact]
+        public void LogIgnoresNullFormattedMessageTest()
+        {
+            var exception = new TimeoutException();
+
+            var sut = new CacheLogger();
+
+            var cacheLogger = sut.WithCache();
+
+            cacheLogger.LogInformation(exception, null);
+
+            cacheLogger.Count.Should().Be(1);
+            cacheLogger.Last.Exception.Should().Be(exception);
+            cacheLogger.Last.Message.Should().BeNull();
         }
 
         [Fact]

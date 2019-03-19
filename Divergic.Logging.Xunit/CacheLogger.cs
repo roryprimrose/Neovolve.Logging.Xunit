@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
+    using System.Linq;
     using EnsureThat;
     using Microsoft.Extensions.Logging;
 
@@ -14,6 +15,7 @@
     {
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
         private readonly ILogger _logger;
+        private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
@@ -37,12 +39,13 @@
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            if (_logger == null)
-            {
-                return NoopDisposable.Instance;
-            }
+            var scope = _logger?.BeginScope(state) ?? NoopDisposable.Instance;
 
-            return _logger.BeginScope(state);
+            var cacheScope = new CacheScope(scope, state, () => _scopes.Pop());
+
+            _scopes.Push(cacheScope);
+
+            return cacheScope;
         }
 
         /// <inheritdoc />
@@ -57,10 +60,20 @@
         }
 
         /// <inheritdoc />
-        protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
-            Exception exception, Func<TState, Exception, string> formatter)
+        protected override void WriteLogEntry<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            string message,
+            Exception exception,
+            Func<TState, Exception, string> formatter)
         {
-            var entry = new LogEntry(logLevel, eventId, state, exception, message);
+            var entry = new LogEntry(logLevel,
+                eventId,
+                state,
+                exception,
+                message,
+                _scopes.Select(s => s.State).ToArray());
 
             _logEntries.Add(entry);
 

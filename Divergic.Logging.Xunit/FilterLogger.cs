@@ -21,7 +21,11 @@
         public abstract bool IsEnabled(LogLevel logLevel);
 
         /// <inheritdoc />
-        public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception exception,
+        public void Log<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            Exception exception,
             Func<TState, Exception, string> formatter)
         {
             Ensure.Any.IsNotNull(formatter, nameof(formatter));
@@ -96,7 +100,12 @@
         /// <param name="message">The formatted message.</param>
         /// <param name="exception">The exception to log.</param>
         /// <param name="formatter">The formatter that creates the log message.</param>
-        protected abstract void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state, string message,
-            Exception exception, Func<TState, Exception, string> formatter);
+        protected abstract void WriteLogEntry<TState>(
+            LogLevel logLevel,
+            EventId eventId,
+            TState state,
+            string message,
+            Exception exception,
+            Func<TState, Exception, string> formatter);
     }
 }
