@@ -34,6 +34,20 @@
             action.Should().NotThrow();
         }
 
+        [Fact]
+        public void BeginScopeShouldNotThrowWhenStateDataHasCircularReference()
+        {
+            var name = Guid.NewGuid().ToString();
+            var state = new CircularReference();
+
+            var sut = new TestOutputLogger(name, _output);
+
+            using (sut.BeginScope(state))
+            {
+                sut.LogDebug("...");
+            }
+        }
+
         [Theory]
         [InlineData(LogLevel.Critical)]
         [InlineData(LogLevel.Debug)]
@@ -146,7 +160,7 @@
         {
             var output = Substitute.For<ITestOutputHelper>();
 
-            Action action = () => new TestOutputLogger(name, null);
+            Action action = () => new TestOutputLogger(name, output);
 
             action.Should().Throw<ArgumentException>();
         }

@@ -75,7 +75,7 @@
         /// <param name="message">The message to log.</param>
         /// <param name="exception">The exception to log.</param>
         /// <returns><c>true</c> if the log should not be written; otherwise <c>false</c>.</returns>
-        protected bool ShouldFilter(string message, Exception exception)
+        protected virtual bool ShouldFilter(string message, Exception exception)
         {
             if (exception != null)
             {

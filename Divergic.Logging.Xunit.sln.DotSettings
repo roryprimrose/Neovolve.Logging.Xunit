@@ -447,4 +447,6 @@
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EEF7F4F32877834FAF86E3EEBFE6B820/CustomPatternPlaceholder/=param/Properties/=RegEx/@EntryIndexedValue"></s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EEF7F4F32877834FAF86E3EEBFE6B820/CustomPatternPlaceholder/=param/Type/@EntryValue">ArgumentPlaceholder</s:String>
 	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EEF7F4F32877834FAF86E3EEBFE6B820/ReplaceComment/@EntryValue">Use nameof</s:String>
-	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EEF7F4F32877834FAF86E3EEBFE6B820/Severity/@EntryValue">SUGGESTION</s:String></wpf:ResourceDictionary>
+	<s:String x:Key="/Default/PatternsAndTemplates/StructuralSearch/Pattern/=EEF7F4F32877834FAF86E3EEBFE6B820/Severity/@EntryValue">SUGGESTION</s:String>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Divergic/@EntryIndexedValue">True</s:Boolean>
+	<s:Boolean x:Key="/Default/UserDictionary/Words/=Xunit/@EntryIndexedValue">True</s:Boolean></wpf:ResourceDictionary>

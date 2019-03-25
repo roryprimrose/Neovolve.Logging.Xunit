@@ -11,9 +11,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
+		Solution Items\Application.ruleset = Solution Items\Application.ruleset
 		GitVersion.yml = GitVersion.yml
 		LICENSE = LICENSE
 		README.md = README.md
+		Solution Items\UnitTest.ruleset = Solution Items\UnitTest.ruleset
 	EndProjectSection
 EndProject
 Global
