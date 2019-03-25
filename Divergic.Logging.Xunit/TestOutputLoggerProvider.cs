@@ -9,7 +9,7 @@
     ///     The <see cref="TestOutputLoggerProvider" /> class is used to provide Xunit logging to <see cref="ILoggerFactory" />
     ///     .
     /// </summary>
-    public class TestOutputLoggerProvider : ILoggerProvider
+    public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly ITestOutputHelper _output;
 

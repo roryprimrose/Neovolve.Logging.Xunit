@@ -31,7 +31,13 @@
             {
                 var padding = BuildPadding(_depth + 1);
 
-                _outputHelper.WriteLine(padding + "Scope data: " + _structuredStateData);
+                // Add the padding to the structured data
+                var structuredLines =
+                    _structuredStateData.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+
+                var structuredData = padding + string.Join(Environment.NewLine + padding, structuredLines);
+
+                _outputHelper.WriteLine("{0}{1}{2}{3}", padding, "Scope data: ", Environment.NewLine, structuredData);
             }
         }
 
@@ -44,6 +50,11 @@
             _onScopeEnd?.Invoke();
         }
 
+        private static string BuildPadding(int depth)
+        {
+            return new string(' ', depth * TestOutputLogger.PaddingSpaces);
+        }
+
         private string BuildScopeStateMessage(bool isScopeEnd)
         {
             var padding = BuildPadding(_depth);
@@ -51,11 +62,6 @@
             const string Format = "{0}<{1}{2}>";
 
             return string.Format(CultureInfo.InvariantCulture, Format, padding, endScopeMarker, _scopeMessage);
-        }
-
-        private string BuildPadding(int depth)
-        {
-            return new string(' ', depth * TestOutputLogger.PaddingSpaces);
         }
 
         private void DetermineScopeStateMessage()
@@ -85,7 +91,7 @@
             else
             {
                 // The data is probably a complex object or a structured log entry
-                _structuredStateData = JsonConvert.SerializeObject(_state);
+                _structuredStateData = JsonConvert.SerializeObject(_state, SerializerSettings.Default);
 
                 _scopeMessage = defaultScopeMessage;
             }
