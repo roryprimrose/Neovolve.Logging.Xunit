@@ -16,6 +16,7 @@
     <PackageLicense>https://github.com/Divergic/Divergic.Logging.Xunit/blob/master/LICENSE</PackageLicense>
     <RepositoryUrl>https://github.com/Divergic/Divergic.Logging.Xunit</RepositoryUrl>
     <PackageTags>xUnit;Logging</PackageTags>
+    <Version>1.0.0-alpha</Version>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
