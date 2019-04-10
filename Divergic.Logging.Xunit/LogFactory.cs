@@ -59,13 +59,13 @@
         /// <param name="output">The test output.</param>
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ILoggerFactory Create(ITestOutputHelper output)
+        public static ILoggerFactory Create(ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
         {
             Ensure.Any.IsNotNull(output, nameof(output));
 
             var factory = new LoggerFactory();
 
-            factory.AddXunit(output);
+            factory.AddXunit(output, customFormatter);
 
             return factory;
         }

@@ -12,16 +12,17 @@
     public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly ITestOutputHelper _output;
+        Func<int, string, LogLevel, EventId, string, Exception, string> _customFormatter;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TestOutputLoggerProvider" /> class.
         /// </summary>
         /// <param name="output">The test output helper.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public TestOutputLoggerProvider(ITestOutputHelper output)
+        public TestOutputLoggerProvider(ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
         {
             Ensure.Any.IsNotNull(output, nameof(output));
-
+            _customFormatter = customFormatter;
             _output = output;
         }
 
@@ -31,7 +32,7 @@
         {
             Ensure.String.IsNotNullOrWhiteSpace(categoryName);
 
-            return new TestOutputLogger(categoryName, _output);
+            return new TestOutputLogger(categoryName, _output, _customFormatter);
         }
 
         /// <inheritdoc />

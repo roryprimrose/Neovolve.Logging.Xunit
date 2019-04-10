@@ -20,12 +20,13 @@
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="factory" /> is <c>null</c>.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ILoggerFactory AddXunit(this ILoggerFactory factory, ITestOutputHelper output)
+        public static ILoggerFactory AddXunit(this ILoggerFactory factory, ITestOutputHelper output,
+            Func<int, string, LogLevel, EventId, string, Exception, string> customerFormatter = null)
         {
             Ensure.Any.IsNotNull(factory, nameof(factory));
             Ensure.Any.IsNotNull(output, nameof(output));
 
-            var provider = new TestOutputLoggerProvider(output);
+            var provider = new TestOutputLoggerProvider(output, customerFormatter);
 
             factory.AddProvider(provider);
 

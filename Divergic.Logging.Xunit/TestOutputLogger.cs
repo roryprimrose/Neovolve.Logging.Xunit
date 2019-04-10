@@ -2,6 +2,8 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
+    using System.Text;
     using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
@@ -18,6 +20,7 @@
         public const int PaddingSpaces = 3;
         private readonly string _name;
         private readonly ITestOutputHelper _output;
+        private readonly Func<int, string, LogLevel, EventId, string, Exception, string> _customFormatter;
         private readonly Stack<ScopeWriter> _scopes;
 
         /// <summary>
@@ -27,13 +30,14 @@
         /// <param name="output">The test output helper.</param>
         /// <exception cref="ArgumentException">The <paramref name="name" /> is <c>null</c>, empty or whitespace.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public TestOutputLogger(string name, ITestOutputHelper output)
+        public TestOutputLogger(string name, ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
         {
             Ensure.String.IsNotNullOrWhiteSpace(name, nameof(name));
             Ensure.Any.IsNotNull(output, nameof(output));
 
             _name = name;
             _output = output;
+            _customFormatter = customFormatter;
             _scopes = new Stack<ScopeWriter>();
         }
 
@@ -62,6 +66,13 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
+            if (_customFormatter != null)
+            {
+                var str = _customFormatter(_scopes.Count, _name, logLevel, eventId, message, exception);
+                _output.WriteLine(str);
+                return;
+            }
+
             const string Format = "{0}{2} [{3}]: {4}";
             var padding = new string(' ', _scopes.Count * PaddingSpaces);
 
@@ -75,5 +86,6 @@
                 _output.WriteLine(Format, padding, _name, logLevel, eventId.Id, exception);
             }
         }
-    }
+
+     }
 }
