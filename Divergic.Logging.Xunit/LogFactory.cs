@@ -57,6 +57,7 @@
         ///     Creates an <see cref="ILoggerFactory" /> instance that is configured for xUnit output.
         /// </summary>
         /// <param name="output">The test output.</param>
+        /// <param name="customFormatter">Optional custom message formatter.</param>
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ILoggerFactory Create(ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)

@@ -28,6 +28,7 @@
         /// </summary>
         /// <param name="name">The name of the logger.</param>
         /// <param name="output">The test output helper.</param>
+        /// <param name="customFormatter">Optional custom message formatter.</param>
         /// <exception cref="ArgumentException">The <paramref name="name" /> is <c>null</c>, empty or whitespace.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public TestOutputLogger(string name, ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)

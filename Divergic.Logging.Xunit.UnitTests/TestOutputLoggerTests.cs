@@ -182,7 +182,7 @@
         {
             var output = Substitute.For<ITestOutputHelper>();
 
-            var loggerFactory = new LoggerFactory().AddXunit(_output, MyCustomFormatter);
+            var loggerFactory = new LoggerFactory().AddXunit(output, MyCustomFormatter);
             //var loggerFactory = LogFactory.Create(output, MyCustomFormatter);
 
             var logger = loggerFactory.CreateLogger("category");

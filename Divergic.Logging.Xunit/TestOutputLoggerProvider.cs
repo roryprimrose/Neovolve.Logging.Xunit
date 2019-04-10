@@ -18,6 +18,7 @@
         ///     Initializes a new instance of the <see cref="TestOutputLoggerProvider" /> class.
         /// </summary>
         /// <param name="output">The test output helper.</param>
+        /// <param name="customFormatter">Optional custom message formatter.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public TestOutputLoggerProvider(ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
         {
