@@ -16,7 +16,6 @@
             _output = output;
         }
 
-
         [Fact]
         public void BuildLogForReturnsCacheLoggerTTest()
         {
@@ -33,6 +32,12 @@
 
             sut.Should().BeAssignableTo<ICacheLogger<LogFactoryTests>>();
             sut.Count.Should().Be(1);
+            sut.Last.EventId.Should().Be(eventId);
+            sut.Last.Exception.Should().Be(exception);
+            sut.Last.LogLevel.Should().Be(logLevel);
+            sut.Last.Scopes.Should().BeEmpty();
+            sut.Last.State.Should().Be(state);
+            sut.Last.Message.Should().Be(data);
         }
 
         [Fact]
@@ -59,6 +64,12 @@
 
             sut.Should().BeAssignableTo<ICacheLogger>();
             sut.Count.Should().Be(1);
+            sut.Last.EventId.Should().Be(eventId);
+            sut.Last.Exception.Should().Be(exception);
+            sut.Last.LogLevel.Should().Be(logLevel);
+            sut.Last.Scopes.Should().BeEmpty();
+            sut.Last.State.Should().Be(state);
+            sut.Last.Message.Should().Be(data);
         }
 
         [Fact]
@@ -85,6 +96,16 @@
             Action action = () => LogFactory.Create(null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void CreateWithCustomFormatterReturnsFactoryTest()
+        {
+            var sut = LogFactory.Create(_output, Formatters.MyCustomFormatter);
+
+            var logger = sut.CreateLogger<LogFactoryTests>();
+
+            logger.LogInformation("This should be written to the test out");
         }
     }
 }

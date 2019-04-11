@@ -70,7 +70,9 @@
             if (_customFormatter != null)
             {
                 var str = _customFormatter(_scopes.Count, _name, logLevel, eventId, message, exception);
+
                 _output.WriteLine(str);
+                
                 return;
             }
 

@@ -12,7 +12,7 @@
     public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly ITestOutputHelper _output;
-        Func<int, string, LogLevel, EventId, string, Exception, string> _customFormatter;
+        private readonly Func<int, string, LogLevel, EventId, string, Exception, string> _customFormatter;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TestOutputLoggerProvider" /> class.
@@ -23,8 +23,9 @@
         public TestOutputLoggerProvider(ITestOutputHelper output, Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
         {
             Ensure.Any.IsNotNull(output, nameof(output));
-            _customFormatter = customFormatter;
+
             _output = output;
+            _customFormatter = customFormatter;
         }
 
         /// <inheritdoc />

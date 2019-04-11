@@ -52,15 +52,22 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullOutputTest()
+        public void CreateLoggerWithCustomFormatterReturnsOutputLoggerTest()
         {
-            Action action = () => new TestOutputLoggerProvider(null);
+            var categoryName = Guid.NewGuid().ToString();
 
-            action.Should().Throw<ArgumentNullException>();
+            var output = Substitute.For<ITestOutputHelper>();
+
+            using (var sut = new TestOutputLoggerProvider(output, Formatters.MyCustomFormatter))
+            {
+                var actual = sut.CreateLogger(categoryName);
+
+                actual.Should().BeOfType<TestOutputLogger>();
+            }
         }
 
         [Fact]
-        public void ThrowsExceptionWithNullOutputTest()
+        public void ThrowsExceptionWhenCreatedWithNullOutputTest()
         {
             Action action = () => new TestOutputLoggerProvider(null);
 

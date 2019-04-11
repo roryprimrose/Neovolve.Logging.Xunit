@@ -1,8 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
-    using System.Globalization;
-    using System.Text;
     using FluentAssertions;
     using global::Xunit;
     using global::Xunit.Abstractions;
@@ -69,6 +67,18 @@
             actual.Should().BeTrue();
         }
 
+        [Fact]
+        public void LogCustomFormatter()
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger("category", output, Formatters.MyCustomFormatter);
+
+            sut.Log(LogLevel.Debug, "message");
+
+            output.Received().WriteLine("Debug category message");
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -78,7 +88,7 @@
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => { return message; };
+            Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
@@ -96,8 +106,8 @@
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            var data = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => { return data; };
+            var message = Guid.NewGuid().ToString();
+            Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
@@ -107,7 +117,7 @@
             sut.Log(logLevel, eventId, state, null, formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
-            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, data);
+            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, message);
         }
 
         [Fact]
@@ -141,7 +151,7 @@
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            Func<string, Exception, string> formatter = (message, error) => { return data; };
+            Func<string, Exception, string> formatter = (message, error) => data;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
@@ -175,60 +185,6 @@
             Action action = () => new TestOutputLogger(name, null);
 
             action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void LogCustomFormatter()
-        {
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var loggerFactory = new LoggerFactory().AddXunit(output, MyCustomFormatter);
-            //var loggerFactory = LogFactory.Create(output, MyCustomFormatter);
-
-            var logger = loggerFactory.CreateLogger("category");
-            logger.Log(LogLevel.Debug, "message");
-
-            output.Received().WriteLine("Debug category message");
-        }
-
-        // This an example message formatter.
-        public static string MyCustomFormatter(int scopeLevel, string name, LogLevel logLevel, EventId eventId, string message, Exception exception)
-        {
-            var sb = new StringBuilder();
-
-            if (scopeLevel > 0)
-                sb.Append(' ', scopeLevel * 2);
-
-            sb.Append($"{GetShortLogLevelString(logLevel)} ");
-
-            if (!string.IsNullOrEmpty(name))
-                sb.Append($"{name} ");
-
-            if (eventId != null && eventId.Id != 0)
-                sb.Append($"[{eventId.Id}]: ");
-
-            if (!string.IsNullOrEmpty(message))
-                sb.Append(message);
-
-            if (exception != null)
-                sb.Append($"\n{exception}");
-
-            return sb.ToString();
-        }
-
-        private static string GetShortLogLevelString(LogLevel level)
-        {
-            switch (level)
-            {
-                case LogLevel.Trace:       return "Trace";
-                case LogLevel.Debug:       return "Debug";
-                case LogLevel.Information: return "Info ";
-                case LogLevel.Warning:     return "Warn ";
-                case LogLevel.Error:       return "Error";
-                case LogLevel.Critical:    return "Crit ";
-                case LogLevel.None:        return "None ";
-                default: throw new Exception("invalid");
-            }
         }
     }
 }
