@@ -131,17 +131,23 @@
         [Fact]
         public void CreateReturnsFactoryTest()
         {
-            var sut = LogFactory.Create(_output);
+            using (var sut = LogFactory.Create(_output))
+            {
+                var logger = sut.CreateLogger<LogFactoryTests>();
 
-            var logger = sut.CreateLogger<LogFactoryTests>();
-
-            logger.LogInformation("This should be written to the test out");
+                logger.LogInformation("This should be written to the test out");
+            }
         }
 
         [Fact]
         public void CreateThrowsExceptionWithNullOutputTest()
         {
-            Action action = () => LogFactory.Create(null);
+            Action action = () =>
+            {
+                using (LogFactory.Create(null))
+                {
+                }
+            };
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -149,11 +155,12 @@
         [Fact]
         public void CreateWithCustomFormatterReturnsFactoryTest()
         {
-            var sut = LogFactory.Create(_output, Formatters.MyCustomFormatter);
+            using (var sut = LogFactory.Create(_output, Formatters.MyCustomFormatter))
+            {
+                var logger = sut.CreateLogger<LogFactoryTests>();
 
-            var logger = sut.CreateLogger<LogFactoryTests>();
-
-            logger.LogInformation("This should be written to the test out");
+                logger.LogInformation("This should be written to the test out");
+            }
         }
     }
 }

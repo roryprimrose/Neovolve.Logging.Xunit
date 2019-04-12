@@ -22,6 +22,7 @@
         /// </param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        [Obsolete("This method will be removed in the next version. Use output.BuildLogger() instead.")]
         public static ICacheLogger BuildLog(ITestOutputHelper output, [CallerMemberName] string memberName = null)
         {
             return BuildLog(output, null, memberName);
@@ -38,19 +39,13 @@
         /// </param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        [Obsolete("This method will be removed in the next version. Use output.BuildLogger(customFormatter) instead.")]
         public static ICacheLogger BuildLog(
             ITestOutputHelper output,
             Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter,
             [CallerMemberName] string memberName = null)
         {
-            Ensure.Any.IsNotNull(output, nameof(output));
-
-            using (var factory = Create(output, customFormatter))
-            {
-                var logger = factory.CreateLogger(memberName);
-
-                return logger.WithCache();
-            }
+            return output.BuildLogger(customFormatter, memberName);
         }
 
         /// <summary>
@@ -61,18 +56,12 @@
         /// <param name="customFormatter">Optional custom message formatter.</param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        [Obsolete("This method will be removed in the next version. Use output.BuildLoggerFor<T>(customFormatter) instead.")]
         public static ICacheLogger<T> BuildLogFor<T>(
             ITestOutputHelper output,
             Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
         {
-            Ensure.Any.IsNotNull(output, nameof(output));
-
-            using (var factory = Create(output, customFormatter))
-            {
-                var logger = factory.CreateLogger<T>();
-
-                return logger.WithCache();
-            }
+            return output.BuildLoggerFor<T>(customFormatter);
         }
 
         /// <summary>

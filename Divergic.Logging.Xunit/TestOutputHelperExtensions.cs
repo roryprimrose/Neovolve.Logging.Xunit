@@ -3,6 +3,7 @@
     using System;
     using System.Runtime.CompilerServices;
     using Divergic.Logging.Xunit;
+    using EnsureThat;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -44,12 +45,14 @@
             Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter,
             [CallerMemberName] string memberName = null)
         {
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            Ensure.Any.IsNotNull(output, nameof(output));
 
-            return LogFactory.BuildLog(output, customFormatter, memberName);
+            using (var factory = LogFactory.Create(output, customFormatter))
+            {
+                var logger = factory.CreateLogger(memberName);
+
+                return logger.WithCache();
+            }
         }
 
         /// <summary>
@@ -76,12 +79,14 @@
             this ITestOutputHelper output,
             Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter)
         {
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            Ensure.Any.IsNotNull(output, nameof(output));
 
-            return LogFactory.BuildLogFor<T>(output, customFormatter);
+            using (var factory = LogFactory.Create(output, customFormatter))
+            {
+                var logger = factory.CreateLogger<T>();
+
+                return logger.WithCache();
+            }
         }
     }
 }

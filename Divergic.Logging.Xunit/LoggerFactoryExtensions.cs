@@ -27,9 +27,13 @@
             Ensure.Any.IsNotNull(factory, nameof(factory));
             Ensure.Any.IsNotNull(output, nameof(output));
 
+#pragma warning disable CA2000 // Dispose objects before losing scope
             var provider = new TestOutputLoggerProvider(output, customFormatter);
+#pragma warning restore CA2000 // Dispose objects before losing scope
 
+#pragma warning disable CA1062 // Validate arguments of public methods
             factory.AddProvider(provider);
+#pragma warning restore CA1062 // Validate arguments of public methods
 
             return factory;
         }
