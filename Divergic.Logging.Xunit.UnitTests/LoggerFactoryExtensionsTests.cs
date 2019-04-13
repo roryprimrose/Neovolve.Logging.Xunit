@@ -42,5 +42,17 @@
 
             action.Should().Throw<ArgumentNullException>();
         }
+
+        [Fact]
+        public void AddXunitWithCustomFormatterAddsProviderToFactoryTest()
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = Substitute.For<ILoggerFactory>();
+
+            sut.AddXunit(output, Formatters.MyCustomFormatter);
+
+            sut.Received().AddProvider(Arg.Is<ILoggerProvider>(x => x is TestOutputLoggerProvider));
+        }
     }
 }

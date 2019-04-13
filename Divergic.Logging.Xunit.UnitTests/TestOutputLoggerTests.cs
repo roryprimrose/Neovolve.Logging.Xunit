@@ -67,6 +67,18 @@
             actual.Should().BeTrue();
         }
 
+        [Fact]
+        public void LogCustomFormatter()
+        {
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger("category", output, Formatters.MyCustomFormatter);
+
+            sut.Log(LogLevel.Debug, "message");
+
+            output.Received().WriteLine("Debug category message");
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -76,7 +88,7 @@
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => { return message; };
+            Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
@@ -94,8 +106,8 @@
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            var data = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => { return data; };
+            var message = Guid.NewGuid().ToString();
+            Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
@@ -105,7 +117,7 @@
             sut.Log(logLevel, eventId, state, null, formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
-            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, data);
+            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, message);
         }
 
         [Fact]
@@ -139,7 +151,7 @@
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            Func<string, Exception, string> formatter = (message, error) => { return data; };
+            Func<string, Exception, string> formatter = (message, error) => data;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();

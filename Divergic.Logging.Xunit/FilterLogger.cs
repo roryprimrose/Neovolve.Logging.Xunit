@@ -58,7 +58,11 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
+            Ensure.That(formatter, nameof(formatter)).IsNotNull();
+
+#pragma warning disable CA1062 // Validate arguments of public methods
             var formattedMessage = formatter(state, exception);
+#pragma warning restore CA1062 // Validate arguments of public methods
 
             // Clear the message if it looks like a null formatted message
             if (formattedMessage == _nullFormatted)
