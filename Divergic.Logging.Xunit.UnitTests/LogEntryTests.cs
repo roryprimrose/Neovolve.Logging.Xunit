@@ -9,7 +9,7 @@
     public class LogEntryTests
     {
         [Fact]
-        public void ReturnsConstructorValuesInPropertiesTest()
+        public void ReturnsConstructorValuesInProperties()
         {
             var level = LogLevel.Error;
             var eventId = Model.Create<EventId>();

@@ -17,7 +17,7 @@
         }
 
         [Fact]
-        public void BuildLogForReturnsCacheLoggerTTest()
+        public void BuildLogForReturnsCacheLoggerT()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -41,7 +41,7 @@
         }
 
         [Fact]
-        public void BuildLogForThrowsExceptionWithNullOutputTest()
+        public void BuildLogForThrowsExceptionWithNullOutput()
         {
             Action action = () => LogFactory.BuildLogFor<LogFactoryTests>(null);
 
@@ -49,7 +49,7 @@
         }
 
         [Fact]
-        public void BuildLogForWithCustomFormatterReturnsCacheLoggerTTest()
+        public void BuildLogForWithCustomFormatterReturnsCacheLoggerT()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -73,7 +73,7 @@
         }
 
         [Fact]
-        public void BuildLogReturnsCacheLoggerTest()
+        public void BuildLogReturnsCacheLogger()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -97,7 +97,7 @@
         }
 
         [Fact]
-        public void BuildLogThrowsExceptionWithNullOutputTest()
+        public void BuildLogThrowsExceptionWithNullOutput()
         {
             Action action = () => LogFactory.BuildLog(null);
 
@@ -105,7 +105,7 @@
         }
 
         [Fact]
-        public void BuildLogWithCustomFormatterReturnsCacheLoggerTest()
+        public void BuildLogWithCustomFormatterReturnsCacheLogger()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -129,7 +129,7 @@
         }
 
         [Fact]
-        public void CreateReturnsFactoryTest()
+        public void CreateReturnsFactory()
         {
             using (var sut = LogFactory.Create(_output))
             {
@@ -140,7 +140,7 @@
         }
 
         [Fact]
-        public void CreateThrowsExceptionWithNullOutputTest()
+        public void CreateThrowsExceptionWithNullOutput()
         {
             Action action = () =>
             {
@@ -153,7 +153,7 @@
         }
 
         [Fact]
-        public void CreateWithCustomFormatterReturnsFactoryTest()
+        public void CreateWithCustomFormatterReturnsFactory()
         {
             using (var sut = LogFactory.Create(_output, Formatters.MyCustomFormatter))
             {

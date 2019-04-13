@@ -10,7 +10,7 @@
     public class LoggerExtensionsTests
     {
         [Fact]
-        public void WithCacheReturnsCacheLoggerTest()
+        public void WithCacheReturnsCacheLogger()
         {
             var source = Substitute.For<ILogger>();
 
@@ -20,7 +20,7 @@
         }
 
         [Fact]
-        public void WithCacheThrowsExceptionWithNullLoggerTest()
+        public void WithCacheThrowsExceptionWithNullLogger()
         {
             Action action = () => LoggerExtensions.WithCache(null);
 
@@ -28,7 +28,7 @@
         }
 
         [Fact]
-        public void WithCacheTReturnsCacheLoggerTest()
+        public void WithCacheTReturnsCacheLogger()
         {
             var source = Substitute.For<ILogger<LoggerExtensionsTests>>();
 
@@ -38,7 +38,7 @@
         }
 
         [Fact]
-        public void WithCacheTThrowsExceptionWithNullLoggerTest()
+        public void WithCacheTThrowsExceptionWithNullLogger()
         {
             Action action = () => LoggerExtensions.WithCache<LoggerExtensionsTests>(null);
 

@@ -16,7 +16,7 @@
         }
 
         [Fact]
-        public void BuildLoggerForTReturnsILoggerTTest()
+        public void BuildLoggerForTReturnsILoggerT()
         {
             ILogger<TestOutputHelperExtensionsTests> logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>();
 
@@ -24,7 +24,7 @@
         }
 
         [Fact]
-        public void BuildLoggerForTReturnsUsableLoggerTest()
+        public void BuildLoggerForTReturnsUsableLogger()
         {
             var logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>();
 
@@ -32,7 +32,7 @@
         }
 
         [Fact]
-        public void BuildLoggerForTThrowsExceptionWithNullOutputTTest()
+        public void BuildLoggerForTThrowsExceptionWithNullOutputT()
         {
             Action action = () => TestOutputHelperExtensions.BuildLoggerFor<TestOutputHelperExtensionsTests>(null);
 
@@ -40,7 +40,7 @@
         }
 
         [Fact]
-        public void BuildLoggerThrowsExceptionWithNullOutputTTest()
+        public void BuildLoggerThrowsExceptionWithNullOutputT()
         {
             Action action = () => TestOutputHelperExtensions.BuildLogger(null);
 
@@ -48,7 +48,7 @@
         }
 
         [Fact]
-        public void BuildReturnsILoggerTest()
+        public void BuildReturnsILogger()
         {
             var logger = _output.BuildLogger();
 
@@ -56,7 +56,7 @@
         }
 
         [Fact]
-        public void BuildReturnsUsableLoggerTest()
+        public void BuildReturnsUsableLogger()
         {
             var logger = _output.BuildLogger();
 

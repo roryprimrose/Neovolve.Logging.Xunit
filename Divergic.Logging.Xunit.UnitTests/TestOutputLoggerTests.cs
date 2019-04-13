@@ -18,7 +18,7 @@
         }
 
         [Fact]
-        public void BeginScopeReturnsInstanceTest()
+        public void BeginScopeReturnsInstance()
         {
             var name = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
@@ -101,7 +101,7 @@
         }
 
         [Fact]
-        public void LogDoesNotWriteNullExceptionTest()
+        public void LogDoesNotWriteNullException()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -121,7 +121,7 @@
         }
 
         [Fact]
-        public void LogIgnoresNullFormattedMessageTest()
+        public void LogIgnoresNullFormattedMessage()
         {
             var name = Guid.NewGuid().ToString();
             var exception = new TimeoutException();
@@ -178,7 +178,7 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullOutputTest()
+        public void ThrowsExceptionWhenCreatedWithNullOutput()
         {
             var name = Guid.NewGuid().ToString();
 

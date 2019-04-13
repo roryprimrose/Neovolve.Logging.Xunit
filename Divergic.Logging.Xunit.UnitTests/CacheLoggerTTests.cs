@@ -9,7 +9,7 @@
     public class CacheLoggerTTests
     {
         [Fact]
-        public void CanCreateTest()
+        public void CanCreate()
         {
             Action action = () => new CacheLogger<CacheLoggerTTests>();
 
@@ -17,7 +17,7 @@
         }
 
         [Fact]
-        public void CanCreateWithSourceLoggerTest()
+        public void CanCreateWithSourceLogger()
         {
             var source = Substitute.For<ILogger<CacheLoggerTTests>>();
 
@@ -27,7 +27,7 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWithNullSourceLoggerTest()
+        public void ThrowsExceptionWithNullSourceLogger()
         {
             Action action = () => new CacheLogger<CacheLoggerTTests>(null);
 
