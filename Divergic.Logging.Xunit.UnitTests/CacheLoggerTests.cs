@@ -11,7 +11,7 @@
     public class CacheLoggerTests
     {
         [Fact]
-        public void BeginScopeReturnsInstanceWhenNoSourceLoggerProvidedTest()
+        public void BeginScopeReturnsInstanceWhenNoSourceLoggerProvided()
         {
             var state = Guid.NewGuid().ToString();
 
@@ -24,7 +24,7 @@
         }
 
         [Fact]
-        public void BeginScopeReturnsInstanceWhenSourceLoggerBeginScopeReturnsNullTest()
+        public void BeginScopeReturnsInstanceWhenSourceLoggerBeginScopeReturnsNull()
         {
             var state = Guid.NewGuid().ToString();
 
@@ -41,7 +41,7 @@
         }
 
         [Fact]
-        public void BeginScopeReturnsWrappedInstanceWhenSourceLoggerProvidedTest()
+        public void BeginScopeReturnsWrappedInstanceWhenSourceLoggerProvided()
         {
             var state = Guid.NewGuid().ToString();
 
@@ -59,7 +59,7 @@
         }
 
         [Fact]
-        public void CacheIsEmptyWhenNoLogEntriesWrittenTest()
+        public void CacheIsEmptyWhenNoLogEntriesWritten()
         {
             var sut = new CacheLogger();
 
@@ -87,7 +87,7 @@
         }
 
         [Fact]
-        public void IsEnabledReturnsTrueWithNullSourceLoggerTest()
+        public void IsEnabledReturnsTrueWithNullSourceLogger()
         {
             var level = LogLevel.Error;
 
@@ -99,7 +99,7 @@
         }
 
         [Fact]
-        public void LastLogEntryCapturesScopeStateWhenNoLoggerProvidedTest()
+        public void LastLogEntryCapturesScopeStateWhenNoLoggerProvided()
         {
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
@@ -116,7 +116,7 @@
         }
 
         [Fact]
-        public void LastLogEntryCapturesScopeStateWhenSourceLoggerBeginScopeReturnsNullTest()
+        public void LastLogEntryCapturesScopeStateWhenSourceLoggerBeginScopeReturnsNull()
         {
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
@@ -138,7 +138,7 @@
         }
 
         [Fact]
-        public void LastReturnsLastLogEntryTest()
+        public void LastReturnsLastLogEntry()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -160,7 +160,7 @@
         }
 
         [Fact]
-        public void LastReturnsLogEntryTest()
+        public void LastReturnsLogEntry()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -237,7 +237,7 @@
         }
 
         [Fact]
-        public void LogDoesLogsRecordWhenFormatterReturnsMessageAndExceptionIsNullTest()
+        public void LogDoesLogsRecordWhenFormatterReturnsMessageAndExceptionIsNull()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -288,7 +288,7 @@
         }
 
         [Fact]
-        public void LogDoesNotLogRecordWhenIsEnabledReturnsFalseTest()
+        public void LogDoesNotLogRecordWhenIsEnabledReturnsFalse()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -316,7 +316,7 @@
         }
 
         [Fact]
-        public void LogEntriesIdentifyAllRecordedScopesTest()
+        public void LogEntriesIdentifyAllRecordedScopes()
         {
             var firstScopeState = Guid.NewGuid().ToString();
             var secondScopeState = Guid.NewGuid().ToString();
@@ -363,7 +363,7 @@
         }
 
         [Fact]
-        public void LogIgnoresNullFormattedMessageTest()
+        public void LogIgnoresNullFormattedMessage()
         {
             var exception = new TimeoutException();
 
@@ -379,7 +379,7 @@
         }
 
         [Fact]
-        public void LogSendsLogToLoggerTest()
+        public void LogSendsLogToLogger()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -400,7 +400,7 @@
         }
 
         [Fact]
-        public void LogThrowsExceptionWithNullFormatterTest()
+        public void LogThrowsExceptionWithNullFormatter()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -417,7 +417,7 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullSourceLoggerTest()
+        public void ThrowsExceptionWhenCreatedWithNullSourceLogger()
         {
             Action action = () => new CacheLogger(null);
 

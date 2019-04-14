@@ -99,6 +99,88 @@ public class MyClassTests
     }
 }
 ```
+# Output Formatting
+The default formatting to the xUnit test results may not be what you want. You can now define your own method to control how the output looks.
+
+```csharp
+public static class Formatters
+{
+    // This an example message formatter.
+    public static string MyCustomFormatter(
+        int scopeLevel,
+        string name,
+        LogLevel logLevel,
+        EventId eventId,
+        string message,
+        Exception exception)
+    {
+        var builder = new StringBuilder();
+
+        if (scopeLevel > 0)
+        {
+            builder.Append(' ', scopeLevel * 2);
+        }
+
+        builder.Append($"{logLevel} ");
+
+        if (!string.IsNullOrEmpty(name))
+        {
+            builder.Append($"{name} ");
+        }
+
+        if (eventId.Id != 0)
+        {
+            builder.Append($"[{eventId.Id}]: ");
+        }
+
+        if (!string.IsNullOrEmpty(message))
+        {
+            builder.Append(message);
+        }
+
+        if (exception != null)
+        {
+            builder.Append($"\n{exception}");
+        }
+
+        return builder.ToString();
+    }
+}
+```
+
+This method can then be provided when creating the logger.
+
+```csharp
+using System;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Xunit;
+using Xunit.Abstractions;
+
+public class MyClassTests
+{
+    private readonly ITestOutputHelper _output;
+    private readonly ILogger _logger;
+
+    public MyClassTests(ITestOutputHelper output)
+    {
+        _output = output;
+        _logger = _output.BuildLogger(Formatters.MyCustomFormatter);
+    }
+
+    [Fact]
+    public void DoSomethingReturnsValueTest()
+    {
+        var sut = new MyClass(_logger);
+
+        var actual = sut.DoSomething();
+
+        // The xUnit test output should now include the log message from MyClass.DoSomething()
+
+        actual.Should().NotBeNull();
+    }
+}
+```
 
 # Inspection
 

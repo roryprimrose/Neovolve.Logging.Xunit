@@ -9,7 +9,7 @@
     public class TestOutputLoggerProviderTests
     {
         [Fact]
-        public void CanDisposeMultipleTimesTest()
+        public void CanDisposeMultipleTimes()
         {
             var output = Substitute.For<ITestOutputHelper>();
 
@@ -21,7 +21,7 @@
         }
 
         [Fact]
-        public void CreateLoggerReturnsOutputLoggerTest()
+        public void CreateLoggerReturnsOutputLogger()
         {
             var categoryName = Guid.NewGuid().ToString();
 
@@ -52,7 +52,7 @@
         }
 
         [Fact]
-        public void CreateLoggerWithCustomFormatterReturnsOutputLoggerTest()
+        public void CreateLoggerWithCustomFormatterReturnsOutputLogger()
         {
             var categoryName = Guid.NewGuid().ToString();
 
@@ -67,7 +67,7 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullOutputTest()
+        public void ThrowsExceptionWhenCreatedWithNullOutput()
         {
             Action action = () => new TestOutputLoggerProvider(null);
 

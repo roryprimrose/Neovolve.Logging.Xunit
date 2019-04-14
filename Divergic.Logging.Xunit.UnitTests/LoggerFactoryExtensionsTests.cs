@@ -10,7 +10,7 @@
     public class LoggerFactoryExtensionsTests
     {
         [Fact]
-        public void AddXunitAddsProviderToFactoryTest()
+        public void AddXunitAddsProviderToFactory()
         {
             var output = Substitute.For<ITestOutputHelper>();
 
@@ -22,7 +22,7 @@
         }
 
         [Fact]
-        public void AddXunitThrowsExceptionWithNullFactoryTest()
+        public void AddXunitThrowsExceptionWithNullFactory()
         {
             var output = Substitute.For<ITestOutputHelper>();
 
@@ -34,7 +34,7 @@
         }
 
         [Fact]
-        public void AddXunitThrowsExceptionWithNullTestOutputTest()
+        public void AddXunitThrowsExceptionWithNullTestOutput()
         {
             var sut = Substitute.For<ILoggerFactory>();
 
@@ -44,7 +44,7 @@
         }
 
         [Fact]
-        public void AddXunitWithCustomFormatterAddsProviderToFactoryTest()
+        public void AddXunitWithCustomFormatterAddsProviderToFactory()
         {
             var output = Substitute.For<ITestOutputHelper>();
 
