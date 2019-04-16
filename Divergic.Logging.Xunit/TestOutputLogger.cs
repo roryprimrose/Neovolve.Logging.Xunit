@@ -58,7 +58,6 @@
             return true;
         }
 
-        /// <inheritdoc />
         protected override void WriteLogEntry<TState>(
             LogLevel logLevel,
             EventId eventId,
@@ -67,12 +66,31 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
+            try
+            {
+                TryWriteLogEntry(logLevel, eventId, message, exception);
+            }
+#pragma warning disable CA1031 // Do not catch general exception types
+            catch (Exception)
+            {
+                //throw;
+            }
+#pragma warning restore CA1031 // Do not catch general exception types
+        }
+
+        /// <inheritdoc />
+        private void TryWriteLogEntry(
+            LogLevel logLevel,
+            EventId eventId,
+            string message,
+            Exception exception)
+        {
             if (_customFormatter != null)
             {
                 var formattedMessage = _customFormatter(_scopes.Count, _name, logLevel, eventId, message, exception);
 
                 _output.WriteLine(formattedMessage);
-                
+
                 return;
             }
 
@@ -89,6 +107,5 @@
                 _output.WriteLine(Format, padding, _name, logLevel, eventId.Id, exception);
             }
         }
-
-     }
+    }
 }
