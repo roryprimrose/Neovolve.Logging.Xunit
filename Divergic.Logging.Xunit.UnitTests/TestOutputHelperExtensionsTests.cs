@@ -40,6 +40,16 @@
         }
 
         [Fact]
+        public void BuildLoggerForTWithLoggingConfigReturnsUsableLogger()
+        {
+            var config = new LoggingConfig();
+
+            var logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>(config);
+
+            logger.LogInformation("Hey, does this work? Check the test trace log.");
+        }
+
+        [Fact]
         public void BuildLoggerThrowsExceptionWithNullOutputT()
         {
             Action action = () => TestOutputHelperExtensions.BuildLogger(null);
@@ -59,6 +69,16 @@
         public void BuildReturnsUsableLogger()
         {
             var logger = _output.BuildLogger();
+
+            logger.LogInformation("Hey, does this work? Check the test trace log.");
+        }
+
+        [Fact]
+        public void BuildWithLoggingConfigReturnsUsableLogger()
+        {
+            var config = new LoggingConfig();
+
+            var logger = _output.BuildLogger(config);
 
             logger.LogInformation("Hey, does this work? Check the test trace log.");
         }

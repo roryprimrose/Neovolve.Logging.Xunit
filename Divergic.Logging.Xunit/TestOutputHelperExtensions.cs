@@ -33,7 +33,7 @@
         ///     Builds a logger from the specified test output helper.
         /// </summary>
         /// <param name="output">The test output helper.</param>
-        /// <param name="customFormatter">Optional custom message formatter.</param>
+        /// <param name="config">Optional logging configuration.</param>
         /// <param name="memberName">
         ///     The member to create the logger for. This is automatically populated using <see cref="CallerMemberNameAttribute" />
         ///     .
@@ -42,12 +42,12 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ICacheLogger BuildLogger(
             this ITestOutputHelper output,
-            Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter,
+            LoggingConfig config,
             [CallerMemberName] string memberName = null)
         {
             Ensure.Any.IsNotNull(output, nameof(output));
 
-            using (var factory = LogFactory.Create(output, customFormatter))
+            using (var factory = LogFactory.Create(output, config))
             {
                 var logger = factory.CreateLogger(memberName);
 
@@ -72,16 +72,14 @@
         /// </summary>
         /// <typeparam name="T">The type to create the logger for.</typeparam>
         /// <param name="output">The test output helper.</param>
-        /// <param name="customFormatter">Optional custom message formatter.</param>
+        /// <param name="config">Optional logging configuration.</param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ICacheLogger<T> BuildLoggerFor<T>(
-            this ITestOutputHelper output,
-            Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter)
+        public static ICacheLogger<T> BuildLoggerFor<T>(this ITestOutputHelper output, LoggingConfig config)
         {
             Ensure.Any.IsNotNull(output, nameof(output));
 
-            using (var factory = LogFactory.Create(output, customFormatter))
+            using (var factory = LogFactory.Create(output, config))
             {
                 var logger = factory.CreateLogger<T>();
 

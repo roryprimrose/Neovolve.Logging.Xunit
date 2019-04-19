@@ -33,14 +33,16 @@
         }
 
         [Fact]
-        public void AddXunitAddsProviderWithFormatterToBuilder()
+        public void AddXunitAddsProviderWithLoggingConfigToBuilder()
         {
+            var config = new LoggingConfig();
+
             var services = Substitute.For<IServiceCollection>();
             var builder = Substitute.For<ILoggingBuilder>();
 
             builder.Services.Returns(services);
 
-            builder.AddXunit(_output, Formatters.MyCustomFormatter);
+            builder.AddXunit(_output, config);
 
             services.Received().Add(Arg.Is<ServiceDescriptor>(x => x.ServiceType == typeof(ILoggerProvider)));
             services.Received()

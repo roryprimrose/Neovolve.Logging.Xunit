@@ -20,21 +20,6 @@
             }
         }
 
-        [Fact]
-        public void CreateLoggerReturnsOutputLogger()
-        {
-            var categoryName = Guid.NewGuid().ToString();
-
-            var output = Substitute.For<ITestOutputHelper>();
-
-            using (var sut = new TestOutputLoggerProvider(output))
-            {
-                var actual = sut.CreateLogger(categoryName);
-
-                actual.Should().BeOfType<TestOutputLogger>();
-            }
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -52,13 +37,29 @@
         }
 
         [Fact]
-        public void CreateLoggerWithCustomFormatterReturnsOutputLogger()
+        public void CreateLoggerWithLoggingConfigReturnsOutputLogger()
+        {
+            var categoryName = Guid.NewGuid().ToString();
+            var config = new LoggingConfig();
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            using (var sut = new TestOutputLoggerProvider(output, config))
+            {
+                var actual = sut.CreateLogger(categoryName);
+
+                actual.Should().BeOfType<TestOutputLogger>();
+            }
+        }
+
+        [Fact]
+        public void CreateLoggerWithoutLoggingConfigReturnsOutputLogger()
         {
             var categoryName = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new TestOutputLoggerProvider(output, Formatters.MyCustomFormatter))
+            using (var sut = new TestOutputLoggerProvider(output))
             {
                 var actual = sut.CreateLogger(categoryName);
 

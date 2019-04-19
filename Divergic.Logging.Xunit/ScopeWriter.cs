@@ -52,7 +52,7 @@
 
         private static string BuildPadding(int depth)
         {
-            return new string(' ', depth * TestOutputLogger.PaddingSpaces);
+            return new string(' ', depth * DefaultFormatter.PaddingSpaces);
         }
 
         private string BuildScopeStateMessage(bool isScopeEnd)

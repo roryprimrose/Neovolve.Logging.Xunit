@@ -1,6 +1,8 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
+    using System.Globalization;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using global::Xunit;
     using global::Xunit.Abstractions;
@@ -68,40 +70,26 @@
         }
 
         [Fact]
-        public void LogCustomFormatter()
+        public void LogIgnoresTestBoundaryFailure()
         {
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var sut = new TestOutputLogger("category", output, Formatters.MyCustomFormatter);
-
-            sut.Log(LogLevel.Debug, "message");
-
-            output.Received().WriteLine("Debug category message");
-        }
-
-        [Theory]
-        [InlineData(null)]
-        [InlineData("")]
-        [InlineData("   ")]
-        public void LogDoesNotWriteEmptyMessageTest(string message)
-        {
-            var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
-            var state = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => message;
+            // This test should not fail the test runner
             var name = Guid.NewGuid().ToString();
+            var config = new LoggingConfig {IgnoreTestBoundaryException = true};
 
-            var output = Substitute.For<ITestOutputHelper>();
+            var sut = new TestOutputLogger(name, _output, config);
 
-            var sut = new TestOutputLogger(name, output);
+            var task = new Task(async () =>
+            {
+                await Task.Delay(0).ConfigureAwait(false);
 
-            sut.Log(logLevel, eventId, state, null, formatter);
+                sut.LogCritical("message2");
+            });
 
-            output.DidNotReceive().WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
+            task.Start();
         }
 
         [Fact]
-        public void LogDoesNotWriteNullException()
+        public void LogUsesDefaultFormatterWhenConfigFormatterIsNull()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -109,6 +97,40 @@
             var message = Guid.NewGuid().ToString();
             Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
+            var config = new LoggingConfig {Formatter = null};
+
+            var expected = string.Format(CultureInfo.InvariantCulture,
+                "{0}{1} [{2}]: {3}\r\n",
+                string.Empty,
+                logLevel,
+                eventId.Id,
+                message);
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(name, output, config);
+
+            sut.Log(logLevel, eventId, state, null, formatter);
+
+            output.Received(1).WriteLine(Arg.Any<string>());
+            output.Received().WriteLine(expected);
+        }
+
+        [Fact]
+        public void LogUsesDefaultFormatterWhenConfigIsNull()
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+            Func<string, Exception, string> formatter = (logState, error) => message;
+            var name = Guid.NewGuid().ToString();
+            var expected = string.Format(CultureInfo.InvariantCulture,
+                "{0}{1} [{2}]: {3}\r\n",
+                string.Empty,
+                logLevel,
+                eventId.Id,
+                message);
 
             var output = Substitute.For<ITestOutputHelper>();
 
@@ -116,25 +138,29 @@
 
             sut.Log(logLevel, eventId, state, null, formatter);
 
-            output.Received(1).WriteLine(Arg.Any<string>(), Arg.Any<object[]>());
-            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, message);
+            output.Received(1).WriteLine(Arg.Any<string>());
+            output.Received().WriteLine(expected);
         }
 
         [Fact]
-        public void LogIgnoresNullFormattedMessage()
+        public void LogWritesExceptionTest()
         {
+            var logLevel = LogLevel.Information;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
-            var exception = new TimeoutException();
 
-            var sut = new TestOutputLogger(name, _output);
+            var output = Substitute.For<ITestOutputHelper>();
 
-            var cacheLogger = sut.WithCache();
+            var sut = new TestOutputLogger(name, output);
 
-            cacheLogger.LogInformation(exception, null);
+            sut.Log(logLevel, eventId, state, exception, formatter);
 
-            cacheLogger.Count.Should().Be(1);
-            cacheLogger.Last.Exception.Should().Be(exception);
-            cacheLogger.Last.Message.Should().BeNull();
+            output.Received(1).WriteLine(Arg.Any<string>());
+            output.Received().WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString())));
         }
 
         [Theory]
@@ -145,23 +171,56 @@
         [InlineData(LogLevel.None)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]
-        public void LogTest(LogLevel logLevel)
+        public void LogWritesLogLevelToOutputTest(LogLevel logLevel)
         {
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            var data = Guid.NewGuid().ToString();
-            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            Func<string, Exception, string> formatter = (message, error) => data;
+            var message = Guid.NewGuid().ToString();
+            Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
+            var expected = string.Format(CultureInfo.InvariantCulture,
+                "{0}{1} [{2}]: {3}\r\n",
+                string.Empty,
+                logLevel,
+                eventId.Id,
+                message);
 
             var output = Substitute.For<ITestOutputHelper>();
 
             var sut = new TestOutputLogger(name, output);
 
-            sut.Log(logLevel, eventId, state, exception, formatter);
+            sut.Log(logLevel, eventId, state, null, formatter);
 
-            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, data);
-            output.Received().WriteLine("{0}{2} [{3}]: {4}", string.Empty, name, logLevel, eventId.Id, exception);
+            output.Received(1).WriteLine(Arg.Any<string>());
+            output.Received().WriteLine(expected);
+        }
+
+        [Fact]
+        public void LogWritesMessageUsingSpecifiedLineFormatter()
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var name = Guid.NewGuid().ToString();
+            var expected = Guid.NewGuid().ToString();
+            Func<string, Exception, string> lineFormatter = (logState, error) => message;
+
+            var formatter = Substitute.For<ILogFormatter>();
+            var config = new LoggingConfig {Formatter = formatter};
+
+            formatter.Format(0, name, logLevel, eventId, message, exception).Returns(expected);
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(name, output, config);
+
+            sut.Log(logLevel, eventId, state, exception, lineFormatter);
+
+            formatter.Received().Format(0, name, logLevel, eventId, message, exception);
+
+            output.Received().WriteLine(expected);
         }
 
         [Theory]
