@@ -218,40 +218,6 @@
             action.Should().Throw<ArgumentNullException>();
         }
 
-        [Fact]
-        public void LogWritesMessageUsingSpecifiedLoggingConfig()
-        {
-            var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
-            var message = Guid.NewGuid().ToString();
-            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            var name = Guid.NewGuid().ToString();
-
-            var config = new MyLoggingConfig();
-            Assert.Equal(message, config.Format(0, name, logLevel, eventId, message, exception));
-
-            var output = Substitute.For<ITestOutputHelper>();
-            var sut = new TestOutputLogger(name, output, config);
-
-            sut.LogError(message);
-            output.Received().WriteLine(message);
-        }
     }
 
-    public class MyLoggingConfig : LoggingConfig
-    {
-        public override bool IgnoreTestBoundaryException { get; set; } = true;
-
-        public override string Format(
-            int scopeLevel,
-            string name,
-            LogLevel logLevel,
-            EventId eventId,
-            string message,
-            Exception exception)
-        {
-            return message;
-            //return base.Format(scopeLevel, name, logLevel, eventId, message, exception);
-        }
-    }
 }
