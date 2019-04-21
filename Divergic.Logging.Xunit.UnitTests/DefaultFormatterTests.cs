@@ -28,7 +28,7 @@
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, null);
 
@@ -45,7 +45,7 @@
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
             
@@ -64,7 +64,7 @@
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
             
@@ -88,7 +88,7 @@
             var message = Guid.NewGuid().ToString();
             var name = Guid.NewGuid().ToString();
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, null);
             
@@ -107,7 +107,7 @@
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
             
@@ -125,7 +125,7 @@
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, null);
             
@@ -144,7 +144,7 @@
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
-            var sut = new DefaultFormatter();
+            var sut = new LoggingConfig();
 
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
             
@@ -159,15 +159,13 @@
         [InlineData(4)]
         public void FormatReturnsValueWithPadding(int scopeLevel)
         {
-            var padding = new string(' ', DefaultFormatter.PaddingSpaces * scopeLevel);
+            var sut = new LoggingConfig();
+            var padding = new string(' ', sut.PaddingSpaces * scopeLevel);
             var name = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-
-            var sut = new DefaultFormatter();
-
             var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
             
             _output.WriteLine(actual);

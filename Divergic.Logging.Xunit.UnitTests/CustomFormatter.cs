@@ -4,9 +4,11 @@ namespace Divergic.Logging.Xunit.UnitTests
     using System.Text;
     using Microsoft.Extensions.Logging;
 
-    public class CustomFormatter : ILogFormatter
+    public class CustomLoggingConfig : LoggingConfig
     {
-        public string Format(
+        public override bool IgnoreTestBoundaryException { get; set; } = true;
+
+        public override string Format(
             int scopeLevel,
             string name,
             LogLevel logLevel,
@@ -50,14 +52,14 @@ namespace Divergic.Logging.Xunit.UnitTests
         {
             switch (level)
             {
-                case LogLevel.Trace: return "Trace";
-                case LogLevel.Debug: return "Debug";
-                case LogLevel.Information: return "Info ";
-                case LogLevel.Warning: return "Warn ";
-                case LogLevel.Error: return "Error";
-                case LogLevel.Critical: return "Crit ";
-                case LogLevel.None: return "None ";
-                default: throw new Exception("invalid");
+                case LogLevel.Trace: return "Trace\t";
+                case LogLevel.Debug: return "Debug\t";
+                case LogLevel.Information: return "Info\t";
+                case LogLevel.Warning: return "Warn\t";
+                case LogLevel.Error: return "Error\t";
+                case LogLevel.Critical: return "Crit\t";
+                case LogLevel.None: return "None\t";
+                default: throw new Exception("invalid\t");
             }
         }
     }

@@ -13,7 +13,6 @@
     public class TestOutputLogger : FilterLogger
     {
         private readonly LoggingConfig _config;
-        private readonly ILogFormatter _formatter;
         private readonly string _name;
         private readonly ITestOutputHelper _output;
         private readonly Stack<ScopeWriter> _scopes;
@@ -34,8 +33,6 @@
             _name = name;
             _output = output;
             _config = config ?? new LoggingConfig();
-            _formatter = _config.Formatter ?? new DefaultFormatter();
-
             _scopes = new Stack<ScopeWriter>();
         }
 
@@ -79,7 +76,7 @@
 
         private void WriteLog(LogLevel logLevel, EventId eventId, string message, Exception exception)
         {
-            var formattedMessage = _formatter.Format(_scopes.Count, _name, logLevel, eventId, message, exception);
+            var formattedMessage = _config.Format(_scopes.Count, _name, logLevel, eventId, message, exception);
 
             _output.WriteLine(formattedMessage);
         }

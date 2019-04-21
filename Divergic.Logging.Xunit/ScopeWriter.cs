@@ -52,7 +52,8 @@
 
         private static string BuildPadding(int depth)
         {
-            return new string(' ', depth * DefaultFormatter.PaddingSpaces);
+            var config = new LoggingConfig();
+            return new string(' ', depth * config.PaddingSpaces);
         }
 
         private string BuildScopeStateMessage(bool isScopeEnd)

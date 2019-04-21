@@ -74,7 +74,7 @@
         {
             // This test should not fail the test runner
             var name = Guid.NewGuid().ToString();
-            var config = new LoggingConfig {IgnoreTestBoundaryException = true};
+            var config = new LoggingConfig { IgnoreTestBoundaryException = true };
 
             var sut = new TestOutputLogger(name, _output, config);
 
@@ -97,7 +97,7 @@
             var message = Guid.NewGuid().ToString();
             Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
-            var config = new LoggingConfig {Formatter = null};
+            var config = new LoggingConfig();
 
             var expected = string.Format(CultureInfo.InvariantCulture,
                 "{0}{1} [{2}]: {3}\r\n",
@@ -195,34 +195,6 @@
             output.Received().WriteLine(expected);
         }
 
-        [Fact]
-        public void LogWritesMessageUsingSpecifiedLineFormatter()
-        {
-            var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
-            var state = Guid.NewGuid().ToString();
-            var message = Guid.NewGuid().ToString();
-            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            var name = Guid.NewGuid().ToString();
-            var expected = Guid.NewGuid().ToString();
-            Func<string, Exception, string> lineFormatter = (logState, error) => message;
-
-            var formatter = Substitute.For<ILogFormatter>();
-            var config = new LoggingConfig {Formatter = formatter};
-
-            formatter.Format(0, name, logLevel, eventId, message, exception).Returns(expected);
-
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var sut = new TestOutputLogger(name, output, config);
-
-            sut.Log(logLevel, eventId, state, exception, lineFormatter);
-
-            formatter.Received().Format(0, name, logLevel, eventId, message, exception);
-
-            output.Received().WriteLine(expected);
-        }
-
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -244,6 +216,42 @@
             Action action = () => new TestOutputLogger(name, null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void LogWritesMessageUsingSpecifiedLoggingConfig()
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var message = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            var name = Guid.NewGuid().ToString();
+
+            var config = new MyLoggingConfig();
+            Assert.Equal(message, config.Format(0, name, logLevel, eventId, message, exception));
+
+            var output = Substitute.For<ITestOutputHelper>();
+            var sut = new TestOutputLogger(name, output, config);
+
+            sut.LogError(message);
+            output.Received().WriteLine(message);
+        }
+    }
+
+    public class MyLoggingConfig : LoggingConfig
+    {
+        public override bool IgnoreTestBoundaryException { get; set; } = true;
+
+        public override string Format(
+            int scopeLevel,
+            string name,
+            LogLevel logLevel,
+            EventId eventId,
+            string message,
+            Exception exception)
+        {
+            return message;
+            //return base.Format(scopeLevel, name, logLevel, eventId, message, exception);
         }
     }
 }

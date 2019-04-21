@@ -14,7 +14,7 @@ namespace Divergic.Logging.Xunit.UnitTests
             string message,
             Exception exception)
         {
-            var formatter = new CustomFormatter();
+            var formatter = new CustomLoggingConfig();
 
             return formatter.Format(scopeLevel, name, logLevel, eventId, message, exception);
         }
