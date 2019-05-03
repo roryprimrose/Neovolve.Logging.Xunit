@@ -1,5 +1,16 @@
 # Introduction
+
 Divergic.Logging.Xunit is a NuGet package that returns an ```ILogger``` or ```ILogger<T>``` that wraps around the ```ITestOutputHelper``` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
+
+## Contents
+
+[Installation][1]  
+[Usage][2]  
+[Output Formatting][3]  
+[Inspection][4]  
+[Configured LoggerFactory][5]  
+[Existing Loggers][6]  
+[Configuration][7]  
 
 # Installation
 
@@ -7,7 +18,10 @@ Run the following in the NuGet command line or visit the [NuGet package page](ht
 
 ```Install-Package Divergic.Logging.Xunit```
 
+[Back to top][0]
+
 # Usage
+
 The common usage of this package is to call the ```BuildLogger``` extension method on the xUnit ```ITestOutputHelper```.
 
 ```csharp
@@ -99,14 +113,17 @@ public class MyClassTests
     }
 }
 ```
+
+[Back to top][0]
+
 # Output Formatting
-The default formatting to the xUnit test results may not be what you want. You can now define your own method to control how the output looks.
+
+The default formatting to the xUnit test results may not be what you want. You can now define your ```ILogFormatter``` class to control how the output looks.
 
 ```csharp
-public static class Formatters
+public class MyFormatter : ILogFormatter
 {
-    // This an example message formatter.
-    public static string MyCustomFormatter(
+    public string Format(
         int scopeLevel,
         string name,
         LogLevel logLevel,
@@ -146,9 +163,18 @@ public static class Formatters
         return builder.ToString();
     }
 }
+
+public class MyConfig : LoggingConfig
+{
+    public MyConfig() : base(new MyFormatter())
+    {
+    }
+
+    public static MyConfig Current { get; } = new MyConfig();
+}
 ```
 
-This method can then be provided when creating the logger.
+The custom ```ILogFormatter``` is defined on a ```LoggingConfig``` class that can be provided when creating a logger. The ```MyConfig.Current``` property above is there provide a clean way to share the config across test classes.
 
 ```csharp
 using System;
@@ -165,7 +191,7 @@ public class MyClassTests
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = _output.BuildLogger(Formatters.MyCustomFormatter);
+        _logger = _output.BuildLogger(MyConfig.Current);
     }
 
     [Fact]
@@ -181,6 +207,8 @@ public class MyClassTests
     }
 }
 ```
+
+[Back to top][0]
 
 # Inspection
 
@@ -248,7 +276,10 @@ public class MyClassTests
 }
 ```
 
+[Back to top][0]
+
 # Configured LoggerFactory
+
 You may have an integration or acceptance test that requires additional configuration to the log providers on ```ILoggerFactory``` while also supporting the logging out to xUnit test results. You can do this by create a factory that is already configured with xUnit support.
 
 ```csharp
@@ -286,7 +317,10 @@ public class MyClassTests
 }
 ```
 
+[Back to top][0]
+
 # Existing Loggers
+
 Already have an existing logger and want the above cache support? Got you covered there too using the ```WithCache()``` method.
 
 ```csharp
@@ -350,3 +384,26 @@ public class MyClassTests
     }
 }
 ```
+
+[Back to top][0]
+
+# Configuration
+
+Logging configuration can be controled by using a ```LoggingConfig``` class as indicated in the [Output Formatting][3] section above. The following are the configuration options that can be set.
+
+**Formatter**: Defines a custom formatting for rendering log messages to xUnit test output.
+
+**IgnoreTestBoundaryException**: Defines whether exceptions thrown while logging outside of the test execution will be ignored.
+
+**ScopePaddingSpaces**: Defines the number of spaces to use for indenting scopes.
+
+[Back to top][0]
+
+[0]: #introduction
+[1]: #installation
+[2]: #usage
+[3]: #output-formatting
+[4]: #inspection
+[5]: #configured-loggerfactory
+[6]: #existing-loggers
+[7]: #configuration
