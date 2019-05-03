@@ -1,9 +1,8 @@
 ﻿namespace Microsoft.Extensions.Logging
 {
-    using System;
     using Divergic.Logging.Xunit;
     using EnsureThat;
-    using global::Xunit.Abstractions;
+    using Xunit.Abstractions;
 
     /// <summary>
     ///     The <see cref="LoggingBuilderExtensions" />
@@ -16,18 +15,15 @@
         /// </summary>
         /// <param name="builder">The logging builder.</param>
         /// <param name="output">The xUnit test output helper.</param>
-        /// <param name="customFormatter">Optional custom message formatter.</param>
-        public static void AddXunit(
-            this ILoggingBuilder builder,
-            ITestOutputHelper output,
-            Func<int, string, LogLevel, EventId, string, Exception, string> customFormatter = null)
+        /// <param name="config">Optional logging configuration.</param>
+        public static void AddXunit(this ILoggingBuilder builder, ITestOutputHelper output, LoggingConfig config = null)
         {
             Ensure.That(builder, nameof(builder)).IsNotNull();
             Ensure.That(output, nameof(output)).IsNotNull();
 
             // Object is added as a provider to the builder and cannot be disposed of here
 #pragma warning disable CA2000 // Dispose objects before losing scope
-            var provider = new TestOutputLoggerProvider(output, customFormatter);
+            var provider = new TestOutputLoggerProvider(output, config);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
             builder.AddProvider(provider);

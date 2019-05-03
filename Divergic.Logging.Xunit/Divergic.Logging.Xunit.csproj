@@ -8,7 +8,7 @@
     <Authors>rprimrose</Authors>
     <Company>Divergic Ptd Ltd</Company>
     <Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
-    <Copyright>Copyright © Divergic Ptd Ltd 2018</Copyright>
+    <Copyright>Copyright © Divergic Pty Ltd 2018</Copyright>
     <IncludeSymbols>true</IncludeSymbols>
     <NeutralLanguage>en-US</NeutralLanguage>	
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>

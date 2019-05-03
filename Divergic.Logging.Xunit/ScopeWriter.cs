@@ -7,6 +7,7 @@
 
     internal class ScopeWriter : IDisposable
     {
+        private readonly LoggingConfig _config;
         private readonly int _depth;
         private readonly Action _onScopeEnd;
         private readonly ITestOutputHelper _outputHelper;
@@ -14,12 +15,18 @@
         private string _scopeMessage;
         private string _structuredStateData;
 
-        public ScopeWriter(ITestOutputHelper outputHelper, object state, int depth, Action onScopeEnd)
+        public ScopeWriter(
+            ITestOutputHelper outputHelper,
+            object state,
+            int depth,
+            Action onScopeEnd,
+            LoggingConfig config)
         {
             _outputHelper = outputHelper;
             _state = state;
             _depth = depth;
             _onScopeEnd = onScopeEnd;
+            _config = config;
 
             DetermineScopeStateMessage();
 
@@ -50,9 +57,9 @@
             _onScopeEnd?.Invoke();
         }
 
-        private static string BuildPadding(int depth)
+        private string BuildPadding(int depth)
         {
-            return new string(' ', depth * TestOutputLogger.PaddingSpaces);
+            return new string(' ', depth * _config.ScopePaddingSpaces);
         }
 
         private string BuildScopeStateMessage(bool isScopeEnd)

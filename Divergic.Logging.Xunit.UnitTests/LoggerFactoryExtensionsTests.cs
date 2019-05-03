@@ -44,13 +44,15 @@
         }
 
         [Fact]
-        public void AddXunitWithCustomFormatterAddsProviderToFactory()
+        public void AddXunitWithLoggingConfigAddsProviderToFactory()
         {
+            var config = new LoggingConfig();
+
             var output = Substitute.For<ITestOutputHelper>();
 
             var sut = Substitute.For<ILoggerFactory>();
 
-            sut.AddXunit(output, Formatters.MyCustomFormatter);
+            sut.AddXunit(output, config);
 
             sut.Received().AddProvider(Arg.Is<ILoggerProvider>(x => x is TestOutputLoggerProvider));
         }
