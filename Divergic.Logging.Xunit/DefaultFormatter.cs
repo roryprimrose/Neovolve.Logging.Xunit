@@ -3,18 +3,23 @@
     using System;
     using System.Globalization;
     using System.Text;
+    using EnsureThat;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
-    /// The <see cref="DefaultFormatter"/>
-    /// class provides the default formatting of log messages for xUnit test output.
+    ///     The <see cref="DefaultFormatter" />
+    ///     class provides the default formatting of log messages for xUnit test output.
     /// </summary>
     public class DefaultFormatter : ILogFormatter
     {
-        /// <summary>
-        ///     Identifies the number of spaces to use for indenting scopes.
-        /// </summary>
-        public const int PaddingSpaces = 3;
+        private readonly LoggingConfig _config;
+
+        public DefaultFormatter(LoggingConfig config)
+        {
+            Ensure.Any.IsNotNull(config, nameof(config));
+
+            _config = config;
+        }
 
         /// <inheritdoc />
         public string Format(
@@ -26,7 +31,7 @@
             Exception exception)
         {
             const string Format = "{0}{2} [{3}]: {4}";
-            var padding = new string(' ', scopeLevel * PaddingSpaces);
+            var padding = new string(' ', scopeLevel * _config.ScopePaddingSpaces);
 
             var builder = new StringBuilder();
 

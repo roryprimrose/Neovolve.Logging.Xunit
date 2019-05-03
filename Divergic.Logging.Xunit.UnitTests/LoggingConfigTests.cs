@@ -20,5 +20,13 @@
 
             sut.IgnoreTestBoundaryException.Should().BeFalse();
         }
+
+        [Fact]
+        public void CreatesWithScopePaddingSpacesHavingValue()
+        {
+            var sut = new LoggingConfig();
+
+            sut.ScopePaddingSpaces.Should().NotBe(0);
+        }
     }
 }

@@ -34,7 +34,7 @@
             _name = name;
             _output = output;
             _config = config ?? new LoggingConfig();
-            _formatter = _config.Formatter ?? new DefaultFormatter();
+            _formatter = _config.Formatter ?? new DefaultFormatter(_config);
 
             _scopes = new Stack<ScopeWriter>();
         }
@@ -42,7 +42,7 @@
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            var scopeWriter = new ScopeWriter(_output, state, _scopes.Count, () => _scopes.Pop());
+            var scopeWriter = new ScopeWriter(_output, state, _scopes.Count, () => _scopes.Pop(), _config);
 
             _scopes.Push(scopeWriter);
 

@@ -11,7 +11,7 @@
         /// </summary>
         public LoggingConfig()
         {
-            Formatter = new DefaultFormatter();
+            Formatter = new DefaultFormatter(this);
         }
 
         /// <summary>
@@ -23,5 +23,10 @@
         ///     Gets or sets whether exceptions thrown while logging outside of the test execution will be ignored.
         /// </summary>
         public bool IgnoreTestBoundaryException { get; set; }
+
+        /// <summary>
+        ///     Identifies the number of spaces to use for indenting scopes.
+        /// </summary>
+        public int ScopePaddingSpaces { get; set; } = 3;
     }
 }
