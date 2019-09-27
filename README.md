@@ -166,8 +166,9 @@ public class MyFormatter : ILogFormatter
 
 public class MyConfig : LoggingConfig
 {
-    public MyConfig() : base(new MyFormatter())
+    public MyConfig()
     {
+        base.Formatter = new MyFormatter();
     }
 
     public static MyConfig Current { get; } = new MyConfig();

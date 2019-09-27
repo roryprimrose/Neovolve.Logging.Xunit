@@ -3,7 +3,6 @@
     using System;
     using EnsureThat;
     using Microsoft.Extensions.Logging;
-    using Microsoft.Extensions.Logging.Internal;
 
     /// <summary>
     ///     The <see cref="FilterLogger" />
@@ -12,7 +11,7 @@
     /// </summary>
     public abstract class FilterLogger : ILogger
     {
-        private readonly string _nullFormatted = new FormattedLogValues(null, null).ToString();
+        private readonly string _nullFormatted = "[null]";
 
         /// <inheritdoc />
         public abstract IDisposable BeginScope<TState>(TState state);
