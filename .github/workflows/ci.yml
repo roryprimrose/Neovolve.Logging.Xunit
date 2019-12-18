@@ -55,7 +55,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: packages
-        path: $GITHUB_WORKSPACE/staging
+        path: staging
     
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
