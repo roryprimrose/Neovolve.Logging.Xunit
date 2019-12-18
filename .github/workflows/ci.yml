@@ -49,13 +49,13 @@ jobs:
         path-to-lcov: /home/runner/work/Divergic.Logging.Xunit/Divergic.Logging.Xunit/coverage/lcov.info
     
     - name: Pack
-      run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o ./staging
+      run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@master
       with:
         name: packages
-        path: ./staging
+        path: $GITHUB_WORKSPACE/staging
     
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
@@ -64,7 +64,7 @@ jobs:
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: mono $NUGET_EXE push ./staging/Divergic.Logging.Xunit.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
+      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
       if: github.event_name == 'pull_request'
 
 #    - name: Add GitHub registry to NuGet config
@@ -72,13 +72,13 @@ jobs:
 #      if: github.ref == 'refs/heads/master'
 #
 #    - name: Push generated package to GitHub registry
-#      run: mono $NUGET_EXE push ./staging/Divergic.Logging.Xunit.*.symbols.nupkg -Source "GPR"
+#      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg -Source "GPR"
 #      if: github.ref == 'refs/heads/master'
 
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: mono $NUGET_EXE push ./staging/Divergic.Logging.Xunit.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
       if: github.ref == 'refs/heads/master'
 
     - name: Create Release
@@ -100,7 +100,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./staging/Divergic.Logging.Xunit.*.symbols.nupkg
+        asset_path: $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg
         asset_name: ${{ format('Divergic.Logging.Xunit.{0}.nupkg', steps.gitversion.outputs.NuGetVersionV2) }}
         asset_content_type: application/zip
       if: github.ref == 'refs/heads/master'
