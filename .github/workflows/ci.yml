@@ -31,7 +31,7 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '2.2.207' # SDK Version to use.
+        dotnet-version: '3.0.100' # SDK Version to use.
 
     - name: Restore
       run: dotnet restore
@@ -55,7 +55,7 @@ jobs:
       uses: actions/upload-artifact@master
       with:
         name: packages
-        path: $GITHUB_WORKSPACE/staging
+        path: staging
     
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
