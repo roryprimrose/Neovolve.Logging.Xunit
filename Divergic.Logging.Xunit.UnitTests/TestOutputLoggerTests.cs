@@ -100,7 +100,7 @@
             var config = new LoggingConfig {Formatter = null};
 
             var expected = string.Format(CultureInfo.InvariantCulture,
-                "{0}{1} [{2}]: {3}\r\n",
+                "{0}{1} [{2}]: {3}" + Environment.NewLine,
                 string.Empty,
                 logLevel,
                 eventId.Id,
@@ -126,7 +126,7 @@
             Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
-                "{0}{1} [{2}]: {3}\r\n",
+                "{0}{1} [{2}]: {3}" + Environment.NewLine,
                 string.Empty,
                 logLevel,
                 eventId.Id,
@@ -179,7 +179,7 @@
             Func<string, Exception, string> formatter = (logState, error) => message;
             var name = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
-                "{0}{1} [{2}]: {3}\r\n",
+                "{0}{1} [{2}]: {3}" + Environment.NewLine,
                 string.Empty,
                 logLevel,
                 eventId.Id,
