@@ -31,7 +31,7 @@ jobs:
     - name: Setup dotnet
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '2.2.110' # SDK Version to use.
+        dotnet-version: '2.2.207' # SDK Version to use.
 
     - name: Restore
       run: dotnet restore
