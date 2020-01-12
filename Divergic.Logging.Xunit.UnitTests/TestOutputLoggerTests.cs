@@ -160,7 +160,7 @@
             sut.Log(logLevel, eventId, state, exception, formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
-            output.Received().WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString())));
+            output.Received().WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
         }
 
         [Theory]

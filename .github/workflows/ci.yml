@@ -1,6 +1,16 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  # Trigger the workflow on push or pull request,
+  # for any branch or version tag
+  push:
+    branches:
+      - '**'
+    tags:
+      - 'v*.*.*'
+  pull_request:
+    branches:
+      - '**'
 
 jobs:
   build:
@@ -10,6 +20,10 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v1
+
+    - name: ResolveProject
+      shell: pwsh
+      run: Write-Host "::set-env name=PROJECT_NAME::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
 
     - name: Fetch tags and master for GitVersion
       run: |
@@ -28,11 +42,20 @@ jobs:
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
 
-    - name: Setup dotnet
+    - name: Setup dotnet v2.1
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: '3.0.100' # SDK Version to use.
+        dotnet-version: '2.1.300' # SDK Version to use.
 
+    - name: Setup dotnet v3.1
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '3.1.100' # SDK Version to use.
+
+    # This step is required while waiting on https://github.com/actions/setup-dotnet/issues/25 to be resolved
+    - name: .net SxS
+      run: rsync -a ${DOTNET_ROOT/3.1.100/2.1.300}/* $DOTNET_ROOT/
+      
     - name: Restore
       run: dotnet restore
 
@@ -40,16 +63,16 @@ jobs:
       run: dotnet build -c Release --no-restore
 
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/lcov.info" /p:MergeWith="$GITHUB_WORKSPACE/coverage/lcov.info" /p:CoverletOutputFormat=lcov                                                       
+      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/" /p:MergeWith="$GITHUB_WORKSPACE/coverage/coverage.json" /p:CoverletOutputFormat="lcov%2cjson" -m:1
     
     - name: Coveralls
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.github_token }}
-        path-to-lcov: /home/runner/work/Divergic.Logging.Xunit/Divergic.Logging.Xunit/coverage/lcov.info
+        path-to-lcov: /home/runner/work/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}/coverage/coverage.info
     
     - name: Pack
-      run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack "./${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@master
@@ -59,27 +82,27 @@ jobs:
     
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
-      if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master'
+      if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
 
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
+      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
       if: github.event_name == 'pull_request'
 
 #    - name: Add GitHub registry to NuGet config
 #      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/divergic/index.json -UserName roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
-#      if: github.ref == 'refs/heads/master'
-#
+#      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+# 
 #    - name: Push generated package to GitHub registry
-#      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg -Source "GPR"
-#      if: github.ref == 'refs/heads/master'
+#      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg -Source "GPR"
+#      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
 
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
-      if: github.ref == 'refs/heads/master'
+      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
 
     - name: Create Release
       id: create_release
@@ -91,16 +114,28 @@ jobs:
         release_name: Release ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         draft: false
         prerelease: ${{ contains(steps.gitversion.outputs.NuGetVersionV2, 'beta') }}
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
     
-    - name: Upload Release Asset
-      id: upload-release-asset 
+    - name: Upload Release Asset for package
+      id: upload-release-asset-package
       uses: actions/upload-release-asset@v1.0.1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: $GITHUB_WORKSPACE/staging/Divergic.Logging.Xunit.*.symbols.nupkg
-        asset_name: ${{ format('Divergic.Logging.Xunit.{0}.nupkg', steps.gitversion.outputs.NuGetVersionV2) }}
+        asset_path: staging/${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
-      if: github.ref == 'refs/heads/master'
+      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+    
+    - name: Upload Release Asset for symbol package
+      id: upload-release-asset-symbolpackage
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: staging/${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
+        asset_content_type: application/zip
+      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
