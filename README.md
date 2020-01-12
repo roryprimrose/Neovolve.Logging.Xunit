@@ -2,7 +2,7 @@
 
 Divergic.Logging.Xunit is a NuGet package that returns an ```ILogger``` or ```ILogger<T>``` that wraps around the ```ITestOutputHelper``` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
 
-[![Coverage Status](https://coveralls.io/repos/github/divergic/Divergic.Logging.Xunit/badge.svg?branch=master)](https://coveralls.io/github/divergic/Divergic.Logging.Xunit?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/Divergic/Divergic.Logging.Xunit/badge.svg?branch=master)](https://coveralls.io/github/Divergic/Divergic.Logging.Xunit?branch=master)
 
 [![Actions Status](https://github.com/divergic/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/divergic/Divergic.Logging.Xunit/actions)
 
