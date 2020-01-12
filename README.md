@@ -2,9 +2,9 @@
 
 Divergic.Logging.Xunit is a NuGet package that returns an ```ILogger``` or ```ILogger<T>``` that wraps around the ```ITestOutputHelper``` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
 
-[![Coverage Status](https://coveralls.io/repos/github/Divergic/Divergic.Logging.Xunit/badge.svg?branch=master)](https://coveralls.io/github/Divergic/Divergic.Logging.Xunit?branch=master)
+[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Divergic/Divergic.Logging.Xunit/blob/master/LICENSE)&nbsp;&nbsp;&nbsp;[![Nuget](https://img.shields.io/nuget/v/Divergic.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Divergic.Logging.Xunit.svg)](https://www.nuget.org/packages/Divergic.Logging.Xunit)
 
-[![Actions Status](https://github.com/divergic/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/divergic/Divergic.Logging.Xunit/actions)
+[![Actions Status](https://github.com/Divergic/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/Divergic/Divergic.Logging.Xunit/actions)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/Divergic/Divergic.Logging.Xunit/badge.svg?branch=master)](https://coveralls.io/github/Divergic/Divergic.Logging.Xunit?branch=master)
 
 ## Contents
 
