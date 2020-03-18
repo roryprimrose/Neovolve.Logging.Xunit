@@ -63,7 +63,7 @@ jobs:
       run: dotnet build -c Release --no-restore
 
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/" /p:MergeWith="$GITHUB_WORKSPACE/coverage/coverage.json" /p:CoverletOutputFormat="lcov%2cjson" -m:1
+      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:Exclude="[*.*Tests]*" /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/" /p:MergeWith="$GITHUB_WORKSPACE/coverage/coverage.json" /p:CoverletOutputFormat="lcov%2cjson" -m:1
     
     - name: Coveralls
       uses: coverallsapp/github-action@master
