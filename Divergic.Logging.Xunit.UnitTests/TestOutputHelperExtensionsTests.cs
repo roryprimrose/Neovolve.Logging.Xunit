@@ -15,12 +15,36 @@
             _output = output;
         }
 
+        [Theory]
+        [ClassData(typeof(LogLevelDataSet))]
+        public void BuildLoggerForTLogsAccordingToLogLevel(LogLevel configuredLevel, LogLevel logLevel, bool isEnabled)
+        {
+            var logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>(configuredLevel);
+
+            logger.Should().BeAssignableTo<ILogger<TestOutputHelperExtensionsTests>>();
+
+            logger.Log(logLevel, "Hey, does this work? Check the test trace log.");
+
+            if (isEnabled)
+            {
+                logger.Entries.Should().HaveCount(1);
+            }
+            else
+            {
+                logger.Entries.Should().BeEmpty();
+            }
+        }
+
         [Fact]
         public void BuildLoggerForTReturnsILoggerT()
         {
-            ILogger<TestOutputHelperExtensionsTests> logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>();
+            var logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>();
 
             logger.Should().BeAssignableTo<ILogger<TestOutputHelperExtensionsTests>>();
+
+            logger.LogInformation("Hey, does this work? Check the test trace log.");
+
+            logger.Entries.Should().HaveCount(1);
         }
 
         [Fact]
@@ -29,6 +53,8 @@
             var logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>();
 
             logger.LogInformation("Hey, does this work? Check the test trace log.");
+
+            logger.Entries.Should().HaveCount(1);
         }
 
         [Fact]
@@ -47,6 +73,28 @@
             var logger = _output.BuildLoggerFor<TestOutputHelperExtensionsTests>(config);
 
             logger.LogInformation("Hey, does this work? Check the test trace log.");
+
+            logger.Entries.Should().HaveCount(1);
+        }
+
+        [Theory]
+        [ClassData(typeof(LogLevelDataSet))]
+        public void BuildLoggerLogsAccordingToLogLevel(LogLevel configuredLevel, LogLevel logLevel, bool isEnabled)
+        {
+            var logger = _output.BuildLogger(configuredLevel);
+
+            logger.Should().BeAssignableTo<ILogger>();
+
+            logger.Log(logLevel, "Hey, does this work? Check the test trace log.");
+
+            if (isEnabled)
+            {
+                logger.Entries.Should().HaveCount(1);
+            }
+            else
+            {
+                logger.Entries.Should().BeEmpty();
+            }
         }
 
         [Fact]
@@ -63,6 +111,10 @@
             var logger = _output.BuildLogger();
 
             logger.Should().BeAssignableTo<ILogger>();
+
+            logger.LogInformation("Hey, does this work? Check the test trace log.");
+
+            logger.Entries.Should().HaveCount(1);
         }
 
         [Fact]
@@ -71,6 +123,8 @@
             var logger = _output.BuildLogger();
 
             logger.LogInformation("Hey, does this work? Check the test trace log.");
+
+            logger.Entries.Should().HaveCount(1);
         }
 
         [Fact]
@@ -81,6 +135,8 @@
             var logger = _output.BuildLogger(config);
 
             logger.LogInformation("Hey, does this work? Check the test trace log.");
+
+            logger.Entries.Should().HaveCount(1);
         }
     }
 }

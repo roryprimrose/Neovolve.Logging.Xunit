@@ -19,28 +19,27 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v1
+      uses: actions/checkout@v2
 
     - name: ResolveProject
       shell: pwsh
       run: Write-Host "::set-env name=PROJECT_NAME::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
-
+      
     - name: Fetch tags and master for GitVersion
       run: |
         git fetch --tags
         git branch --create-reflog master origin/master
-
     - name: GitVersion
       id: gitversion  # step id used as reference for output values
       uses: roryprimrose/rungitversion@v1
-
+      
     - name: Update project version
       uses: roryprimrose/set-vs-sdk-project-version@v1
       with:
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
-        informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}
+        informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
 
     - name: Setup dotnet v2.1
       uses: actions/setup-dotnet@v1
@@ -63,7 +62,7 @@ jobs:
       run: dotnet build -c Release --no-restore
 
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:Exclude="[*.*Tests]*" /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/" /p:MergeWith="$GITHUB_WORKSPACE/coverage/coverage.json" /p:CoverletOutputFormat="lcov%2cjson" -m:1
+      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:Exclude="[*.*Tests]*" /p:ExcludeByAttribute="Obsolete%2cGeneratedCodeAttribute%2cCompilerGeneratedAttribute" /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/" /p:MergeWith="$GITHUB_WORKSPACE/coverage/coverage.json" /p:CoverletOutputFormat="lcov%2cjson" -m:1
     
     - name: Coveralls
       uses: coverallsapp/github-action@master
