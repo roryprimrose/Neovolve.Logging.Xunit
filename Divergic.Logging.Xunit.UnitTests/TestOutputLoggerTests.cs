@@ -51,22 +51,20 @@
         }
 
         [Theory]
-        [InlineData(LogLevel.Critical)]
-        [InlineData(LogLevel.Debug)]
-        [InlineData(LogLevel.Error)]
-        [InlineData(LogLevel.Information)]
-        [InlineData(LogLevel.None)]
-        [InlineData(LogLevel.Trace)]
-        [InlineData(LogLevel.Warning)]
-        public void IsEnabledReturnsTrueTest(LogLevel logLevel)
+        [ClassData(typeof(LogLevelDataSet))]
+        public void IsEnabledReturnsBasedOnConfiguredLevelTest(LogLevel configuredLevel, LogLevel logLevel, bool isEnabled)
         {
             var name = Guid.NewGuid().ToString();
+            var config = new LoggingConfig
+            {
+                LogLevel = configuredLevel
+            };
 
-            var sut = new TestOutputLogger(name, _output);
+            var sut = new TestOutputLogger(name, _output, config);
 
             var actual = sut.IsEnabled(logLevel);
 
-            actual.Should().BeTrue();
+            actual.Should().Be(isEnabled);
         }
 
         [Fact]
@@ -168,7 +166,6 @@
         [InlineData(LogLevel.Debug)]
         [InlineData(LogLevel.Error)]
         [InlineData(LogLevel.Information)]
-        [InlineData(LogLevel.None)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]
         public void LogWritesLogLevelToOutputTest(LogLevel logLevel)

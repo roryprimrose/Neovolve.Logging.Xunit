@@ -1,5 +1,7 @@
 ﻿namespace Divergic.Logging.Xunit
 {
+    using Microsoft.Extensions.Logging;
+
     /// <summary>
     ///     The <see cref="LoggingConfig" />
     ///     class is used to configure how logging operates.
@@ -23,6 +25,11 @@
         ///     Gets or sets whether exceptions thrown while logging outside of the test execution will be ignored.
         /// </summary>
         public bool IgnoreTestBoundaryException { get; set; }
+
+        /// <summary>
+        ///     Gets or sets the minimum logging level.
+        /// </summary>
+        public LogLevel LogLevel { get; set; } = LogLevel.Trace;
 
         /// <summary>
         ///     Identifies the number of spaces to use for indenting scopes.

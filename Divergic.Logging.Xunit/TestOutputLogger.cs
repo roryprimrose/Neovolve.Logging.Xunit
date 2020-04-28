@@ -52,9 +52,14 @@
         /// <inheritdoc />
         public override bool IsEnabled(LogLevel logLevel)
         {
-            return true;
+            if (logLevel == LogLevel.None)
+            {
+                return false;
+            }
+
+            return logLevel >= _config.LogLevel;
         }
-        
+
         /// <inheritdoc />
         protected override void WriteLogEntry<TState>(
             LogLevel logLevel,
