@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Diagnostics;
     using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
@@ -87,6 +88,9 @@
             var formattedMessage = _formatter.Format(_scopes.Count, _name, logLevel, eventId, message, exception);
 
             _output.WriteLine(formattedMessage);
+            
+            // Write the message to the output window
+            Trace.WriteLine(formattedMessage);
         }
     }
 }
