@@ -3,7 +3,7 @@
     using System;
     using System.Globalization;
     using global::Xunit.Abstractions;
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     internal class ScopeWriter : IDisposable
     {
@@ -66,14 +66,14 @@
         {
             var padding = BuildPadding(_depth);
             var endScopeMarker = isScopeEnd ? "/" : string.Empty;
-            const string Format = "{0}<{1}{2}>";
+            const string format = "{0}<{1}{2}>";
 
-            return string.Format(CultureInfo.InvariantCulture, Format, padding, endScopeMarker, _scopeMessage);
+            return string.Format(CultureInfo.InvariantCulture, format, padding, endScopeMarker, _scopeMessage);
         }
 
         private void DetermineScopeStateMessage()
         {
-            const string ScopeMarker = "Scope: ";
+            const string scopeMarker = "Scope: ";
             var defaultScopeMessage = "Scope " + (_depth + 1);
 
             if (_state == null)
@@ -88,17 +88,24 @@
                 }
                 else
                 {
-                    _scopeMessage = ScopeMarker + state;
+                    _scopeMessage = scopeMarker + state;
                 }
             }
             else if (_state.GetType().IsValueType)
             {
-                _scopeMessage = ScopeMarker + _state;
+                _scopeMessage = scopeMarker + _state;
             }
             else
             {
-                // The data is probably a complex object or a structured log entry
-                _structuredStateData = JsonConvert.SerializeObject(_state, SerializerSettings.Default);
+                try
+                {
+                    // The data is probably a complex object or a structured log entry
+                    _structuredStateData = JsonSerializer.Serialize(_state, SerializerSettings.Default);
+                }
+                catch (JsonException ex)
+                {
+                    _structuredStateData = ex.ToString();
+                }
 
                 _scopeMessage = defaultScopeMessage;
             }

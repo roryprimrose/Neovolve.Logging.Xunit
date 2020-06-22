@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Generic;
     using System.Diagnostics;
-    using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
 
@@ -29,11 +28,13 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public TestOutputLogger(string name, ITestOutputHelper output, LoggingConfig config = null)
         {
-            Ensure.String.IsNotNullOrWhiteSpace(name, nameof(name));
-            Ensure.Any.IsNotNull(output, nameof(output));
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                throw new ArgumentException("No name value has been supplied", nameof(name));
+            }
 
             _name = name;
-            _output = output;
+            _output = output ?? throw new ArgumentNullException(nameof(output));
             _config = config ?? new LoggingConfig();
             _formatter = _config.Formatter ?? new DefaultFormatter(_config);
 

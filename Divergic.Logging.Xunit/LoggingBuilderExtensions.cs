@@ -1,7 +1,7 @@
 ﻿namespace Microsoft.Extensions.Logging
 {
+    using System;
     using Divergic.Logging.Xunit;
-    using EnsureThat;
     using Xunit.Abstractions;
 
     /// <summary>
@@ -18,8 +18,15 @@
         /// <param name="config">Optional logging configuration.</param>
         public static void AddXunit(this ILoggingBuilder builder, ITestOutputHelper output, LoggingConfig config = null)
         {
-            Ensure.That(builder, nameof(builder)).IsNotNull();
-            Ensure.That(output, nameof(output)).IsNotNull();
+            if (builder == null)
+            {
+                throw new ArgumentNullException(nameof(builder));
+            }
+
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
             // Object is added as a provider to the builder and cannot be disposed of here
 #pragma warning disable CA2000 // Dispose objects before losing scope

@@ -52,7 +52,8 @@
 
         [Theory]
         [ClassData(typeof(LogLevelDataSet))]
-        public void IsEnabledReturnsBasedOnConfiguredLevelTest(LogLevel configuredLevel, LogLevel logLevel, bool isEnabled)
+        public void IsEnabledReturnsBasedOnConfiguredLevelTest(LogLevel configuredLevel, LogLevel logLevel,
+            bool isEnabled)
         {
             var name = Guid.NewGuid().ToString();
             var config = new LoggingConfig
@@ -158,7 +159,8 @@
             sut.Log(logLevel, eventId, state, exception, formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
-            output.Received().WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
+            output.Received()
+                .WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
         }
 
         [Theory]
@@ -241,6 +243,48 @@
             Action action = () => new TestOutputLogger(name, null);
 
             action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void WriteLogIgnoresExceptionWhenIgnoreTestBoundaryExceptionEnabled()
+        {
+            var name = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+            var config = new LoggingConfig
+            {
+                IgnoreTestBoundaryException = true
+            };
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            output.When(x => x.WriteLine(Arg.Any<string>())).Throw<InvalidOperationException>();
+
+            var sut = new TestOutputLogger(name, output, config);
+
+            Action action = () => sut.LogInformation(message);
+
+            action.Should().NotThrow();
+        }
+
+        [Fact]
+        public void WriteLogThrowsExceptionWhenIgnoreTestBoundaryExceptionDisabled()
+        {
+            var name = Guid.NewGuid().ToString();
+            var message = Guid.NewGuid().ToString();
+            var config = new LoggingConfig
+            {
+                IgnoreTestBoundaryException = false
+            };
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            output.When(x => x.WriteLine(Arg.Any<string>())).Throw<InvalidOperationException>();
+
+            var sut = new TestOutputLogger(name, output, config);
+
+            Action action = () => sut.LogInformation(message);
+
+            action.Should().Throw<InvalidOperationException>();
         }
     }
 }

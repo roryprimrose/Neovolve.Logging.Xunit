@@ -1,6 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
-    using Newtonsoft.Json;
+    using System.Text.Json;
 
     /// <summary>
     ///     The <see cref="SerializerSettings" />
@@ -8,14 +8,12 @@
     /// </summary>
     public static class SerializerSettings
     {
-        private static JsonSerializerSettings BuildSerializerSettings()
+        private static JsonSerializerOptions BuildSerializerSettings()
         {
-            var settings = new JsonSerializerSettings
+            var settings = new JsonSerializerOptions
             {
-                NullValueHandling = NullValueHandling.Ignore,
-                DefaultValueHandling = DefaultValueHandling.Ignore,
-                Formatting = Formatting.Indented,
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                IgnoreNullValues = true,
+                WriteIndented = true
             };
 
             return settings;
@@ -24,6 +22,6 @@
         /// <summary>
         ///     Gets the default serializer settings.
         /// </summary>
-        public static JsonSerializerSettings Default { get; } = BuildSerializerSettings();
+        public static JsonSerializerOptions Default { get; } = BuildSerializerSettings();
     }
 }

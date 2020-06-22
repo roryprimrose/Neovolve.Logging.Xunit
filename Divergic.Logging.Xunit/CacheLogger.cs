@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
-    using EnsureThat;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -31,9 +30,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
         public CacheLogger(ILogger logger)
         {
-            Ensure.Any.IsNotNull(logger, nameof(logger));
-
-            _logger = logger;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
         /// <inheritdoc />
