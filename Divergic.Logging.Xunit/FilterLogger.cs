@@ -1,7 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
-    using EnsureThat;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -27,7 +26,10 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            Ensure.Any.IsNotNull(formatter, nameof(formatter));
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
 
             if (IsEnabled(logLevel) == false)
             {
@@ -57,7 +59,10 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            Ensure.That(formatter, nameof(formatter)).IsNotNull();
+            if (formatter == null)
+            {
+                throw new ArgumentNullException(nameof(formatter));
+            }
 
 #pragma warning disable CA1062 // Validate arguments of public methods
             var formattedMessage = formatter(state, exception);

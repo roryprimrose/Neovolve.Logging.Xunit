@@ -3,7 +3,6 @@
     using System;
     using System.Runtime.CompilerServices;
     using Divergic.Logging.Xunit;
-    using EnsureThat;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -69,7 +68,10 @@
             LoggingConfig config,
             [CallerMemberName] string memberName = null)
         {
-            Ensure.Any.IsNotNull(output, nameof(output));
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
             using (var factory = LogFactory.Create(output, config))
             {
@@ -119,7 +121,10 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ICacheLogger<T> BuildLoggerFor<T>(this ITestOutputHelper output, LoggingConfig config)
         {
-            Ensure.Any.IsNotNull(output, nameof(output));
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
             using (var factory = LogFactory.Create(output, config))
             {

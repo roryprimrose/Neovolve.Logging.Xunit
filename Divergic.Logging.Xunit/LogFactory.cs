@@ -1,7 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
-    using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
 
@@ -21,7 +20,10 @@
         public static ILoggerFactory Create(
             ITestOutputHelper output, LoggingConfig config = null)
         {
-            Ensure.Any.IsNotNull(output, nameof(output));
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
             var factory = new LoggerFactory();
 

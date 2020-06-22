@@ -1,7 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
-    using EnsureThat;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
 
@@ -22,9 +21,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public TestOutputLoggerProvider(ITestOutputHelper output, LoggingConfig config = null)
         {
-            Ensure.Any.IsNotNull(output, nameof(output));
-
-            _output = output;
+            _output = output ?? throw new ArgumentNullException(nameof(output));
             _config = config;
         }
 
@@ -32,7 +29,10 @@
         /// <exception cref="ArgumentException">The <paramref name="categoryName" /> is <c>null</c>, empty or whitespace.</exception>
         public ILogger CreateLogger(string categoryName)
         {
-            Ensure.String.IsNotNullOrWhiteSpace(categoryName);
+            if (string.IsNullOrWhiteSpace(categoryName))
+            {
+                throw new ArgumentException("No categoryName value has been supplied", nameof(categoryName));
+            }
 
             return new TestOutputLogger(categoryName, _output, _config);
         }

@@ -2,7 +2,6 @@
 {
     using System;
     using Divergic.Logging.Xunit;
-    using EnsureThat;
     using Xunit.Abstractions;
 
     /// <summary>
@@ -23,8 +22,15 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ILoggerFactory AddXunit(this ILoggerFactory factory, ITestOutputHelper output, LoggingConfig config = null)
         {
-            Ensure.Any.IsNotNull(factory, nameof(factory));
-            Ensure.Any.IsNotNull(output, nameof(output));
+            if (factory == null)
+            {
+                throw new ArgumentNullException(nameof(factory));
+            }
+
+            if (output == null)
+            {
+                throw new ArgumentNullException(nameof(output));
+            }
 
 #pragma warning disable CA2000 // Dispose objects before losing scope
             var provider = new TestOutputLoggerProvider(output, config);

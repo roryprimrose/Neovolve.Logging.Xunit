@@ -3,7 +3,6 @@
     using System;
     using System.Globalization;
     using System.Text;
-    using EnsureThat;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -21,9 +20,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="config"/> value is <c>null</c>.</exception>
         public DefaultFormatter(LoggingConfig config)
         {
-            Ensure.Any.IsNotNull(config, nameof(config));
-
-            _config = config;
+            _config = config ?? throw new ArgumentNullException(nameof(config));
         }
 
         /// <inheritdoc />
@@ -35,7 +32,7 @@
             string message,
             Exception exception)
         {
-            const string Format = "{0}{2} [{3}]: {4}";
+            const string format = "{0}{2} [{3}]: {4}";
             var padding = new string(' ', scopeLevel * _config.ScopePaddingSpaces);
 
             var builder = new StringBuilder();
@@ -43,7 +40,7 @@
             if (string.IsNullOrWhiteSpace(message) == false)
             {
                 builder.AppendFormat(CultureInfo.InvariantCulture,
-                    Format,
+                    format,
                     padding,
                     name,
                     logLevel,
@@ -55,7 +52,7 @@
             if (exception != null)
             {
                 builder.AppendFormat(CultureInfo.InvariantCulture,
-                    Format,
+                    format,
                     padding,
                     name,
                     logLevel,
