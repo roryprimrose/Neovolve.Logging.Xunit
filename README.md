@@ -62,7 +62,6 @@ public class MyClassTests
         _output = output;
         _logger = output.BuildLogger();
     }
-    }
 
     [Fact]
     public void DoSomethingReturnsValueTest()
