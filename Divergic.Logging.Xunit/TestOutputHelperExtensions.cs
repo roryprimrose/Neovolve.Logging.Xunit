@@ -74,7 +74,7 @@
 
             var logger = factory.CreateLogger(memberName);
 
-            return logger.WithCache();
+            return logger.WithCache(factory);
         }
 
         /// <summary>
@@ -123,7 +123,7 @@
 
             var logger = factory.CreateLogger<T>();
 
-            return logger.WithCache();
+            return logger.WithCache(factory);
         }
     }
 }

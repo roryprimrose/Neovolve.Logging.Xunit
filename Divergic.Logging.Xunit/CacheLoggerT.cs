@@ -20,8 +20,9 @@
         ///     Creates a new instance of the <see cref="CacheLogger{T}" /> class.
         /// </summary>
         /// <param name="logger">The source logger.</param>
-        public CacheLogger(ILogger logger)
-            : base(logger)
+        /// <param name="factory">The logger factory.</param>
+        public CacheLogger(ILogger logger, ILoggerFactory factory)
+            : base(logger, factory)
         {
         }
     }
