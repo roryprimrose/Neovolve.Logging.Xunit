@@ -17,10 +17,8 @@
 
             var sut = new CacheLogger();
 
-            using (var actual = sut.BeginScope(state))
-            {
-                actual.Should().NotBeNull();
-            }
+            using var actual = sut.BeginScope(state);
+            actual.Should().NotBeNull();
         }
 
         [Fact]
@@ -34,10 +32,8 @@
 
             var sut = new CacheLogger(logger);
 
-            using (var actual = sut.BeginScope(state))
-            {
-                actual.Should().NotBeNull();
-            }
+            using var actual = sut.BeginScope(state);
+            actual.Should().NotBeNull();
         }
 
         [Fact]
@@ -419,6 +415,7 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullSourceLogger()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new CacheLogger(null);
 
             action.Should().Throw<ArgumentNullException>();

@@ -18,15 +18,8 @@
         /// <param name="config">Optional logging configuration.</param>
         public static void AddXunit(this ILoggingBuilder builder, ITestOutputHelper output, LoggingConfig config = null)
         {
-            if (builder == null)
-            {
-                throw new ArgumentNullException(nameof(builder));
-            }
-
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            builder = builder ?? throw new ArgumentNullException(nameof(builder));
+            output = output ?? throw new ArgumentNullException(nameof(output));
 
             // Object is added as a provider to the builder and cannot be disposed of here
 #pragma warning disable CA2000 // Dispose objects before losing scope

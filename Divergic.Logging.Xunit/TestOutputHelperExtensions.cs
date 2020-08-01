@@ -68,17 +68,13 @@
             LoggingConfig config,
             [CallerMemberName] string memberName = null)
         {
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            output = output ?? throw new ArgumentNullException(nameof(output));
 
-            using (var factory = LogFactory.Create(output, config))
-            {
-                var logger = factory.CreateLogger(memberName);
+            using var factory = LogFactory.Create(output, config);
 
-                return logger.WithCache();
-            }
+            var logger = factory.CreateLogger(memberName);
+
+            return logger.WithCache();
         }
 
         /// <summary>
@@ -121,17 +117,13 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ICacheLogger<T> BuildLoggerFor<T>(this ITestOutputHelper output, LoggingConfig config)
         {
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            output = output ?? throw new ArgumentNullException(nameof(output));
 
-            using (var factory = LogFactory.Create(output, config))
-            {
-                var logger = factory.CreateLogger<T>();
+            using var factory = LogFactory.Create(output, config);
 
-                return logger.WithCache();
-            }
+            var logger = factory.CreateLogger<T>();
+
+            return logger.WithCache();
         }
     }
 }

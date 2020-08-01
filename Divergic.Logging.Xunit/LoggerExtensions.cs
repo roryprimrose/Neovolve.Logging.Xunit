@@ -17,10 +17,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
         public static ICacheLogger WithCache(this ILogger logger)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
+            logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             var cacheLogger = new CacheLogger(logger);
 
@@ -36,10 +33,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
         public static ICacheLogger<T> WithCache<T>(this ILogger<T> logger)
         {
-            if (logger == null)
-            {
-                throw new ArgumentNullException(nameof(logger));
-            }
+            logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
             var cacheLogger = new CacheLogger<T>(logger);
 

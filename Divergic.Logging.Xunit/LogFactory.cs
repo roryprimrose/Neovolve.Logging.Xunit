@@ -20,10 +20,7 @@
         public static ILoggerFactory Create(
             ITestOutputHelper output, LoggingConfig config = null)
         {
-            if (output == null)
-            {
-                throw new ArgumentNullException(nameof(output));
-            }
+            output = output ?? throw new ArgumentNullException(nameof(output));
 
             var factory = new LoggerFactory();
 
