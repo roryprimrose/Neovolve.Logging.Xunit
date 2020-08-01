@@ -26,7 +26,9 @@ Run the following in the NuGet command line or visit the [NuGet package page](ht
 
 # Usage
 
-The common usage of this package is to call the ```BuildLogger``` extension method on the xUnit ```ITestOutputHelper```.
+The common usage of this package is to call the `BuildLogger` extension method on the xUnit ```ITestOutputHelper```.
+
+Consider the following that that is the subject under test.
 
 ```csharp
 using System;
@@ -51,22 +53,26 @@ public class MyClass
         return Guid.NewGuid().ToString();
     }
 }
+```
 
+Call `BuildLogger` on `ITestOutputHelper` to generate the `ILogger` that we can use on the class being tested.
+
+```csharp
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly ILogger _logger;
 
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = output.BuildLogger();
     }
 
     [Fact]
     public void DoSomethingReturnsValueTest()
     {
-        var sut = new MyClass(_logger);
+        using var logger = _output.BuildLogger();
+
+        var sut = new MyClass(logger);
 
         var actual = sut.DoSomething();
 
@@ -86,27 +92,21 @@ Information [0]: Hey, we did something
 Support for ```ILogger<T>``` is there using the ```BuildLoggerFor<T>``` extension method.
 
 ```csharp
-using System;
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Xunit;
-using Xunit.Abstractions;
-
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly ILogger<MyClass> _logger;
 
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = output.BuildLoggerFor<MyClass>();
     }
 
     [Fact]
     public void DoSomethingReturnsValueTest()
     {
-        var sut = new MyClass(_logger);
+        using var logger = output.BuildLoggerFor<MyClass>();
+
+        var sut = new MyClass(logger);
 
         var actual = sut.DoSomething();
 
@@ -116,6 +116,37 @@ public class MyClassTests
     }
 }
 ```
+
+The above examples inline the declaration of the logger with `using var` to ensure that the logger instance is disposed. You can avoid having to build the logger instance in each unit test method by deriving the test class from either `LoggingTestsBase` or `LoggingTestsBase<T>`. These classes provide the implementation to build the logger and dispose it. They also provide access to the `ITestOutputHelper` instance for writing directly to the test output.
+
+```csharp
+public class MyClassTests : LoggingTestsBase
+{
+    private readonly ITestOutputHelper _output;
+
+    public MyClassTests(ITestOutputHelper output) : base(output, LogLevel.Information)
+    {
+    }
+
+    [Fact]
+    public void DoSomethingReturnsValueTest()
+    {
+        var sut = new MyClass(Logger);
+
+        var actual = sut.DoSomething();
+
+        // The xUnit test output should now include the log message from
+        MyClass.DoSomething()
+
+        Output.WriteLine("This works too");
+
+        actual.Should().NotBeNullOrWhiteSpace();
+    }
+}
+```
+
+The `BuildLogger` and `BuildLoggerFor<T>` extension methods along with the `LoggingTestsBase` and `LoggingTestsBase<T>` abstract classes also provide overloads to set the logging level or define 
+[logging configuration][7].
 
 [Back to top][0]
 
@@ -398,6 +429,8 @@ Logging configuration can be controled by using a ```LoggingConfig``` class as i
 **Formatter**: Defines a custom formatting for rendering log messages to xUnit test output.
 
 **IgnoreTestBoundaryException**: Defines whether exceptions thrown while logging outside of the test execution will be ignored.
+
+**LogLevel**: Defines the minimum log level that will be written to the test output. This helps to limit the noise in test output when set to higher levels. Defaults to `LogLevel.Trace`.
 
 **ScopePaddingSpaces**: Defines the number of spaces to use for indenting scopes.
 
