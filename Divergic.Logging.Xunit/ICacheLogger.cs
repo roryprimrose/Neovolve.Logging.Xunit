@@ -1,5 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
+    using System;
     using System.Collections.Generic;
     using Microsoft.Extensions.Logging;
 
@@ -7,7 +8,7 @@
     ///     The <see cref="ICacheLogger" />
     ///     interface defines the members for recording and accessing log entries.
     /// </summary>
-    public interface ICacheLogger : ILogger
+    public interface ICacheLogger : ILogger, IDisposable
     {
         /// <summary>
         ///     Gets the number of cache entries recorded.

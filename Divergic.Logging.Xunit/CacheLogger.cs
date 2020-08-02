@@ -12,6 +12,7 @@
     /// </summary>
     public class CacheLogger : FilterLogger, ICacheLogger
     {
+        private readonly ILoggerFactory _factory;
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
         private readonly ILogger _logger;
         private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
@@ -27,10 +28,13 @@
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
         /// </summary>
         /// <param name="logger">The source logger.</param>
+        /// <param name="factory">The logger factory.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
-        public CacheLogger(ILogger logger)
+        /// <exception cref="ArgumentNullException">The <paramref name="factory" /> is <c>null</c>.</exception>
+        public CacheLogger(ILogger logger, ILoggerFactory factory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
         }
 
         /// <inheritdoc />
@@ -46,6 +50,13 @@
         }
 
         /// <inheritdoc />
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        /// <inheritdoc />
         public override bool IsEnabled(LogLevel logLevel)
         {
             if (_logger == null)
@@ -54,6 +65,18 @@
             }
 
             return _logger.IsEnabled(logLevel);
+        }
+
+        /// <summary>
+        ///     Disposes resources held by this instance.
+        /// </summary>
+        /// <param name="disposing"><c>true</c> if disposing unmanaged types; otherwise <c>false</c>.</param>
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _factory?.Dispose();
+            }
         }
 
         /// <inheritdoc />

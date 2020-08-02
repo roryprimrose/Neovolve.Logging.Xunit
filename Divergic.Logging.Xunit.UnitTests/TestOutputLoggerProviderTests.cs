@@ -13,11 +13,9 @@
         {
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new TestOutputLoggerProvider(output))
-            {
-                sut.Dispose();
-                sut.Dispose();
-            }
+            using var sut = new TestOutputLoggerProvider(output);
+            sut.Dispose();
+            sut.Dispose();
         }
 
         [Theory]
@@ -28,12 +26,12 @@
         {
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new TestOutputLoggerProvider(output))
-            {
-                Action action = () => sut.CreateLogger(categoryName);
+            using var sut = new TestOutputLoggerProvider(output);
+            
+            // ReSharper disable once AccessToDisposedClosure
+            Action action = () => sut.CreateLogger(categoryName);
 
-                action.Should().Throw<ArgumentException>();
-            }
+            action.Should().Throw<ArgumentException>();
         }
 
         [Fact]
@@ -44,12 +42,10 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new TestOutputLoggerProvider(output, config))
-            {
-                var actual = sut.CreateLogger(categoryName);
+            using var sut = new TestOutputLoggerProvider(output, config);
+            var actual = sut.CreateLogger(categoryName);
 
-                actual.Should().BeOfType<TestOutputLogger>();
-            }
+            actual.Should().BeOfType<TestOutputLogger>();
         }
 
         [Fact]
@@ -59,17 +55,16 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            using (var sut = new TestOutputLoggerProvider(output))
-            {
-                var actual = sut.CreateLogger(categoryName);
+            using var sut = new TestOutputLoggerProvider(output);
+            var actual = sut.CreateLogger(categoryName);
 
-                actual.Should().BeOfType<TestOutputLogger>();
-            }
+            actual.Should().BeOfType<TestOutputLogger>();
         }
 
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullOutput()
         {
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new TestOutputLoggerProvider(null);
 
             action.Should().Throw<ArgumentNullException>();

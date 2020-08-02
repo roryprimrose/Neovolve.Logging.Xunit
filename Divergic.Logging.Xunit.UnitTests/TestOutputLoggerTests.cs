@@ -230,6 +230,7 @@
         {
             var output = Substitute.For<ITestOutputHelper>();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new TestOutputLogger(name, output);
 
             action.Should().Throw<ArgumentException>();
@@ -240,6 +241,7 @@
         {
             var name = Guid.NewGuid().ToString();
 
+            // ReSharper disable once ObjectCreationAsStatement
             Action action = () => new TestOutputLogger(name, null);
 
             action.Should().Throw<ArgumentNullException>();

@@ -26,10 +26,7 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            if (formatter == null)
-            {
-                throw new ArgumentNullException(nameof(formatter));
-            }
+            formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
 
             if (IsEnabled(logLevel) == false)
             {
@@ -59,10 +56,7 @@
             Exception exception,
             Func<TState, Exception, string> formatter)
         {
-            if (formatter == null)
-            {
-                throw new ArgumentNullException(nameof(formatter));
-            }
+            formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
 
 #pragma warning disable CA1062 // Validate arguments of public methods
             var formattedMessage = formatter(state, exception);
