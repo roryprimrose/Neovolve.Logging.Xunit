@@ -15,6 +15,7 @@ Divergic.Logging.Xunit is a NuGet package that returns an ```ILogger``` or ```IL
 [Configured LoggerFactory][5]  
 [Existing Loggers][6]  
 [Configuration][7]  
+[Supporters][8]  
 
 # Installation
 
@@ -28,14 +29,11 @@ Run the following in the NuGet command line or visit the [NuGet package page](ht
 
 The common usage of this package is to call the `BuildLogger` extension method on the xUnit ```ITestOutputHelper```.
 
-Consider the following that that is the subject under test.
+Consider the following example of a class to test.
 
 ```csharp
 using System;
-using FluentAssertions;
 using Microsoft.Extensions.Logging;
-using Xunit;
-using Xunit.Abstractions;
 
 public class MyClass
 {
@@ -55,9 +53,15 @@ public class MyClass
 }
 ```
 
-Call `BuildLogger` on `ITestOutputHelper` to generate the `ILogger` that we can use on the class being tested.
+Call `BuildLogger` on `ITestOutputHelper` to generate the `ILogger` that we can inject into the class being tested.
 
 ```csharp
+using System;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Xunit;
+using Xunit.Abstractions;
+
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
@@ -68,7 +72,7 @@ public class MyClassTests
     }
 
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         using var logger = _output.BuildLogger();
 
@@ -102,7 +106,7 @@ public class MyClassTests
     }
 
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         using var logger = output.BuildLoggerFor<MyClass>();
 
@@ -117,7 +121,9 @@ public class MyClassTests
 }
 ```
 
-The above examples inline the declaration of the logger with `using var` to ensure that the logger instance is disposed. You can avoid having to build the logger instance in each unit test method by deriving the test class from either `LoggingTestsBase` or `LoggingTestsBase<T>`. These classes provide the implementation to build the logger and dispose it. They also provide access to the `ITestOutputHelper` instance for writing directly to the test output.
+The above examples inline the declaration of the logger with `using var` to ensure that the logger instance (and internal `ILoggerFactory`) is disposed. 
+
+You can avoid having to build the logger instance in each unit test method by deriving the test class from either `LoggingTestsBase` or `LoggingTestsBase<T>`. These classes provide the implementation to build the logger and dispose it. They also provide access to the `ITestOutputHelper` instance for writing directly to the test output.
 
 ```csharp
 public class MyClassTests : LoggingTestsBase
@@ -129,7 +135,7 @@ public class MyClassTests : LoggingTestsBase
     }
 
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var sut = new MyClass(Logger);
 
@@ -152,7 +158,7 @@ The `BuildLogger` and `BuildLoggerFor<T>` extension methods along with the `Logg
 
 # Output Formatting
 
-The default formatting to the xUnit test results may not be what you want. You can now define your ```ILogFormatter``` class to control how the output looks.
+The default formatting to the xUnit test results may not be what you want. You can define your ```ILogFormatter``` class to control how the output looks.
 
 ```csharp
 public class MyFormatter : ILogFormatter
@@ -230,7 +236,7 @@ public class MyClassTests
     }
 
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var sut = new MyClass(_logger);
 
@@ -271,7 +277,7 @@ public class MyClassTests
     }
 
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var sut = new MyClass(_logger);
 
@@ -296,7 +302,7 @@ using Xunit;
 public class MyClassTests
 {
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var logger = new CacheLogger();
 
@@ -339,7 +345,7 @@ public class MyClassTests
     }
 
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var sut = new MyClass(_logger);
 
@@ -369,7 +375,7 @@ using Xunit;
 public class MyClassTests
 {
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var logger = Substitute.For<ILogger>();
 
@@ -401,7 +407,7 @@ using Xunit;
 public class MyClassTests
 {
     [Fact]
-    public void DoSomethingReturnsValueTest()
+    public void DoSomethingReturnsValue()
     {
         var logger = Substitute.For<ILogger<MyClass>>();
 
@@ -436,6 +442,12 @@ Logging configuration can be controled by using a ```LoggingConfig``` class as i
 
 [Back to top][0]
 
+## Supporters
+
+This project is supported by [JetBrains](https://www.jetbrains.com/?from=ModelBuilder)
+
+[Back to top][0]
+
 [0]: #introduction
 [1]: #installation
 [2]: #usage
@@ -444,3 +456,4 @@ Logging configuration can be controled by using a ```LoggingConfig``` class as i
 [5]: #configured-loggerfactory
 [6]: #existing-loggers
 [7]: #configuration
+[8]: #supporters
