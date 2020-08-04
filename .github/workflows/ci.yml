@@ -13,8 +13,8 @@ on:
       - '**'
 env:
   targetRepository: 'roryprimrose/Divergic.Logging.Xunit'
-  isBaseRepository: github.repository == targetRepository
-  publishPackage: isBaseRepository && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+  isBaseRepository: github.repository == 'roryprimrose/Divergic.Logging.Xunit'
+  publishPackage: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
 
 jobs:
   build:
@@ -80,7 +80,7 @@ jobs:
         targetdir: "Report"
         reporttypes: "HtmlInline;Cobertura"
         tag: '${{ github.run_number }}_${{ github.run_id }}'
-      if: env.isBaseRepository       # Don't run on forks
+      if: github.event_name == 'pull_request' && github.repository == 'roryprimrose/Divergic.Logging.Xunit'       # Don't run on forks
 
     - name: Publish Coverage Report
       uses: 5monkeys/cobertura-action@master
@@ -88,7 +88,7 @@ jobs:
         path: Report/Cobertura.xml
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         minimum_coverage: 75
-      if: env.isBaseRepository       # Don't run on forks
+      if: github.event_name == 'pull_request' && github.repository == 'roryprimrose/Divergic.Logging.Xunit'       # Don't run on forks
 
     - name: Pack
       run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
@@ -99,29 +99,69 @@ jobs:
         name: packages
         path: staging
     
+    - shell: bash
+      run: |
+        {{ steps.gitversion.outputs.NuGetVersionV2 }} > version.txt
+    - name: Upload version
+      uses: actions/upload-artifact@v2
+      with:
+        name: version
+        path: version.txt
+
+  publish:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.repository == 'roryprimrose/Divergic.Logging.Xunit'       # Don't run on forks
+
+    steps:
+    - name: Download packages
+        uses: actions/download-artifact@v2
+        with:
+          name: packages
+      
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
-      if: env.isBaseRepository       # Don't run on forks
 
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.projectName }}.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
-      if: env.isBaseRepository       # Don't run on forks
+      run: mono $NUGET_EXE push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
+      
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if:  github.event_name == 'pull_request' && github.repository == 'roryprimrose/Divergic.Logging.Xunit' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+
+    steps:
+    
+    - name: Download packages
+        uses: actions/download-artifact@v2
+        with:
+          name: packages
+      
+    - name: Download version
+      uses: actions/download-artifact@v2
+      with:
+        name: version
+
+    - shell: bash
+      run: |
+        value=`cat version.txt`
+        echo ::set-env name=NuGetVersionV2::$(echo $value)
+    
+    - name: Setup nuget
+      uses: olegtarasov/download-nuget@v1
 
 #    - name: Add GitHub registry to NuGet config
 #      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/divergic/index.json -UserName roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
-#      if: env.publishPackage
 # 
 #    - name: Push generated package to GitHub registry
-#      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.projectName }}.*.symbols.nupkg -Source "GPR"
-#      if: env.publishPackage
+#      run: mono $NUGET_EXE push *.*.symbols.nupkg -Source "GPR"
 
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.projectName }}.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
-      if: env.publishPackage
+      run: mono $NUGET_EXE push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
     - name: Create Release
       id: create_release
@@ -129,11 +169,10 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
-        release_name: Release ${{ steps.gitversion.outputs.NuGetVersionV2 }}
+        tag_name: ${{ env.NuGetVersionV2 }}
+        release_name: Release ${{ env.NuGetVersionV2 }}
         draft: false
-        prerelease: ${{ contains(steps.gitversion.outputs.NuGetVersionV2, 'beta') }}
-      if: env.publishPackage
+        prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
     
     - name: Upload Release Asset for package
       id: upload-release-asset-package
@@ -142,10 +181,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: staging/${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
-      if: env.publishPackage
     
     - name: Upload Release Asset for symbol package
       id: upload-release-asset-symbolpackage
@@ -154,7 +192,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: staging/${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_content_type: application/zip
-      if: env.publishPackage
