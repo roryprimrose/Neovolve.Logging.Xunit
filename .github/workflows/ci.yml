@@ -11,6 +11,10 @@ on:
   pull_request:
     branches:
       - '**'
+env:
+  targetRepository: 'roryprimrose/Divergic.Logging.Xunit'
+  isBaseRepository: github.repository == targetRepository
+  publishPackage: isBaseRepository && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
 
 jobs:
   build:
@@ -23,7 +27,7 @@ jobs:
 
     - name: ResolveProject
       shell: pwsh
-      run: Write-Host "::set-env name=PROJECT_NAME::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
+      run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
       
     - name: Fetch all history for all tags and branches
       run: git fetch --prune --unshallow
@@ -64,18 +68,30 @@ jobs:
 
     - name: Build
       run: dotnet build -c Release --no-restore
-
+    
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:Exclude="[*.*Tests]*" /p:ExcludeByAttribute="Obsolete%2cGeneratedCodeAttribute%2cCompilerGeneratedAttribute" /p:CoverletOutput="$GITHUB_WORKSPACE/coverage/" /p:MergeWith="$GITHUB_WORKSPACE/coverage/coverage.json" /p:CoverletOutputFormat="lcov%2cjson" -m:1
-    
-    - name: Coveralls
-      uses: coverallsapp/github-action@master
+      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+    - name: Generate Coverage Report
+      # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.5.8
       with:
-        github-token: ${{ secrets.github_token }}
-        path-to-lcov: /home/runner/work/${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}/coverage/coverage.info
-    
+        reports: "**/coverage.cobertura.xml"
+        targetdir: "Report"
+        reporttypes: "HtmlInline;Cobertura"
+        tag: '${{ github.run_number }}_${{ github.run_id }}'
+      if: env.isBaseRepository       # Don't run on forks
+
+    - name: Publish Coverage Report
+      uses: 5monkeys/cobertura-action@master
+      with:
+        path: Report/Cobertura.xml
+        repo_token: ${{ secrets.GITHUB_TOKEN }}
+        minimum_coverage: 75
+      if: env.isBaseRepository       # Don't run on forks
+
     - name: Pack
-      run: dotnet pack "./${{ env.PROJECT_NAME }}/${{ env.PROJECT_NAME }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@master
@@ -85,27 +101,27 @@ jobs:
     
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
-      if: github.event_name == 'pull_request' || github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      if: env.isBaseRepository       # Don't run on forks
 
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
-      if: github.event_name == 'pull_request'
+      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.projectName }}.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
+      if: env.isBaseRepository       # Don't run on forks
 
 #    - name: Add GitHub registry to NuGet config
 #      run: mono $NUGET_EXE sources add -name "GPR" -Source https://nuget.pkg.github.com/divergic/index.json -UserName roryprimrose -Password ${{ secrets.GITHUB_TOKEN }}
-#      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+#      if: env.publishPackage
 # 
 #    - name: Push generated package to GitHub registry
-#      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg -Source "GPR"
-#      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+#      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.projectName }}.*.symbols.nupkg -Source "GPR"
+#      if: env.publishPackage
 
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.PROJECT_NAME }}.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
-      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      run: mono $NUGET_EXE push $GITHUB_WORKSPACE/staging/${{ env.projectName }}.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      if: env.publishPackage
 
     - name: Create Release
       id: create_release
@@ -117,7 +133,7 @@ jobs:
         release_name: Release ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         draft: false
         prerelease: ${{ contains(steps.gitversion.outputs.NuGetVersionV2, 'beta') }}
-      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      if: env.publishPackage
     
     - name: Upload Release Asset for package
       id: upload-release-asset-package
@@ -126,10 +142,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: staging/${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
+        asset_path: staging/${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
-      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      if: env.publishPackage
     
     - name: Upload Release Asset for symbol package
       id: upload-release-asset-symbolpackage
@@ -138,7 +154,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: staging/${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.PROJECT_NAME }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
+        asset_path: staging/${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.${{ steps.gitversion.outputs.NuGetVersionV2 }}.symbols.nupkg
         asset_content_type: application/zip
-      if: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
+      if: env.publishPackage
