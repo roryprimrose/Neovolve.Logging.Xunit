@@ -115,9 +115,9 @@ jobs:
 
     steps:
     - name: Download packages
-        uses: actions/download-artifact@v2
-        with:
-          name: packages
+      uses: actions/download-artifact@v2
+      with:
+        name: packages
       
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
@@ -135,9 +135,9 @@ jobs:
     steps:
     
     - name: Download packages
-        uses: actions/download-artifact@v2
-        with:
-          name: packages
+      uses: actions/download-artifact@v2
+      with:
+        name: packages
       
     - name: Download version
       uses: actions/download-artifact@v2
