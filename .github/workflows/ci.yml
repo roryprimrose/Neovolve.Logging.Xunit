@@ -127,10 +127,14 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if:  github.repository == 'roryprimrose/Divergic.Logging.Xunit' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    if: github.repository == 'roryprimrose/Divergic.Logging.Xunit' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
     
+    - name: ResolveProject
+      shell: pwsh
+      run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
+      
     - name: Download packages
       uses: actions/download-artifact@v2
       with:
@@ -141,7 +145,8 @@ jobs:
       with:
         name: version
 
-    - shell: bash
+    - name: Read version
+      shell: bash
       run: |
         value=`cat version.txt`
         echo ::set-env name=NuGetVersionV2::$(echo $value)
