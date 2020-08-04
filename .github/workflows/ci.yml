@@ -127,7 +127,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if:  github.event_name == 'pull_request' && github.repository == 'roryprimrose/Divergic.Logging.Xunit' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    if:  github.repository == 'roryprimrose/Divergic.Logging.Xunit' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
     
