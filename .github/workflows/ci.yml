@@ -100,8 +100,9 @@ jobs:
         path: staging
     
     - shell: bash
+      name: Store version
       run: |
-        {{ steps.gitversion.outputs.NuGetVersionV2 }} > version.txt
+        '{{ steps.gitversion.outputs.NuGetVersionV2 }}' > version.txt
     - name: Upload version
       uses: actions/upload-artifact@v2
       with:
