@@ -11,10 +11,6 @@ on:
   pull_request:
     branches:
       - '**'
-env:
-  targetRepository: 'roryprimrose/Divergic.Logging.Xunit'
-  isBaseRepository: github.repository == 'roryprimrose/Divergic.Logging.Xunit'
-  publishPackage: github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')
 
 jobs:
   build:
