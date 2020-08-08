@@ -26,7 +26,7 @@ jobs:
       run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
       
     - name: Fetch all history for all tags and branches
-      run: git fetch --prune --unshallow
+      run: git fetch --prune --unshallow --tags
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.4
@@ -36,6 +36,9 @@ jobs:
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
       uses: gittools/actions/gitversion/execute@v0.9.4
+      with:
+        useConfigFile: true
+        configFilePath: ./GitVersion.yml
 
     - name: Update project version
       uses: roryprimrose/set-vs-sdk-project-version@v1
@@ -70,13 +73,13 @@ jobs:
 
     - name: Generate Coverage Report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.5.8
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.6.4
       with:
-        reports: "**/coverage.*.cobertura.xml"
+        reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
         reporttypes: "HtmlInline;Cobertura"
         tag: '${{ github.run_number }}_${{ github.run_id }}'
-      if: github.event_name == 'pull_request' && github.repository == 'roryprimrose/Divergic.Logging.Xunit'       # Don't run on forks
+      if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
 
     - name: Publish Coverage Report
       uses: 5monkeys/cobertura-action@master
@@ -84,7 +87,7 @@ jobs:
         path: Report/Cobertura.xml
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         minimum_coverage: 75
-      if: github.event_name == 'pull_request' && github.repository == 'roryprimrose/Divergic.Logging.Xunit'       # Don't run on forks
+      if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
 
     - name: Pack
       run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
@@ -108,7 +111,7 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
-    if: github.repository == 'roryprimrose/Divergic.Logging.Xunit'       # Don't run on forks
+    if: github.repository_owner == 'roryprimrose'       # Don't run on forks
 
     steps:
     - name: Download packages
@@ -122,12 +125,12 @@ jobs:
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: mono $NUGET_EXE push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/divergic/api/v2/package
+      run: mono $NUGET_EXE push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.repository == 'roryprimrose/Divergic.Logging.Xunit' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    if: github.repository_owner == 'roryprimrose' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
 
     steps:
     
