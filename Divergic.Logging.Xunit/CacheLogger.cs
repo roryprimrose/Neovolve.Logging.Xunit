@@ -28,10 +28,13 @@
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
         /// </summary>
         /// <param name="logger">The source logger.</param>
-        /// <param name="factory">The logger factory.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentNullException">The <paramref name="factory" /> is <c>null</c>.</exception>
-        public CacheLogger(ILogger logger, ILoggerFactory factory)
+        public CacheLogger(ILogger logger)
+        {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+        }
+
+        internal CacheLogger(ILogger logger, ILoggerFactory factory)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _factory = factory ?? throw new ArgumentNullException(nameof(factory));

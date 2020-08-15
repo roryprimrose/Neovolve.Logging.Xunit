@@ -1,5 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
+    using System;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -20,8 +21,13 @@
         ///     Creates a new instance of the <see cref="CacheLogger{T}" /> class.
         /// </summary>
         /// <param name="logger">The source logger.</param>
-        /// <param name="factory">The logger factory.</param>
-        public CacheLogger(ILogger logger, ILoggerFactory factory)
+        /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
+        public CacheLogger(ILogger logger)
+            : base(logger)
+        {
+        }
+
+        internal CacheLogger(ILogger logger, ILoggerFactory factory)
             : base(logger, factory)
         {
         }

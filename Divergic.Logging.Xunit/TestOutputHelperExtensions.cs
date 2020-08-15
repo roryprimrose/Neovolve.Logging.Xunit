@@ -70,7 +70,8 @@
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 
-            using var factory = LogFactory.Create(output, config);
+            // Do not use the using keyword here because the factory will be disposed before the logger is finished with it
+            var factory = LogFactory.Create(output, config);
 
             var logger = factory.CreateLogger(memberName);
 
@@ -119,7 +120,8 @@
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 
-            using var factory = LogFactory.Create(output, config);
+            // Do not use the using keyword here because the factory will be disposed before the logger is finished with it
+            var factory = LogFactory.Create(output, config);
 
             var logger = factory.CreateLogger<T>();
 
