@@ -225,18 +225,17 @@ using Xunit.Abstractions;
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly ILogger _logger;
 
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = _output.BuildLogger(MyConfig.Current);
     }
 
     [Fact]
     public void DoSomethingReturnsValue()
     {
-        var sut = new MyClass(_logger);
+        using var logger = _output.BuildLogger(MyConfig.Current);
+        var sut = new MyClass(logger);
 
         var actual = sut.DoSomething();
 
@@ -266,18 +265,17 @@ using Xunit.Abstractions;
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly ICacheLogger _logger;
 
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = output.BuildLogger();
     }
 
     [Fact]
     public void DoSomethingReturnsValue()
     {
-        var sut = new MyClass(_logger);
+        using var logger = _output.BuildLogger();
+        var sut = new MyClass(logger);
 
         sut.DoSomething();
         
@@ -304,7 +302,7 @@ public class MyClassTests
     {
         var logger = new CacheLogger();
 
-        var sut = new MyClass(_logger);
+        var sut = new MyClass(logger);
 
         sut.DoSomething();
         
