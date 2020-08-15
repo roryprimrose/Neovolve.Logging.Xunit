@@ -14,10 +14,10 @@
         private readonly LoggingConfig _config;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultFormatter"/> class.
+        ///     Initializes a new instance of the <see cref="DefaultFormatter" /> class.
         /// </summary>
         /// <param name="config">The logging configuration.</param>
-        /// <exception cref="ArgumentNullException">The <paramref name="config"/> value is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">The <paramref name="config" /> value is <c>null</c>.</exception>
         public DefaultFormatter(LoggingConfig config)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -30,7 +30,7 @@
             LogLevel logLevel,
             EventId eventId,
             string message,
-            Exception exception)
+            Exception? exception)
         {
             const string format = "{0}{2} [{3}]: {4}";
             var padding = new string(' ', scopeLevel * _config.ScopePaddingSpaces);

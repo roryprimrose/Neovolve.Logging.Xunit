@@ -27,11 +27,10 @@
             var state = Guid.NewGuid().ToString();
 
             var logger = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
-            logger.BeginScope(state).Returns((IDisposable) null);
+            logger.BeginScope(state).Returns((IDisposable) null!);
 
-            using var sut = new CacheLogger(logger, factory);
+            using var sut = new CacheLogger(logger);
 
             using var actual = sut.BeginScope(state);
             actual.Should().NotBeNull();
@@ -43,12 +42,11 @@
             var state = Guid.NewGuid().ToString();
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
             var scope = Substitute.For<IDisposable>();
 
             source.BeginScope(state).Returns(scope);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             var actual = sut.BeginScope(state);
 
@@ -95,14 +93,13 @@
         [InlineData(false)]
         public void IsEnabledReturnsSourceLoggerIsEnabledTest(bool expected)
         {
-            var level = LogLevel.Error;
+            const LogLevel level = LogLevel.Error;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(level).Returns(expected);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             var actual = sut.IsEnabled(level);
 
@@ -112,7 +109,7 @@
         [Fact]
         public void IsEnabledReturnsTrueWithNullSourceLogger()
         {
-            var level = LogLevel.Error;
+            const LogLevel level = LogLevel.Error;
 
             using var sut = new CacheLogger();
 
@@ -134,7 +131,7 @@
                 sut.LogInformation(message);
             }
 
-            sut.Last.Scopes.Should().HaveCount(1);
+            sut.Last!.Scopes.Should().HaveCount(1);
             sut.Last.Scopes.Single().Should().Be(state);
         }
 
@@ -144,33 +141,32 @@
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
 
-            var factory = Substitute.For<ILoggerFactory>();
             var logger = Substitute.For<ILogger>();
 
             logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
-            logger.BeginScope(state).Returns((IDisposable) null);
+            logger.BeginScope(state).Returns((IDisposable) null!);
 
-            using var sut = new CacheLogger(logger, factory);
+            using var sut = new CacheLogger(logger);
 
             using (sut.BeginScope(state))
             {
                 sut.LogInformation(message);
             }
 
-            sut.Last.Scopes.Should().HaveCount(1);
+            sut.Last!.Scopes.Should().HaveCount(1);
             sut.Last.Scopes.Single().Should().Be(state);
         }
 
         [Fact]
         public void LastReturnsLastLogEntry()
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var otherState = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             using var sut = new CacheLogger();
 
@@ -179,25 +175,25 @@
 
             sut.Count.Should().Be(2);
             sut.Entries.Should().HaveCount(2);
-            sut.Last.Message.Should().Be(data);
+            sut.Last!.Message.Should().Be(data);
             sut.Last.Should().Be(sut.Entries.Last());
         }
 
         [Fact]
         public void LastReturnsLogEntry()
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             using var sut = new CacheLogger();
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
-            sut.Last.EventId.Should().Be(eventId);
+            sut.Last!.EventId.Should().Be(eventId);
             sut.Last.Exception.Should().Be(exception);
             sut.Last.LogLevel.Should().Be(logLevel);
             sut.Last.State.Should().Be(state);
@@ -218,7 +214,7 @@
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             using var sut = new CacheLogger();
 
@@ -241,18 +237,17 @@
         [InlineData("  ")]
         public void LogDoesLogsRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNotNullTest(string data)
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -264,18 +259,17 @@
         [Fact]
         public void LogDoesLogsRecordWhenFormatterReturnsMessageAndExceptionIsNull()
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, null, Formatter);
 
@@ -290,17 +284,16 @@
         [InlineData("  ")]
         public void LogDoesNotLogRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNullTest(string data)
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, null, Formatter);
 
@@ -317,19 +310,18 @@
         [Fact]
         public void LogDoesNotLogRecordWhenIsEnabledReturnsFalse()
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(false);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -387,7 +379,7 @@
                 sut.LogDebug(Guid.NewGuid().ToString());
             }
 
-            sut.Last.Scopes.Single().Should().Be(state);
+            sut.Last!.Scopes.Single().Should().Be(state);
         }
 
         [Fact]
@@ -395,35 +387,30 @@
         {
             var exception = new TimeoutException();
 
-            var factory = Substitute.For<ILoggerFactory>();
-
             using var sut = new CacheLogger();
 
-            using var cacheLogger = sut.WithCache(factory);
+            sut.LogInformation(exception, null);
 
-            cacheLogger.LogInformation(exception, null);
-
-            cacheLogger.Count.Should().Be(1);
-            cacheLogger.Last.Exception.Should().Be(exception);
-            cacheLogger.Last.Message.Should().BeNull();
+            sut.Count.Should().Be(1);
+            sut.Last!.Exception.Should().Be(exception);
+            sut.Last.Message.Should().BeEmpty();
         }
 
         [Fact]
         public void LogSendsLogToLogger()
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception error) => data;
+            string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -433,29 +420,17 @@
         [Fact]
         public void LogThrowsExceptionWithNullFormatter()
         {
-            var logLevel = LogLevel.Error;
+            const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var logger = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
-            using var sut = new CacheLogger(logger, factory);
+            using var sut = new CacheLogger(logger);
 
             // ReSharper disable once AccessToDisposedClosure
-            Action action = () => sut.Log(logLevel, eventId, state, exception, null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void ThrowsExceptionWhenCreatedWithNullFactory()
-        {
-            var logger = Substitute.For<ILogger>();
-
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new CacheLogger(logger, null);
+            Action action = () => sut.Log(logLevel, eventId, state, exception, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -463,10 +438,8 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullSourceLogger()
         {
-            var factory = Substitute.For<ILoggerFactory>();
-
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new CacheLogger(null, factory);
+            Action action = () => new CacheLogger(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -14,7 +14,7 @@
 
             var sut = new IsEnabledWrapper();
 
-            Action action = () => sut.RunFormatMessage(state, null, null);
+            Action action = () => sut.RunFormatMessage(state, null, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -32,11 +32,11 @@
         }
 
         [Fact]
-        public void LogDoesNotWriteWhenExceptionAndMessageAreNull()
+        public void LogDoesNotWriteWhenExceptionAndMessageAreEmpty()
         {
             var sut = new IsEnabledWrapper();
 
-            sut.Log<string>(LogLevel.Critical, default, null, null, (data, ex) => null);
+            sut.Log(LogLevel.Critical, default, string.Empty, null, (data, ex) => string.Empty);
 
             sut.LogWritten.Should().BeFalse();
         }
@@ -49,7 +49,7 @@
 
             var sut = new IsEnabledWrapper();
 
-            Action action = () => sut.Log(LogLevel.Critical, default, state, exception, null);
+            Action action = () => sut.Log(LogLevel.Critical, default, state, exception, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -62,7 +62,7 @@
 
             var sut = new IsEnabledWrapper();
 
-            sut.Log(LogLevel.Critical, default, state, exception, (data, ex) => null);
+            sut.Log(LogLevel.Critical, default, state, exception, (data, ex) => string.Empty);
 
             sut.LogWritten.Should().BeTrue();
         }
@@ -120,7 +120,7 @@
 
             public override IDisposable BeginScope<TState>(TState state)
             {
-                return null;
+                return NoopDisposable.Instance;
             }
 
             public override bool IsEnabled(LogLevel logLevel)
@@ -128,26 +128,26 @@
                 return _isEnabled;
             }
 
-            public string RunFormatMessage<T>(T state, Exception exception, Func<T, Exception, string> formatter)
+            public string RunFormatMessage<T>(T state, Exception? exception, Func<T, Exception?, string> formatter)
             {
                 return FormatMessage(state, exception, formatter);
             }
 
             protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state,
-                string message, Exception exception,
-                Func<TState, Exception, string> formatter)
+                string message, Exception? exception,
+                Func<TState, Exception?, string> formatter)
             {
                 LogWritten = true;
             }
 
-            public bool LogWritten { get; set; }
+            public bool LogWritten { get; private set; }
         }
 
         private class MessageWrapper : FilterLogger
         {
             public override IDisposable BeginScope<TState>(TState state)
             {
-                return null;
+                return NoopDisposable.Instance;
             }
 
             public override bool IsEnabled(LogLevel logLevel)
@@ -156,13 +156,13 @@
             }
 
             protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state,
-                string message, Exception exception,
-                Func<TState, Exception, string> formatter)
+                string message, Exception? exception,
+                Func<TState, Exception?, string> formatter)
             {
                 Message = message;
             }
 
-            public string Message { get; set; }
+            public string Message { get; private set; } = string.Empty;
         }
 
         private class ShouldFilterWrapper : FilterLogger
@@ -176,7 +176,7 @@
 
             public override IDisposable BeginScope<TState>(TState state)
             {
-                return null;
+                return NoopDisposable.Instance;
             }
 
             public override bool IsEnabled(LogLevel logLevel)
@@ -184,24 +184,19 @@
                 return true;
             }
 
-            public string RunFormatMessage<T>(T state, Exception exception, Func<T, Exception, string> formatter)
-            {
-                return FormatMessage(state, exception, formatter);
-            }
-
-            protected override bool ShouldFilter(string message, Exception exception)
+            protected override bool ShouldFilter(string message, Exception? exception)
             {
                 return _shouldFilter;
             }
 
             protected override void WriteLogEntry<TState>(LogLevel logLevel, EventId eventId, TState state,
-                string message, Exception exception,
-                Func<TState, Exception, string> formatter)
+                string message, Exception? exception,
+                Func<TState, Exception?, string> formatter)
             {
                 LogWritten = true;
             }
 
-            public bool LogWritten { get; set; }
+            public bool LogWritten { get; private set; }
         }
     }
 }

@@ -23,8 +23,8 @@
             LogLevel logLevel,
             EventId eventId,
             TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter)
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
             formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
 
@@ -53,8 +53,8 @@
         /// <returns>The log message.</returns>
         protected string FormatMessage<TState>(
             TState state,
-            Exception exception,
-            Func<TState, Exception, string> formatter)
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
             formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
 
@@ -65,7 +65,7 @@
             // Clear the message if it looks like a null formatted message
             if (formattedMessage == _nullFormatted)
             {
-                return null;
+                return string.Empty;
             }
 
             return formattedMessage;
@@ -77,7 +77,7 @@
         /// <param name="message">The message to log.</param>
         /// <param name="exception">The exception to log.</param>
         /// <returns><c>true</c> if the log should not be written; otherwise <c>false</c>.</returns>
-        protected virtual bool ShouldFilter(string message, Exception exception)
+        protected virtual bool ShouldFilter(string message, Exception? exception)
         {
             if (exception != null)
             {
@@ -107,7 +107,7 @@
             EventId eventId,
             TState state,
             string message,
-            Exception exception,
-            Func<TState, Exception, string> formatter);
+            Exception? exception,
+            Func<TState, Exception?, string> formatter);
     }
 }

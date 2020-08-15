@@ -13,29 +13,16 @@
         public void WithCacheReturnsCacheLogger()
         {
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
-            var sut = source.WithCache(factory);
+            var sut = source.WithCache();
 
             sut.Should().BeAssignableTo<ICacheLogger>();
         }
 
         [Fact]
-        public void WithCacheThrowsExceptionWithNullFactory()
-        {
-            var source = Substitute.For<ILogger>();
-
-            Action action = () => source.WithCache(null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
         public void WithCacheThrowsExceptionWithNullLogger()
         {
-            var factory = Substitute.For<ILoggerFactory>();
-
-            Action action = () => LoggerExtensions.WithCache(null, factory);
+            Action action = () => LoggerExtensions.WithCache(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -43,31 +30,17 @@
         [Fact]
         public void WithCacheTReturnsCacheLogger()
         {
-            var factory = Substitute.For<ILoggerFactory>();
-
             var source = Substitute.For<ILogger<LoggerExtensionsTests>>();
 
-            var sut = source.WithCache(factory);
+            var sut = source.WithCache();
 
             sut.Should().BeAssignableTo<ICacheLogger<LoggerExtensionsTests>>();
         }
 
         [Fact]
-        public void WithCacheTThrowsExceptionWithNullFactory()
-        {
-            var source = Substitute.For<ILogger<LoggerExtensionsTests>>();
-
-            Action action = () => source.WithCache(null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
         public void WithCacheTThrowsExceptionWithNullLogger()
         {
-            var factory = Substitute.For<ILoggerFactory>();
-
-            Action action = () => LoggerExtensions.WithCache<LoggerExtensionsTests>(null, factory);
+            Action action = () => LoggerExtensions.WithCache<LoggerExtensionsTests>(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

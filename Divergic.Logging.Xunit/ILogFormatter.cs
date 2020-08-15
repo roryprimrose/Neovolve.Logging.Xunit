@@ -25,6 +25,6 @@
             LogLevel logLevel,
             EventId eventId,
             string message,
-            Exception exception);
+            Exception? exception);
     }
 }

@@ -1,5 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
+    using System;
     using FluentAssertions;
     using global::Xunit;
 
@@ -27,6 +28,16 @@
             var sut = new LoggingConfig();
 
             sut.ScopePaddingSpaces.Should().NotBe(0);
+        }
+
+        [Fact]
+        public void FormatterThrowsExceptionWhenAssignedNull()
+        {
+            var sut = new LoggingConfig();
+
+            Action action = () => sut.Formatter = null!;
+
+            action.Should().Throw<ArgumentNullException>();
         }
     }
 }

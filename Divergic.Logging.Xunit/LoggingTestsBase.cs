@@ -26,7 +26,7 @@
         /// </summary>
         /// <param name="output">The xUnit test output.</param>
         /// <param name="config">Optional logging configuration.</param>
-        protected LoggingTestsBase(ITestOutputHelper output, LoggingConfig config = null)
+        protected LoggingTestsBase(ITestOutputHelper output, LoggingConfig? config = null)
         {
             Output = output ?? throw new ArgumentNullException(nameof(output));
             Logger = output.BuildLogger(config);
@@ -47,7 +47,7 @@
         {
             if (disposing)
             {
-                Logger?.Dispose();
+                Logger.Dispose();
             }
         }
 

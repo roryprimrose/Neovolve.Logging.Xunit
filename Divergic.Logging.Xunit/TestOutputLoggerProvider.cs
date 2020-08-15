@@ -10,8 +10,8 @@
     /// </summary>
     public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
+        private readonly LoggingConfig? _config;
         private readonly ITestOutputHelper _output;
-        private readonly LoggingConfig _config;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="TestOutputLoggerProvider" /> class.
@@ -19,7 +19,7 @@
         /// <param name="output">The test output helper.</param>
         /// <param name="config">Optional logging configuration.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public TestOutputLoggerProvider(ITestOutputHelper output, LoggingConfig config = null)
+        public TestOutputLoggerProvider(ITestOutputHelper output, LoggingConfig? config = null)
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));
             _config = config;

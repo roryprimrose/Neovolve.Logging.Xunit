@@ -2,9 +2,7 @@
 
 Divergic.Logging.Xunit is a NuGet package that returns an ```ILogger``` or ```ILogger<T>``` that wraps around the ```ITestOutputHelper``` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
 
-[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Divergic/Divergic.Logging.Xunit/blob/master/LICENSE)&nbsp;&nbsp;&nbsp;[![Nuget](https://img.shields.io/nuget/v/Divergic.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Divergic.Logging.Xunit.svg)](https://www.nuget.org/packages/Divergic.Logging.Xunit)
-
-[![Actions Status](https://github.com/Divergic/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/Divergic/Divergic.Logging.Xunit/actions)&nbsp;[![Coverage Status](https://coveralls.io/repos/github/Divergic/Divergic.Logging.Xunit/badge.svg?branch=master)](https://coveralls.io/github/Divergic/Divergic.Logging.Xunit?branch=master)
+[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/Divergic/Divergic.Logging.Xunit/blob/master/LICENSE)&nbsp;[![Nuget](https://img.shields.io/nuget/v/Divergic.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Divergic.Logging.Xunit.svg)](https://www.nuget.org/packages/Divergic.Logging.Xunit)&nbsp;[![Actions Status](https://github.com/Divergic/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/Divergic/Divergic.Logging.Xunit/actions)
 
 ## Contents
 
@@ -227,18 +225,17 @@ using Xunit.Abstractions;
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly ILogger _logger;
 
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = _output.BuildLogger(MyConfig.Current);
     }
 
     [Fact]
     public void DoSomethingReturnsValue()
     {
-        var sut = new MyClass(_logger);
+        using var logger = _output.BuildLogger(MyConfig.Current);
+        var sut = new MyClass(logger);
 
         var actual = sut.DoSomething();
 
@@ -268,18 +265,17 @@ using Xunit.Abstractions;
 public class MyClassTests
 {
     private readonly ITestOutputHelper _output;
-    private readonly ICacheLogger _logger;
 
     public MyClassTests(ITestOutputHelper output)
     {
         _output = output;
-        _logger = output.BuildLogger();
     }
 
     [Fact]
     public void DoSomethingReturnsValue()
     {
-        var sut = new MyClass(_logger);
+        using var logger = _output.BuildLogger();
+        var sut = new MyClass(logger);
 
         sut.DoSomething();
         
@@ -306,7 +302,7 @@ public class MyClassTests
     {
         var logger = new CacheLogger();
 
-        var sut = new MyClass(_logger);
+        var sut = new MyClass(logger);
 
         sut.DoSomething();
         

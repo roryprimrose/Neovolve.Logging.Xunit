@@ -22,10 +22,10 @@
         public LogEntry(
             LogLevel logLevel,
             EventId eventId,
-            object state,
-            Exception exception,
+            object? state,
+            Exception? exception,
             string message,
-            IReadOnlyCollection<object> scopes)
+            IReadOnlyCollection<object?> scopes)
         {
             LogLevel = logLevel;
             EventId = eventId;
@@ -43,7 +43,7 @@
         /// <summary>
         ///     Gets the exception of the entry.
         /// </summary>
-        public Exception Exception { get; }
+        public Exception? Exception { get; }
 
         /// <summary>
         ///     Gets the log level of the entry.
@@ -58,11 +58,11 @@
         /// <summary>
         ///     Gets the scopes active at the time of the call to <see cref="ILogger.Log{TState}" />
         /// </summary>
-        public IReadOnlyCollection<object> Scopes { get; }
+        public IReadOnlyCollection<object?> Scopes { get; }
 
         /// <summary>
         ///     Gets the state of the entry.
         /// </summary>
-        public object State { get; }
+        public object? State { get; }
     }
 }

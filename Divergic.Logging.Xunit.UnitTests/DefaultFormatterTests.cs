@@ -194,7 +194,7 @@
         public void ThrowsExceptionWhenCreatedWithNullConfig()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new DefaultFormatter(null);
+            Action action = () => new DefaultFormatter(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

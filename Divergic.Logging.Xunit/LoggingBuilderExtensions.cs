@@ -16,7 +16,8 @@
         /// <param name="builder">The logging builder.</param>
         /// <param name="output">The xUnit test output helper.</param>
         /// <param name="config">Optional logging configuration.</param>
-        public static void AddXunit(this ILoggingBuilder builder, ITestOutputHelper output, LoggingConfig config = null)
+        public static void AddXunit(this ILoggingBuilder builder, ITestOutputHelper output,
+            LoggingConfig? config = null)
         {
             builder = builder ?? throw new ArgumentNullException(nameof(builder));
             output = output ?? throw new ArgumentNullException(nameof(output));

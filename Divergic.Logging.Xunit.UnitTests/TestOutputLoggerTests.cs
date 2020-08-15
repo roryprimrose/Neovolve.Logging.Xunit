@@ -88,41 +88,13 @@
         }
 
         [Fact]
-        public void LogUsesDefaultFormatterWhenConfigFormatterIsNull()
-        {
-            var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
-            var state = Guid.NewGuid().ToString();
-            var message = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => message;
-            var name = Guid.NewGuid().ToString();
-            var config = new LoggingConfig {Formatter = null};
-
-            var expected = string.Format(CultureInfo.InvariantCulture,
-                "{0}{1} [{2}]: {3}" + Environment.NewLine,
-                string.Empty,
-                logLevel,
-                eventId.Id,
-                message);
-
-            var output = Substitute.For<ITestOutputHelper>();
-
-            var sut = new TestOutputLogger(name, output, config);
-
-            sut.Log(logLevel, eventId, state, null, formatter);
-
-            output.Received(1).WriteLine(Arg.Any<string>());
-            output.Received().WriteLine(expected);
-        }
-
-        [Fact]
         public void LogUsesDefaultFormatterWhenConfigIsNull()
         {
             var logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => message;
+            string Formatter(string logState, Exception? error) => message;
             var name = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
                 "{0}{1} [{2}]: {3}" + Environment.NewLine,
@@ -135,7 +107,7 @@
 
             var sut = new TestOutputLogger(name, output);
 
-            sut.Log(logLevel, eventId, state, null, formatter);
+            sut.Log(logLevel, eventId, state, null, Formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
             output.Received().WriteLine(expected);
@@ -149,14 +121,14 @@
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            Func<string, Exception, string> formatter = (logState, error) => message;
+            string Formatter(string logState, Exception? error) => message;
             var name = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
 
             var sut = new TestOutputLogger(name, output);
 
-            sut.Log(logLevel, eventId, state, exception, formatter);
+            sut.Log(logLevel, eventId, state, exception, Formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
             output.Received()
@@ -175,7 +147,7 @@
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
-            Func<string, Exception, string> formatter = (logState, error) => message;
+            string Formatter(string logState, Exception? error) => message;
             var name = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
                 "{0}{1} [{2}]: {3}" + Environment.NewLine,
@@ -188,7 +160,7 @@
 
             var sut = new TestOutputLogger(name, output);
 
-            sut.Log(logLevel, eventId, state, null, formatter);
+            sut.Log(logLevel, eventId, state, null, Formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
             output.Received().WriteLine(expected);
@@ -204,7 +176,7 @@
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var name = Guid.NewGuid().ToString();
             var expected = Guid.NewGuid().ToString();
-            Func<string, Exception, string> lineFormatter = (logState, error) => message;
+            string Formatter(string logState, Exception? error) => message;
 
             var formatter = Substitute.For<ILogFormatter>();
             var config = new LoggingConfig {Formatter = formatter};
@@ -215,7 +187,7 @@
 
             var sut = new TestOutputLogger(name, output, config);
 
-            sut.Log(logLevel, eventId, state, exception, lineFormatter);
+            sut.Log(logLevel, eventId, state, exception, Formatter);
 
             formatter.Received().Format(0, name, logLevel, eventId, message, exception);
 
@@ -242,7 +214,7 @@
             var name = Guid.NewGuid().ToString();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TestOutputLogger(name, null);
+            Action action = () => new TestOutputLogger(name, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

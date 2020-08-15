@@ -27,7 +27,7 @@
             var output = Substitute.For<ITestOutputHelper>();
 
             using var sut = new TestOutputLoggerProvider(output);
-            
+
             // ReSharper disable once AccessToDisposedClosure
             Action action = () => sut.CreateLogger(categoryName);
 
@@ -65,7 +65,7 @@
         public void ThrowsExceptionWhenCreatedWithNullOutput()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TestOutputLoggerProvider(null);
+            Action action = () => new TestOutputLoggerProvider(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

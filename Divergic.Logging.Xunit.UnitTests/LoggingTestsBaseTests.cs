@@ -60,7 +60,7 @@
         public void ThrowsExceptionWhenCreatedWithNullOutput()
         {
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new Wrapper(null);
+            Action action = () => new Wrapper(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -75,7 +75,7 @@
             {
             }
 
-            public Wrapper(ITestOutputHelper output, LoggingConfig config = null) : base(output, config)
+            public Wrapper(ITestOutputHelper output, LoggingConfig? config = null) : base(output, config)
             {
             }
 

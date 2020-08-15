@@ -2,8 +2,8 @@
 {
     using System;
     using System.Globalization;
-    using global::Xunit.Abstractions;
     using System.Text.Json;
+    using global::Xunit.Abstractions;
 
     internal class ScopeWriter : IDisposable
     {
@@ -11,13 +11,13 @@
         private readonly int _depth;
         private readonly Action _onScopeEnd;
         private readonly ITestOutputHelper _outputHelper;
-        private readonly object _state;
-        private string _scopeMessage;
-        private string _structuredStateData;
+        private readonly object? _state;
+        private string _scopeMessage = string.Empty;
+        private string _structuredStateData = string.Empty;
 
         public ScopeWriter(
             ITestOutputHelper outputHelper,
-            object state,
+            object? state,
             int depth,
             Action onScopeEnd,
             LoggingConfig config)
@@ -54,7 +54,7 @@
 
             _outputHelper.WriteLine(scopeStartMessage);
 
-            _onScopeEnd?.Invoke();
+            _onScopeEnd.Invoke();
         }
 
         private string BuildPadding(int depth)

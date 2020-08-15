@@ -12,9 +12,9 @@
     /// </summary>
     public class CacheLogger : FilterLogger, ICacheLogger
     {
-        private readonly ILoggerFactory _factory;
+        private readonly ILoggerFactory? _factory;
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
-        private readonly ILogger _logger;
+        private readonly ILogger? _logger;
         private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
 
         /// <summary>
@@ -28,13 +28,16 @@
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
         /// </summary>
         /// <param name="logger">The source logger.</param>
-        /// <param name="factory">The logger factory.</param>
         /// <exception cref="ArgumentNullException">The <paramref name="logger" /> is <c>null</c>.</exception>
-        /// <exception cref="ArgumentNullException">The <paramref name="factory" /> is <c>null</c>.</exception>
-        public CacheLogger(ILogger logger, ILoggerFactory factory)
+        public CacheLogger(ILogger logger)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _factory = factory ?? throw new ArgumentNullException(nameof(factory));
+        }
+
+        internal CacheLogger(ILogger logger, ILoggerFactory factory)
+        {
+            _logger = logger;
+            _factory = factory;
         }
 
         /// <inheritdoc />
@@ -85,8 +88,8 @@
             EventId eventId,
             TState state,
             string message,
-            Exception exception,
-            Func<TState, Exception, string> formatter)
+            Exception? exception,
+            Func<TState, Exception?, string> formatter)
         {
             var entry = new LogEntry(logLevel,
                 eventId,
@@ -113,7 +116,7 @@
         /// <summary>
         ///     Gets the last entry logged.
         /// </summary>
-        public LogEntry Last
+        public LogEntry? Last
         {
             get
             {

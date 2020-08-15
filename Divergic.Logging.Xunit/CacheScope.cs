@@ -4,10 +4,10 @@
 
     internal class CacheScope : IDisposable
     {
-        private Action _onScopeEnd;
-        private IDisposable _scope;
+        private readonly Action _onScopeEnd;
+        private readonly IDisposable _scope;
 
-        public CacheScope(IDisposable scope, object state, Action onScopeEnd)
+        public CacheScope(IDisposable scope, object? state, Action onScopeEnd)
         {
             _scope = scope;
             State = state;
@@ -17,14 +17,12 @@
         public void Dispose()
         {
             // Pass on the end scope request
-            _scope?.Dispose();
-            _scope = null;
+            _scope.Dispose();
 
             // Clean up the scope in the cache logger
-            _onScopeEnd?.Invoke();
-            _onScopeEnd = null;
+            _onScopeEnd.Invoke();
         }
 
-        public object State { get; }
+        public object? State { get; }
     }
 }
