@@ -30,23 +30,10 @@
         }
 
         [Fact]
-        public void ThrowsExceptionWithNullFactory()
-        {
-            var source = Substitute.For<ILogger<CacheLoggerTTests>>();
-
-            // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new CacheLogger<CacheLoggerTTests>(source, null);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
         public void ThrowsExceptionWithNullSourceLogger()
         {
-            var factory = Substitute.For<ILoggerFactory>();
-
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new CacheLogger<CacheLoggerTTests>(null, factory);
+            Action action = () => new CacheLogger<CacheLoggerTTests>(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

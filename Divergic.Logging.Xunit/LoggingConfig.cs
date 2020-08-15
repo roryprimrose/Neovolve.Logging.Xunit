@@ -1,5 +1,6 @@
 ﻿namespace Divergic.Logging.Xunit
 {
+    using System;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -8,18 +9,25 @@
     /// </summary>
     public class LoggingConfig
     {
+        private ILogFormatter _formatter;
+
         /// <summary>
         ///     Initializes a new instance of the <see cref="LoggingConfig" /> class.
         /// </summary>
         public LoggingConfig()
         {
-            Formatter = new DefaultFormatter(this);
+            _formatter = new DefaultFormatter(this);
         }
 
         /// <summary>
         ///     Gets or sets a custom formatting for rendering log messages to xUnit test output.
         /// </summary>
-        public ILogFormatter Formatter { get; set; }
+        public ILogFormatter Formatter
+        {
+            get => _formatter;
+            set =>
+                _formatter = value ?? throw new ArgumentNullException(nameof(value));
+        }
 
         /// <summary>
         ///     Gets or sets whether exceptions thrown while logging outside of the test execution will be ignored.

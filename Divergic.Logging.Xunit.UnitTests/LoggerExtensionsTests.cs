@@ -25,7 +25,7 @@
         {
             var source = Substitute.For<ILogger>();
 
-            Action action = () => source.WithCache(null);
+            Action action = () => source.WithCache(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -35,7 +35,7 @@
         {
             var factory = Substitute.For<ILoggerFactory>();
 
-            Action action = () => LoggerExtensions.WithCache(null, factory);
+            Action action = () => LoggerExtensions.WithCache(null!, factory);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -57,7 +57,7 @@
         {
             var source = Substitute.For<ILogger<LoggerExtensionsTests>>();
 
-            Action action = () => source.WithCache(null);
+            Action action = () => source.WithCache(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -67,7 +67,7 @@
         {
             var factory = Substitute.For<ILoggerFactory>();
 
-            Action action = () => LoggerExtensions.WithCache<LoggerExtensionsTests>(null, factory);
+            Action action = () => LoggerExtensions.WithCache<LoggerExtensionsTests>(null!, factory);
 
             action.Should().Throw<ArgumentNullException>();
         }

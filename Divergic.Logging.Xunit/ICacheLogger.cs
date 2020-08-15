@@ -23,6 +23,6 @@
         /// <summary>
         ///     Gets the latest cache entry.
         /// </summary>
-        LogEntry Last { get; }
+        LogEntry? Last { get; }
     }
 }

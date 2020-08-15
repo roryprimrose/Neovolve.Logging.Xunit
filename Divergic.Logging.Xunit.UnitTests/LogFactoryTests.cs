@@ -29,7 +29,7 @@
         {
             Action action = () =>
             {
-                using (LogFactory.Create(null))
+                using (LogFactory.Create(null!))
                 {
                 }
             };

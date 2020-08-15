@@ -23,7 +23,7 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ICacheLogger BuildLogger(
             this ITestOutputHelper output,
-            [CallerMemberName] string memberName = null)
+            [CallerMemberName] string memberName = "")
         {
             return BuildLogger(output, null, memberName);
         }
@@ -42,7 +42,7 @@
         public static ICacheLogger BuildLogger(
             this ITestOutputHelper output,
             LogLevel logLevel,
-            [CallerMemberName] string memberName = null)
+            [CallerMemberName] string memberName = "")
         {
             var config = new LoggingConfig
             {
@@ -65,8 +65,8 @@
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ICacheLogger BuildLogger(
             this ITestOutputHelper output,
-            LoggingConfig config,
-            [CallerMemberName] string memberName = null)
+            LoggingConfig? config,
+            [CallerMemberName] string memberName = "")
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 
@@ -116,7 +116,7 @@
         /// <param name="config">Optional logging configuration.</param>
         /// <returns>The logger.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public static ICacheLogger<T> BuildLoggerFor<T>(this ITestOutputHelper output, LoggingConfig config)
+        public static ICacheLogger<T> BuildLoggerFor<T>(this ITestOutputHelper output, LoggingConfig? config)
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 

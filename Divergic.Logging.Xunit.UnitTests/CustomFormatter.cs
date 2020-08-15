@@ -12,7 +12,7 @@ namespace Divergic.Logging.Xunit.UnitTests
             LogLevel logLevel,
             EventId eventId,
             string message,
-            Exception exception)
+            Exception? exception)
         {
             var sb = new StringBuilder();
 

@@ -119,15 +119,19 @@
             Logger.LogInformation("After first scope");
         }
 
+        // ReSharper disable once ClassNeverInstantiated.Local
+        // ReSharper disable UnusedMember.Local
         private class Person
         {
-            public DateTime DateOfBirth { get; set; }
+            public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
 
-            public string Email { get; set; }
+            public string Email { get; set; } = string.Empty;
 
-            public string FirstName { get; set; }
+            public string FirstName { get; set; } = string.Empty;
 
-            public string LastName { get; set; }
+            public string LastName { get; set; } = string.Empty;
         }
+
+        // ReSharper restore UnusedMember.Local
     }
 }

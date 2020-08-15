@@ -60,7 +60,7 @@
         [Fact]
         public void BuildLoggerForTThrowsExceptionWithNullOutputT()
         {
-            Action action = () => TestOutputHelperExtensions.BuildLoggerFor<TestOutputHelperExtensionsTests>(null);
+            Action action = () => TestOutputHelperExtensions.BuildLoggerFor<TestOutputHelperExtensionsTests>(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -100,7 +100,7 @@
         [Fact]
         public void BuildLoggerThrowsExceptionWithNullOutputT()
         {
-            Action action = () => TestOutputHelperExtensions.BuildLogger(null);
+            Action action = () => TestOutputHelperExtensions.BuildLogger(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

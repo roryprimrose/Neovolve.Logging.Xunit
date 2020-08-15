@@ -52,7 +52,7 @@
         [Fact]
         public void AddXunitThrowsExceptionWithNullBuilder()
         {
-            ILoggingBuilder builder = null;
+            ILoggingBuilder builder = null!;
 
             Action action = () => builder.AddXunit(_output);
 
@@ -64,7 +64,7 @@
         {
             var builder = Substitute.For<ILoggingBuilder>();
 
-            Action action = () => builder.AddXunit(null);
+            Action action = () => builder.AddXunit(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

@@ -5,6 +5,7 @@
     <IsPackable>False</IsPackable>
     <CodeAnalysisRuleSet>..\Solution Items\UnitTest.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@
     <TargetFrameworks>netstandard2.0;netstandard2.1</TargetFrameworks>
     <CodeAnalysisRuleSet>..\Solution Items\Application.ruleset</CodeAnalysisRuleSet>
     <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
 
     <Title>ILogger for xUnit</Title>
     <Authors>rprimrose</Authors>

@@ -18,7 +18,7 @@
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ILoggerFactory Create(
-            ITestOutputHelper output, LoggingConfig config = null)
+            ITestOutputHelper output, LoggingConfig? config = null)
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 
