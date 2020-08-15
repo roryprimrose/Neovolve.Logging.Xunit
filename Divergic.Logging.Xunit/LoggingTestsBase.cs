@@ -47,7 +47,7 @@
         {
             if (disposing)
             {
-                Logger?.Dispose();
+                Logger.Dispose();
             }
         }
 

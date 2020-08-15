@@ -70,7 +70,7 @@
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 
-            // Do not use the using keyword here because the factory will be disposed before the logger is finished with it
+            // Do not use the using keyword here because the factory will be disposed before the cache logger is finished with it
             var factory = LogFactory.Create(output, config);
 
             var logger = factory.CreateLogger(memberName);
@@ -120,7 +120,7 @@
         {
             output = output ?? throw new ArgumentNullException(nameof(output));
 
-            // Do not use the using keyword here because the factory will be disposed before the logger is finished with it
+            // Do not use the using keyword here because the factory will be disposed before the cache logger is finished with it
             var factory = LogFactory.Create(output, config);
 
             var logger = factory.CreateLogger<T>();

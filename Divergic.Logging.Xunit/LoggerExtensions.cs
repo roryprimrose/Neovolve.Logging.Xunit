@@ -42,9 +42,6 @@
 
         internal static ICacheLogger WithCache(this ILogger logger, ILoggerFactory factory)
         {
-            logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            factory = factory ?? throw new ArgumentNullException(nameof(factory));
-
             var cacheLogger = new CacheLogger(logger, factory);
 
             return cacheLogger;
@@ -52,9 +49,6 @@
 
         internal static ICacheLogger<T> WithCache<T>(this ILogger<T> logger, ILoggerFactory factory)
         {
-            logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            factory = factory ?? throw new ArgumentNullException(nameof(factory));
-
             var cacheLogger = new CacheLogger<T>(logger, factory);
 
             return cacheLogger;

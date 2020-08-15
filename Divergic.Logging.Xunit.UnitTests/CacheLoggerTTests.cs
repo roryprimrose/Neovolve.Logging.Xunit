@@ -21,6 +21,17 @@
         public void CanCreateWithSourceLogger()
         {
             var source = Substitute.For<ILogger<CacheLoggerTTests>>();
+
+            // ReSharper disable once ObjectCreationAsStatement
+            Action action = () => new CacheLogger<CacheLoggerTTests>(source);
+
+            action.Should().NotThrow();
+        }
+
+        [Fact]
+        public void CanCreateWithSourceLoggerAndFactory()
+        {
+            var source = Substitute.For<ILogger<CacheLoggerTTests>>();
             var factory = Substitute.For<ILoggerFactory>();
 
             // ReSharper disable once ObjectCreationAsStatement

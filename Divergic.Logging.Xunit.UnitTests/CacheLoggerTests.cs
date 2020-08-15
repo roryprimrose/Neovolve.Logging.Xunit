@@ -27,11 +27,10 @@
             var state = Guid.NewGuid().ToString();
 
             var logger = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             logger.BeginScope(state).Returns((IDisposable) null!);
 
-            using var sut = new CacheLogger(logger, factory);
+            using var sut = new CacheLogger(logger);
 
             using var actual = sut.BeginScope(state);
             actual.Should().NotBeNull();
@@ -43,12 +42,11 @@
             var state = Guid.NewGuid().ToString();
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
             var scope = Substitute.For<IDisposable>();
 
             source.BeginScope(state).Returns(scope);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             var actual = sut.BeginScope(state);
 
@@ -98,11 +96,10 @@
             const LogLevel level = LogLevel.Error;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(level).Returns(expected);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             var actual = sut.IsEnabled(level);
 
@@ -144,13 +141,12 @@
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
 
-            var factory = Substitute.For<ILoggerFactory>();
             var logger = Substitute.For<ILogger>();
 
             logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
             logger.BeginScope(state).Returns((IDisposable) null!);
 
-            using var sut = new CacheLogger(logger, factory);
+            using var sut = new CacheLogger(logger);
 
             using (sut.BeginScope(state))
             {
@@ -248,11 +244,10 @@
             string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -271,11 +266,10 @@
             string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, null, Formatter);
 
@@ -296,11 +290,10 @@
             string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, null, Formatter);
 
@@ -325,11 +318,10 @@
             string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(false);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -395,17 +387,13 @@
         {
             var exception = new TimeoutException();
 
-            var factory = Substitute.For<ILoggerFactory>();
-
             using var sut = new CacheLogger();
 
-            using var cacheLogger = sut.WithCache(factory);
+            sut.LogInformation(exception, null);
 
-            cacheLogger.LogInformation(exception, null);
-
-            cacheLogger.Count.Should().Be(1);
-            cacheLogger.Last!.Exception.Should().Be(exception);
-            cacheLogger.Last.Message.Should().BeEmpty();
+            sut.Count.Should().Be(1);
+            sut.Last!.Exception.Should().Be(exception);
+            sut.Last.Message.Should().BeEmpty();
         }
 
         [Fact]
@@ -419,11 +407,10 @@
             string Formatter(string message, Exception? error) => data;
 
             var source = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
             source.IsEnabled(logLevel).Returns(true);
 
-            using var sut = new CacheLogger(source, factory);
+            using var sut = new CacheLogger(source);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -439,9 +426,8 @@
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
             var logger = Substitute.For<ILogger>();
-            var factory = Substitute.For<ILoggerFactory>();
 
-            using var sut = new CacheLogger(logger, factory);
+            using var sut = new CacheLogger(logger);
 
             // ReSharper disable once AccessToDisposedClosure
             Action action = () => sut.Log(logLevel, eventId, state, exception, null!);
