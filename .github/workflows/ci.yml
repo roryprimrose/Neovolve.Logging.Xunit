@@ -49,12 +49,12 @@ jobs:
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
 
     - name: Setup dotnet v2.1
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.7.0
       with:
         dotnet-version: '2.1.300' # SDK Version to use.
 
     - name: Setup dotnet v3.1
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.7.0
       with:
         dotnet-version: '3.1.100' # SDK Version to use.
 
