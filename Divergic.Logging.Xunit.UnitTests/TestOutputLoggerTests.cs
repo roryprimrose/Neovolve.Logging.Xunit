@@ -97,7 +97,7 @@
             string Formatter(string logState, Exception? error) => message;
             var name = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
-                "{0}{1} [{2}]: {3}" + Environment.NewLine,
+                "{0}{1} [{2}]: {3}",
                 string.Empty,
                 logLevel,
                 eventId.Id,
@@ -150,7 +150,7 @@
             string Formatter(string logState, Exception? error) => message;
             var name = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
-                "{0}{1} [{2}]: {3}" + Environment.NewLine,
+                "{0}{1} [{2}]: {3}",
                 string.Empty,
                 logLevel,
                 eventId.Id,

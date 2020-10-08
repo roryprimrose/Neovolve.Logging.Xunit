@@ -18,6 +18,54 @@
         }
 
         [Theory]
+        [InlineData(null, false)]
+        [InlineData("", false)]
+        [InlineData("  ", false)]
+        [InlineData("stuff", false)]
+        [InlineData(null, true)]
+        [InlineData("", true)]
+        [InlineData("  ", true)]
+        [InlineData("stuff", true)]
+        public void FormatIncludesNewLineBetweenMessageAndException(string message, bool exceptionExists)
+        {
+            var config = new LoggingConfig();
+            var scopeLevel = 1;
+            var name = Guid.NewGuid().ToString();
+            var logLevel = LogLevel.Information;
+            var eventId = Model.Create<EventId>();
+            Exception? exception = exceptionExists
+                ? new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
+                : null;
+
+            var sut = new DefaultFormatter(config);
+
+            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+
+            actual.Should().NotStartWith(Environment.NewLine);
+            actual.Should().NotEndWith(Environment.NewLine);
+
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                if (exception != null)
+                {
+                    actual.Should().Be($"   Information [{eventId.Id}]: {exception}");
+                }
+                else
+                {
+                    actual.Should().BeEmpty();
+                }
+            }
+            else if (exception != null)
+            {
+                actual.Should().Be($"   Information [{eventId.Id}]: stuff{Environment.NewLine}   Information [{eventId.Id}]: {exception}");
+            }
+            else
+            {
+                actual.Should().Be($"   Information [{eventId.Id}]: stuff");
+            }
+        }
+
+        [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
