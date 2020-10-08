@@ -126,8 +126,6 @@ You can avoid having to build the logger instance in each unit test method by de
 ```csharp
 public class MyClassTests : LoggingTestsBase
 {
-    private readonly ITestOutputHelper _output;
-
     public MyClassTests(ITestOutputHelper output) : base(output, LogLevel.Information)
     {
     }
@@ -279,9 +277,9 @@ public class MyClassTests
 
         sut.DoSomething();
         
-        _logger.Count.Should().Be(1);
-        _logger.Entries.Should().HaveCount(1);
-        _logger.Last.Message.Should().Be("Hey, we did something");
+        logger.Count.Should().Be(1);
+        logger.Entries.Should().HaveCount(1);
+        logger.Last.Message.Should().Be("Hey, we did something");
     }
 }
 ```
