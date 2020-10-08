@@ -1,8 +1,9 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
-    using System.Collections.Generic;
+    using System.Collections.Concurrent;
     using System.Diagnostics;
+    using System.Threading;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
 
@@ -12,10 +13,12 @@
     /// </summary>
     public class TestOutputLogger : FilterLogger
     {
+        private static readonly AsyncLocal<ConcurrentStack<ScopeWriter>> _scopes =
+            new AsyncLocal<ConcurrentStack<ScopeWriter>>();
+
         private readonly LoggingConfig _config;
         private readonly string _name;
         private readonly ITestOutputHelper _output;
-        private readonly Stack<ScopeWriter> _scopes;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
@@ -35,16 +38,14 @@
             _name = name;
             _output = output ?? throw new ArgumentNullException(nameof(output));
             _config = config ?? new LoggingConfig();
-
-            _scopes = new Stack<ScopeWriter>();
         }
 
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            var scopeWriter = new ScopeWriter(_output, state, _scopes.Count, () => _scopes.Pop(), _config);
+            var scopeWriter = new ScopeWriter(_output, state, Scopes.Count, () => Scopes.TryPop(out _), _config);
 
-            _scopes.Push(scopeWriter);
+            Scopes.Push(scopeWriter);
 
             return scopeWriter;
         }
@@ -84,13 +85,29 @@
 
         private void WriteLog(LogLevel logLevel, EventId eventId, string message, Exception? exception)
         {
-            var formattedMessage =
-                _config.Formatter.Format(_scopes.Count, _name, logLevel, eventId, message, exception);
+            var formattedMessage = _config.Formatter.Format(Scopes.Count, _name, logLevel, eventId, message, exception);
 
             _output.WriteLine(formattedMessage);
 
             // Write the message to the output window
             Trace.WriteLine(formattedMessage);
+        }
+
+        private static ConcurrentStack<ScopeWriter> Scopes
+        {
+            get
+            {
+                var scopes = _scopes.Value;
+
+                if (scopes == null)
+                {
+                    scopes = new ConcurrentStack<ScopeWriter>();
+
+                    _scopes.Value = scopes;
+                }
+
+                return scopes;
+            }
         }
     }
 }

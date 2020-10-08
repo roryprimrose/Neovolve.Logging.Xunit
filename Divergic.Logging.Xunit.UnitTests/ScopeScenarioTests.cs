@@ -1,6 +1,9 @@
 ﻿namespace Divergic.Logging.Xunit.UnitTests
 {
     using System;
+    using System.Linq;
+    using System.Threading;
+    using System.Threading.Tasks;
     using global::Xunit;
     using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
@@ -50,11 +53,11 @@
             Logger.LogTrace("Writing trace message");
             Logger.LogWarning("Writing warning message");
 
-            using (Logger.BeginScope((object) scopeState))
+            using (Logger.BeginScope((object)scopeState))
             {
                 Logger.LogInformation("Inside first scope");
 
-                using (Logger.BeginScope((object) scopeState))
+                using (Logger.BeginScope((object)scopeState))
                 {
                     Logger.LogInformation("Inside second scope");
                 }
@@ -119,6 +122,54 @@
             Logger.LogInformation("After first scope");
         }
 
+        [Fact]
+        public async Task UsingParallelTasks()
+        {
+            var tasks = Enumerable.Range(0, 10).Select(
+                _ => StartOnDefaultScheduler(
+                    () =>
+                    {
+                        for (var i = 0; i < 100; i++)
+                        {
+                            using (Logger.BeginScope("My scope data"))
+                            {
+                            }
+                        }
+
+                        return Task.CompletedTask;
+                    })).ToList();
+
+            await Task.WhenAll(tasks).ConfigureAwait(false);
+
+            Task StartOnDefaultScheduler(Func<Task> asyncFunc)
+            {
+                return Task.Factory.StartNew(
+                    asyncFunc,
+                    CancellationToken.None,
+                    TaskCreationOptions.None,
+                    TaskScheduler.Default).Unwrap();
+            }
+        }
+
+        [Fact]
+        public void UsingThreads()
+        {
+            var threads = Enumerable.Range(0, 10).Select(
+                _ => new Thread(
+                    () =>
+                    {
+                        for (var i = 0; i < 100; i++)
+                        {
+                            using (Logger.BeginScope("My scope data"))
+                            {
+                            }
+                        }
+                    })).ToList();
+
+            threads.ForEach(x => x.Start());
+            threads.ForEach(x => x.Join());
+        }
+
         // ReSharper disable once ClassNeverInstantiated.Local
         // ReSharper disable UnusedMember.Local
         private class Person
@@ -131,7 +182,7 @@
 
             public string LastName { get; set; } = string.Empty;
         }
-
+        // ReSharper restore once ClassNeverInstantiated.Local
         // ReSharper restore UnusedMember.Local
     }
 }

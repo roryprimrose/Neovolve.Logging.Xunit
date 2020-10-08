@@ -1,9 +1,11 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
+    using System.Collections.Concurrent;
     using System.Collections.Generic;
     using System.Collections.ObjectModel;
     using System.Linq;
+    using System.Threading;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -12,10 +14,12 @@
     /// </summary>
     public class CacheLogger : FilterLogger, ICacheLogger
     {
+        private static readonly AsyncLocal<ConcurrentStack<CacheScope>> _scopes =
+            new AsyncLocal<ConcurrentStack<CacheScope>>();
+
         private readonly ILoggerFactory? _factory;
         private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
         private readonly ILogger? _logger;
-        private readonly Stack<CacheScope> _scopes = new Stack<CacheScope>();
 
         /// <summary>
         ///     Creates a new instance of the <see cref="CacheLogger" /> class.
@@ -45,9 +49,9 @@
         {
             var scope = _logger?.BeginScope(state) ?? NoopDisposable.Instance;
 
-            var cacheScope = new CacheScope(scope, state, () => _scopes.Pop());
+            var cacheScope = new CacheScope(scope, state, () => Scopes.TryPop(out _));
 
-            _scopes.Push(cacheScope);
+            Scopes.Push(cacheScope);
 
             return cacheScope;
         }
@@ -91,12 +95,13 @@
             Exception? exception,
             Func<TState, Exception?, string> formatter)
         {
-            var entry = new LogEntry(logLevel,
+            var entry = new LogEntry(
+                logLevel,
                 eventId,
                 state,
                 exception,
                 message,
-                _scopes.Select(s => s.State).ToArray());
+                Scopes.Select(s => s.State).ToArray());
 
             _logEntries.Add(entry);
 
@@ -128,6 +133,23 @@
                 }
 
                 return _logEntries[count - 1];
+            }
+        }
+
+        private static ConcurrentStack<CacheScope> Scopes
+        {
+            get
+            {
+                var scopes = _scopes.Value;
+
+                if (scopes == null)
+                {
+                    scopes = new ConcurrentStack<CacheScope>();
+
+                    _scopes.Value = scopes;
+                }
+
+                return scopes;
             }
         }
     }
