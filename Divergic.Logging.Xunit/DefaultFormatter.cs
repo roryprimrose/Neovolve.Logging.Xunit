@@ -1,8 +1,8 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
+    using System.Collections.Generic;
     using System.Globalization;
-    using System.Text;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -32,36 +32,31 @@
             string message,
             Exception? exception)
         {
-            const string format = "{0}{2} [{3}]: {4}";
+            const string Format = "{0}{1} [{2}]: {3}";
             var padding = new string(' ', scopeLevel * _config.ScopePaddingSpaces);
-
-            var builder = new StringBuilder();
+            var parts = new List<string>(2);
 
             if (string.IsNullOrWhiteSpace(message) == false)
             {
-                builder.AppendFormat(CultureInfo.InvariantCulture,
-                    format,
-                    padding,
-                    name,
-                    logLevel,
-                    eventId.Id,
-                    message);
-                builder.AppendLine();
+                var part = string.Format(CultureInfo.InvariantCulture, Format, padding, logLevel, eventId.Id, message);
+
+                parts.Add(part);
             }
 
             if (exception != null)
             {
-                builder.AppendFormat(CultureInfo.InvariantCulture,
-                    format,
+                var part = string.Format(
+                    CultureInfo.InvariantCulture,
+                    Format,
                     padding,
-                    name,
                     logLevel,
                     eventId.Id,
                     exception);
-                builder.AppendLine();
+
+                parts.Add(part);
             }
 
-            return builder.ToString();
+            return string.Join(Environment.NewLine, parts);
         }
     }
 }
