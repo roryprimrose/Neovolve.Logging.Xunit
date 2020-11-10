@@ -29,13 +29,13 @@ jobs:
       run: git fetch --prune --unshallow --tags
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.4
+      uses: gittools/actions/gitversion/setup@v0.9.5
       with:
           versionSpec: '5.3.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.4
+      uses: gittools/actions/gitversion/execute@v0.9.5
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
