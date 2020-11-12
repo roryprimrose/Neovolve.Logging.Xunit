@@ -29,13 +29,13 @@ jobs:
       run: git fetch --prune --unshallow --tags
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.4
+      uses: gittools/actions/gitversion/setup@v0.9.6
       with:
           versionSpec: '5.3.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.4
+      uses: gittools/actions/gitversion/execute@v0.9.6
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
@@ -69,7 +69,7 @@ jobs:
 
     - name: Generate Coverage Report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.7.1
+      uses: danielpalme/ReportGenerator-GitHub-Action@4.8.0
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
