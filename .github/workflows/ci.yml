@@ -20,13 +20,8 @@ jobs:
 
     - name: Checkout
       uses: actions/checkout@v2
-
-    - name: ResolveProject
-      shell: pwsh
-      run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
-      
-    - name: Fetch all history for all tags and branches
-      run: git fetch --prune --unshallow --tags
+      with:
+        fetch-depth: 0
 
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v0.9.6
@@ -57,6 +52,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: '3.1.x' # SDK Version to use.
+        
+    - name: Setup dotnet v5.0
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: '5.0.x' # SDK Version to use.
 
     - name: Restore
       run: dotnet restore
@@ -67,7 +67,7 @@ jobs:
     - name: Test
       run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
 
-    - name: Generate Coverage Report
+    - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
       uses: danielpalme/ReportGenerator-GitHub-Action@4.8.0
       with:
@@ -77,14 +77,18 @@ jobs:
         tag: '${{ github.run_number }}_${{ github.run_id }}'
       if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
 
-    - name: Publish Coverage Report
+    - name: Publish coverage report
       uses: 5monkeys/cobertura-action@master
       with:
         path: Report/Cobertura.xml
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         minimum_coverage: 75
       if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
-
+      
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Pack
       run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
@@ -130,10 +134,6 @@ jobs:
 
     steps:
     
-    - name: ResolveProject
-      shell: pwsh
-      run: Write-Host "::set-env name=projectName::$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))"
-      
     - name: Download packages
       uses: actions/download-artifact@v2
       with:
@@ -148,8 +148,12 @@ jobs:
       shell: bash
       run: |
         value=`cat version.txt`
-        echo ::set-env name=NuGetVersionV2::$(echo $value)
+        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
     
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Setup nuget
       uses: olegtarasov/download-nuget@v1
 
@@ -164,7 +168,7 @@ jobs:
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
       run: mono $NUGET_EXE push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
-    - name: Create Release
+    - name: Create release
       id: create_release
       uses: actions/create-release@v1.1.4
       env:
@@ -175,7 +179,7 @@ jobs:
         draft: false
         prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
     
-    - name: Upload Release Asset for package
+    - name: Upload release asset for package
       id: upload-release-asset-package
       uses: actions/upload-release-asset@v1.0.2
       env:
@@ -186,7 +190,7 @@ jobs:
         asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
     
-    - name: Upload Release Asset for symbol package
+    - name: Upload release asset for symbol package
       id: upload-release-asset-symbolpackage
       uses: actions/upload-release-asset@v1.0.2
       env:
