@@ -36,7 +36,7 @@ jobs:
         configFilePath: ./GitVersion.yml
 
     - name: Update project version
-      uses: roryprimrose/set-vs-sdk-project-version@v1
+      uses: roryprimrose/set-vs-sdk-project-version@v1.0.4
       with:
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
