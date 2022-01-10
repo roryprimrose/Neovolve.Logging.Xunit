@@ -302,7 +302,7 @@
                     Arg.Any<EventId>(),
                     Arg.Any<string>(),
                     Arg.Any<Exception>(),
-                    Arg.Any<Func<string, Exception, string>>());
+                    Arg.Any<Func<string, Exception?, string>>());
             sut.Entries.Should().BeEmpty();
             sut.Last.Should().BeNull();
         }
@@ -330,7 +330,7 @@
                     Arg.Any<EventId>(),
                     Arg.Any<string>(),
                     Arg.Any<Exception>(),
-                    Arg.Any<Func<string, Exception, string>>());
+                    Arg.Any<Func<string, Exception?, string>>());
             sut.Entries.Should().BeEmpty();
             sut.Last.Should().BeNull();
         }
