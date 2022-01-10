@@ -134,7 +134,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
-    # if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
 
     steps:
     
@@ -164,40 +164,40 @@ jobs:
     - name: Publish to GitHub
       run: nuget push *.*.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
-    #- name: Publish to NuGet.org
-    #  env: 
-    #    NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-    #  run: nuget push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+    - name: Publish to NuGet.org
+      env: 
+        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+      run: nuget push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
-    #- name: Create release
-    #  id: create_release
-    #  uses: actions/create-release@v1.1.4
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    tag_name: ${{ env.NuGetVersionV2 }}
-    #    release_name: Release ${{ env.NuGetVersionV2 }}
-    #    draft: false
-    #    prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1.1.4
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ env.NuGetVersionV2 }}
+        release_name: Release ${{ env.NuGetVersionV2 }}
+        draft: false
+        prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
     
-    #- name: Upload release asset for package
-    #  id: upload-release-asset-package
-    #  uses: actions/upload-release-asset@v1.0.2
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #    asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
-    #    asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
-    #    asset_content_type: application/zip
+    - name: Upload release asset for package
+      id: upload-release-asset-package
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_content_type: application/zip
     
-    #- name: Upload release asset for symbol package
-    #  id: upload-release-asset-symbolpackage
-    #  uses: actions/upload-release-asset@v1.0.2
-    #  env:
-    #    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    #  with:
-    #    upload_url: ${{ steps.create_release.outputs.upload_url }}
-    #    asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
-    #    asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
-    #    asset_content_type: application/zip
+    - name: Upload release asset for symbol package
+      id: upload-release-asset-symbolpackage
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_content_type: application/zip
