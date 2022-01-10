@@ -1,6 +1,7 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System.Text.Json;
+    using System.Text.Json.Serialization;
 
     /// <summary>
     ///     The <see cref="SerializerSettings" />
@@ -12,7 +13,7 @@
         {
             var settings = new JsonSerializerOptions
             {
-                IgnoreNullValues = true,
+                DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
                 WriteIndented = true
             };
 
