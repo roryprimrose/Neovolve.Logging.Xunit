@@ -19,7 +19,7 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2.3.4
+      uses: actions/checkout@v2.4.0
       with:
         fetch-depth: 0
 
@@ -36,30 +36,25 @@ jobs:
         configFilePath: ./GitVersion.yml
 
     - name: Update project version
-      uses: roryprimrose/set-vs-sdk-project-version@v1.0.4
+      uses: roryprimrose/set-vs-sdk-project-version@v1.0.5
       with:
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
-
-    - name: Setup dotnet v2.1
-      uses: actions/setup-dotnet@v1.8.0
-      with:
-        dotnet-version: '2.1.x' # SDK Version to use.
-
+        
     - name: Setup dotnet v3.1
-      uses: actions/setup-dotnet@v1.8.0
+      uses: actions/setup-dotnet@v1.9.0
       with:
         dotnet-version: '3.1.x' # SDK Version to use.
         
     - name: Setup dotnet v5.0
-      uses: actions/setup-dotnet@v1.8.0
+      uses: actions/setup-dotnet@v1.9.0
       with:
         dotnet-version: '5.0.x' # SDK Version to use.
         
     - name: Setup dotnet v6.0
-      uses: actions/setup-dotnet@v1.8.0
+      uses: actions/setup-dotnet@v1.9.0
       with:
         dotnet-version: '6.0.x' # SDK Version to use.
 
@@ -80,7 +75,8 @@ jobs:
         targetdir: "Report"
         reporttypes: "HtmlInline;Cobertura"
         tag: '${{ github.run_number }}_${{ github.run_id }}'
-      if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
+      # Don't run on fork or dependabot builds
+      if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
 
     - name: Publish coverage report
       uses: 5monkeys/cobertura-action@master
@@ -88,7 +84,8 @@ jobs:
         path: Report/Cobertura.xml
         repo_token: ${{ secrets.GITHUB_TOKEN }}
         minimum_coverage: 75
-      if: github.event_name == 'pull_request' && github.repository_owner == 'roryprimrose'       # Don't run on forks
+      # Don't run on fork or dependabot builds
+      if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
       
     - name: Resolve project name
       shell: pwsh
@@ -116,7 +113,8 @@ jobs:
   publish:
     needs: build
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'roryprimrose'       # Don't run on forks
+    # Only run on pushes which should only be on the base repository
+    if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
 
     steps:
     - name: Download packages
@@ -135,7 +133,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.repository_owner == 'roryprimrose' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v'))
+    # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
 
     steps:
     
@@ -163,10 +162,8 @@ jobs:
       uses: nuget/setup-nuget@v1
       
     - name: Publish to GitHub
-      env: 
-        GPR_APIKEY: ${{ secrets.GPR_APIKEY }}
-      run: nuget push *.*.symbols.nupkg $GPR_APIKEY -source https://nuget.pkg.github.com/roryprimrose/index.json
-      
+      run: nuget push *.*.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+
     - name: Publish to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}

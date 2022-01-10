@@ -14,9 +14,9 @@
     <IncludeSymbols>true</IncludeSymbols>
     <NeutralLanguage>en-US</NeutralLanguage>	
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-    <PackageProjectUrl>https://github.com/Divergic/Divergic.Logging.Xunit</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/roryprimrose/Divergic.Logging.Xunit</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-    <RepositoryUrl>https://github.com/Divergic/Divergic.Logging.Xunit</RepositoryUrl>
+    <RepositoryUrl>https://github.com/roryprimrose/Divergic.Logging.Xunit</RepositoryUrl>
     <PackageTags>xUnit;Logging</PackageTags>
     <Version>1.0.0-alpha</Version>
   </PropertyGroup>
