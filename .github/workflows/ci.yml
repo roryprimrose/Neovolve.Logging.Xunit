@@ -158,15 +158,17 @@ jobs:
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v1
-      
+    - name: Setup dotnet v6.0
+      uses: actions/setup-dotnet@v1.8.0
+      with:
+        dotnet-version: '6.0.x' # SDK Version to use.
+
     - name: Publish to GitHub
       env: 
         GPR_APIKEY: ${{ secrets.GPR_APIKEY }}
       run: |
-        nuget add source -UserName USERNAME -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText -Name github "https://nuget.pkg.github.com/roryprimrose/index.json"
-        nuget push *.*.symbols.nupkg -source github
+        dotnet nuget add source --username USERNAME --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github "https://nuget.pkg.github.com/roryprimrose/index.json"
+        dotnet nuget push *.*.symbols.nupkg --source "github"
       
     #- name: Publish to NuGet.org
     #  env: 
