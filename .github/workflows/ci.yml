@@ -168,6 +168,9 @@ jobs:
         GPR_APIKEY: ${{ secrets.GPR_APIKEY }}
       run: |
         dotnet nuget push *.*.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
+
+    #- name: Setup nuget
+    #  uses: nuget/setup-nuget@v1
       
     #- name: Publish to NuGet.org
     #  env: 
