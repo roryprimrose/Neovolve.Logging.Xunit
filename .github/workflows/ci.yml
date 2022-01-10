@@ -165,7 +165,7 @@ jobs:
       env: 
         GPR_APIKEY: ${{ secrets.GPR_APIKEY }}
       run: |
-        nuget add source -username USERNAME -password ${{ secrets.GITHUB_TOKEN }} -store-password-in-clear-text -name github "https://nuget.pkg.github.com/roryprimrose/index.json"
+        nuget add source -UserName USERNAME -Password ${{ secrets.GITHUB_TOKEN }} -StorePasswordInClearText -Name github "https://nuget.pkg.github.com/roryprimrose/index.json"
         nuget push *.*.symbols.nupkg -source github
       
     #- name: Publish to NuGet.org
