@@ -19,24 +19,24 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v2
+      uses: actions/checkout@v2.3.4
       with:
         fetch-depth: 0
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.7
+      uses: gittools/actions/gitversion/setup@v0.9.11
       with:
           versionSpec: '5.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.7
+      uses: gittools/actions/gitversion/execute@v0.9.11
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
 
     - name: Update project version
-      uses: roryprimrose/set-vs-sdk-project-version@v1
+      uses: roryprimrose/set-vs-sdk-project-version@v1.0.4
       with:
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
@@ -44,19 +44,24 @@ jobs:
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
 
     - name: Setup dotnet v2.1
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.8.0
       with:
         dotnet-version: '2.1.x' # SDK Version to use.
 
     - name: Setup dotnet v3.1
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.8.0
       with:
         dotnet-version: '3.1.x' # SDK Version to use.
         
     - name: Setup dotnet v5.0
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@v1.8.0
       with:
         dotnet-version: '5.0.x' # SDK Version to use.
+        
+    - name: Setup dotnet v6.0
+      uses: actions/setup-dotnet@v1.8.0
+      with:
+        dotnet-version: '6.0.x' # SDK Version to use.
 
     - name: Restore
       run: dotnet restore
@@ -69,7 +74,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@4.8.3
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.0.2
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
