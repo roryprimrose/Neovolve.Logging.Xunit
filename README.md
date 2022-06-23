@@ -161,7 +161,7 @@ public class MyFormatter : ILogFormatter
 {
     public string Format(
         int scopeLevel,
-        string name,
+        string categoryName,
         LogLevel logLevel,
         EventId eventId,
         string message,
@@ -176,9 +176,9 @@ public class MyFormatter : ILogFormatter
 
         builder.Append($"{logLevel} ");
 
-        if (!string.IsNullOrEmpty(name))
+        if (!string.IsNullOrEmpty(categoryName))
         {
-            builder.Append($"{name} ");
+            builder.Append($"{categoryName} ");
         }
 
         if (eventId.Id != 0)

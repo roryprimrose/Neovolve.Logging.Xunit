@@ -22,10 +22,10 @@
         [Fact]
         public void BeginScopeReturnsInstance()
         {
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
 
-            var sut = new TestOutputLogger(name, _output);
+            var sut = new TestOutputLogger(categoryName, _output);
 
             var actual = sut.BeginScope(state);
 
@@ -39,10 +39,10 @@
         [Fact]
         public void BeginScopeShouldNotThrowWhenStateDataHasCircularReference()
         {
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var state = new CircularReference();
 
-            var sut = new TestOutputLogger(name, _output);
+            var sut = new TestOutputLogger(categoryName, _output);
 
             using (sut.BeginScope(state))
             {
@@ -55,13 +55,13 @@
         public void IsEnabledReturnsBasedOnConfiguredLevelTest(LogLevel configuredLevel, LogLevel logLevel,
             bool isEnabled)
         {
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var config = new LoggingConfig
             {
                 LogLevel = configuredLevel
             };
 
-            var sut = new TestOutputLogger(name, _output, config);
+            var sut = new TestOutputLogger(categoryName, _output, config);
 
             var actual = sut.IsEnabled(logLevel);
 
@@ -72,10 +72,10 @@
         public void LogIgnoresTestBoundaryFailure()
         {
             // This test should not fail the test runner
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var config = new LoggingConfig {IgnoreTestBoundaryException = true};
 
-            var sut = new TestOutputLogger(name, _output, config);
+            var sut = new TestOutputLogger(categoryName, _output, config);
 
             var task = new Task(async () =>
             {
@@ -95,7 +95,7 @@
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             string Formatter(string logState, Exception? error) => message;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
                 "{0}{1} [{2}]: {3}",
                 string.Empty,
@@ -105,7 +105,7 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new TestOutputLogger(name, output);
+            var sut = new TestOutputLogger(categoryName, output);
 
             sut.Log(logLevel, eventId, state, null, Formatter);
 
@@ -122,11 +122,11 @@
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             string Formatter(string logState, Exception? error) => message;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new TestOutputLogger(name, output);
+            var sut = new TestOutputLogger(categoryName, output);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
@@ -148,7 +148,7 @@
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             string Formatter(string logState, Exception? error) => message;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var expected = string.Format(CultureInfo.InvariantCulture,
                 "{0}{1} [{2}]: {3}",
                 string.Empty,
@@ -158,7 +158,7 @@
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new TestOutputLogger(name, output);
+            var sut = new TestOutputLogger(categoryName, output);
 
             sut.Log(logLevel, eventId, state, null, Formatter);
 
@@ -174,22 +174,22 @@
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var expected = Guid.NewGuid().ToString();
             string Formatter(string logState, Exception? error) => message;
 
             var formatter = Substitute.For<ILogFormatter>();
             var config = new LoggingConfig {Formatter = formatter};
 
-            formatter.Format(0, name, logLevel, eventId, message, exception).Returns(expected);
+            formatter.Format(0, categoryName, logLevel, eventId, message, exception).Returns(expected);
 
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = new TestOutputLogger(name, output, config);
+            var sut = new TestOutputLogger(categoryName, output, config);
 
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
-            formatter.Received().Format(0, name, logLevel, eventId, message, exception);
+            formatter.Received().Format(0, categoryName, logLevel, eventId, message, exception);
 
             output.Received().WriteLine(expected);
         }
@@ -198,12 +198,12 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void ThrowsExceptionWhenCreatedWithInvalidNameTest(string name)
+        public void ThrowsExceptionWhenCreatedWithInvalidCategoryNameTest(string categoryName)
         {
             var output = Substitute.For<ITestOutputHelper>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TestOutputLogger(name, output);
+            Action action = () => new TestOutputLogger(categoryName, output);
 
             action.Should().Throw<ArgumentException>();
         }
@@ -211,10 +211,10 @@
         [Fact]
         public void ThrowsExceptionWhenCreatedWithNullOutput()
         {
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TestOutputLogger(name, null!);
+            Action action = () => new TestOutputLogger(categoryName, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -222,7 +222,7 @@
         [Fact]
         public void WriteLogIgnoresExceptionWhenIgnoreTestBoundaryExceptionEnabled()
         {
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             var config = new LoggingConfig
             {
@@ -233,7 +233,7 @@
 
             output.When(x => x.WriteLine(Arg.Any<string>())).Throw<InvalidOperationException>();
 
-            var sut = new TestOutputLogger(name, output, config);
+            var sut = new TestOutputLogger(categoryName, output, config);
 
             Action action = () => sut.LogInformation(message);
 
@@ -243,7 +243,7 @@
         [Fact]
         public void WriteLogThrowsExceptionWhenIgnoreTestBoundaryExceptionDisabled()
         {
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             var config = new LoggingConfig
             {
@@ -254,11 +254,68 @@
 
             output.When(x => x.WriteLine(Arg.Any<string>())).Throw<InvalidOperationException>();
 
-            var sut = new TestOutputLogger(name, output, config);
+            var sut = new TestOutputLogger(categoryName, output, config);
 
             Action action = () => sut.LogInformation(message);
 
             action.Should().Throw<InvalidOperationException>();
+        }
+
+        [Theory]
+        [InlineData(null, "this message", "this message")]
+        [InlineData("secret", "this message", "this message")]
+        [InlineData("secret", "this secret message", "this **** message")]
+        public void WritesScopeMessagesUsingFormatter(string? sensitiveValue, string state, string expected)
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var message = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
+            string Formatter(string logState, Exception? error) => message;
+
+            var config = new LoggingConfig();
+
+            if (sensitiveValue != null)
+            {
+                config.SensitiveValues.Add(sensitiveValue);
+            }
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(categoryName, output, config);
+
+            using (sut.BeginScope(state))
+            {
+                sut.Log(logLevel, eventId, state, null, Formatter);
+            }
+
+            output.Received().WriteLine($"<Scope: {expected}>");
+            output.Received().WriteLine($"   {logLevel} [{eventId.Id}]: {message}");
+            output.Received().WriteLine($"</Scope: {expected}>");
+        }
+
+        [Fact]
+        public void WritesScopeMessagesWithStructuredDataUsingFormatter()
+        {
+            var logLevel = LogLevel.Error;
+            var eventId = Model.Create<EventId>();
+            var message = Guid.NewGuid().ToString();
+            var sensitiveValue = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
+            var config = new LoggingConfig().Set(x => x.SensitiveValues.Add(sensitiveValue));
+
+            var state = Model.Create<StructuredData>().Set(x => x.FirstName += " " + sensitiveValue);
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLogger(categoryName, output, config);
+
+            using (sut.BeginScope(state))
+            {
+                sut.Log(logLevel, eventId, message);
+            }
+
+            output.DidNotReceive().WriteLine(Arg.Is<string>(x => x.Contains(sensitiveValue)));
         }
     }
 }

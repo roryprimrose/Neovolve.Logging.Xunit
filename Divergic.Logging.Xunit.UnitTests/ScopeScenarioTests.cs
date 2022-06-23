@@ -11,7 +11,9 @@
 
     public class ScopeScenarioTests : LoggingTestsBase<ScopeScenarioTests>
     {
-        public ScopeScenarioTests(ITestOutputHelper output) : base(output)
+        private static readonly LoggingConfig _config = new LoggingConfig().Set(x => x.SensitiveValues.Add("secret"));
+
+        public ScopeScenarioTests(ITestOutputHelper output) : base(output, _config)
         {
         }
 
@@ -40,6 +42,31 @@
             Logger.LogInformation("After first scope");
         }
 
+        [Fact]
+        public void TestOutputWritesMessagesInContextOfScopesWithSensitiveData()
+        {
+            Logger.LogCritical("Writing critical message with secret");
+            Logger.LogDebug("Writing debug message with secret");
+            Logger.LogError("Writing error message with secret");
+            Logger.LogInformation("Writing information message with secret");
+            Logger.LogTrace("Writing trace message with secret");
+            Logger.LogWarning("Writing warning message with secret");
+
+            using (Logger.BeginScope("First scope with secret"))
+            {
+                Logger.LogInformation("Inside first scope with secret");
+
+                using (Logger.BeginScope("Second scope with secret"))
+                {
+                    Logger.LogInformation("Inside second scope with secret");
+                }
+
+                Logger.LogInformation("After second scope with secret");
+            }
+
+            Logger.LogInformation("After first scope with secret");
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -53,11 +80,11 @@
             Logger.LogTrace("Writing trace message");
             Logger.LogWarning("Writing warning message");
 
-            using (Logger.BeginScope((object)scopeState))
+            using (Logger.BeginScope((object) scopeState))
             {
                 Logger.LogInformation("Inside first scope");
 
-                using (Logger.BeginScope((object)scopeState))
+                using (Logger.BeginScope((object) scopeState))
                 {
                     Logger.LogInformation("Inside second scope");
                 }
@@ -78,13 +105,13 @@
             Logger.LogTrace("Writing trace message");
             Logger.LogWarning("Writing warning message");
 
-            var firstPerson = Model.Create<Person>();
+            var firstPerson = Model.Create<StructuredData>();
 
             using (Logger.BeginScope(firstPerson))
             {
                 Logger.LogInformation("Inside first scope");
 
-                var secondPerson = Model.Create<Person>();
+                var secondPerson = Model.Create<StructuredData>();
 
                 using (Logger.BeginScope(secondPerson))
                 {
@@ -95,6 +122,35 @@
             }
 
             Logger.LogInformation("After first scope");
+        }
+
+        [Fact]
+        public void TestOutputWritesScopeBoundariesUsingObjectsWithSecret()
+        {
+            Logger.LogCritical("Writing critical message with secret");
+            Logger.LogDebug("Writing debug message with secret");
+            Logger.LogError("Writing error message with secret");
+            Logger.LogInformation("Writing information message with secret");
+            Logger.LogTrace("Writing trace message with secret");
+            Logger.LogWarning("Writing warning message with secret");
+
+            var firstPerson = Model.Create<StructuredData>().Set(x => x.Email = "secret");
+
+            using (Logger.BeginScope(firstPerson))
+            {
+                Logger.LogInformation("Inside first scope with secret");
+
+                var secondPerson = Model.Create<StructuredData>().Set(x => x.FirstName = "secret");
+
+                using (Logger.BeginScope(secondPerson))
+                {
+                    Logger.LogInformation("Inside second scope with secret");
+                }
+
+                Logger.LogInformation("After second scope with secret");
+            }
+
+            Logger.LogInformation("After first scope with secret");
         }
 
         [Fact]
@@ -169,20 +225,5 @@
             threads.ForEach(x => x.Start());
             threads.ForEach(x => x.Join());
         }
-
-        // ReSharper disable once ClassNeverInstantiated.Local
-        // ReSharper disable UnusedMember.Local
-        private class Person
-        {
-            public DateTime DateOfBirth { get; set; } = DateTime.UtcNow;
-
-            public string Email { get; set; } = string.Empty;
-
-            public string FirstName { get; set; } = string.Empty;
-
-            public string LastName { get; set; } = string.Empty;
-        }
-        // ReSharper restore once ClassNeverInstantiated.Local
-        // ReSharper restore UnusedMember.Local
     }
 }

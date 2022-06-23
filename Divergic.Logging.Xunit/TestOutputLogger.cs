@@ -17,25 +17,25 @@
             new AsyncLocal<ConcurrentStack<ScopeWriter>>();
 
         private readonly LoggingConfig _config;
-        private readonly string _name;
+        private readonly string _categoryName;
         private readonly ITestOutputHelper _output;
 
         /// <summary>
         ///     Creates a new instance of the <see cref="TestOutputLogger" /> class.
         /// </summary>
-        /// <param name="name">The name of the logger.</param>
+        /// <param name="categoryName">The category name of the logger.</param>
         /// <param name="output">The test output helper.</param>
         /// <param name="config">Optional logging configuration.</param>
-        /// <exception cref="ArgumentException">The <paramref name="name" /> is <c>null</c>, empty or whitespace.</exception>
+        /// <exception cref="ArgumentException">The <paramref name="categoryName" /> is <c>null</c>, empty or whitespace.</exception>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
-        public TestOutputLogger(string name, ITestOutputHelper output, LoggingConfig? config = null)
+        public TestOutputLogger(string categoryName, ITestOutputHelper output, LoggingConfig? config = null)
         {
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(categoryName))
             {
-                throw new ArgumentException("No name value has been supplied", nameof(name));
+                throw new ArgumentException("No name value has been supplied", nameof(categoryName));
             }
-
-            _name = name;
+            
+            _categoryName = categoryName;
             _output = output ?? throw new ArgumentNullException(nameof(output));
             _config = config ?? new LoggingConfig();
         }
@@ -43,7 +43,7 @@
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            var scopeWriter = new ScopeWriter(_output, state, Scopes.Count, () => Scopes.TryPop(out _), _config);
+            var scopeWriter = new ScopeWriter(_output, state, Scopes.Count, _categoryName, () => Scopes.TryPop(out _), _config);
 
             Scopes.Push(scopeWriter);
 
@@ -85,7 +85,7 @@
 
         private void WriteLog(LogLevel logLevel, EventId eventId, string message, Exception? exception)
         {
-            var formattedMessage = _config.Formatter.Format(Scopes.Count, _name, logLevel, eventId, message, exception);
+            var formattedMessage = _config.Formatter.Format(Scopes.Count, _categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(formattedMessage);
 
