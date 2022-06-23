@@ -24,21 +24,23 @@
         }
 
         /// <inheritdoc />
-        public string Format(
+        public virtual string Format(
             int scopeLevel,
-            string name,
+            string categoryName,
             LogLevel logLevel,
             EventId eventId,
             string message,
             Exception? exception)
         {
-            const string Format = "{0}{1} [{2}]: {3}";
             var padding = new string(' ', scopeLevel * _config.ScopePaddingSpaces);
             var parts = new List<string>(2);
 
             if (string.IsNullOrWhiteSpace(message) == false)
             {
-                var part = string.Format(CultureInfo.InvariantCulture, Format, padding, logLevel, eventId.Id, message);
+                var part = string.Format(CultureInfo.InvariantCulture, FormatMask, padding, logLevel, eventId.Id,
+                    message);
+
+                part = MaskSensitiveValues(part);
 
                 parts.Add(part);
             }
@@ -47,16 +49,45 @@
             {
                 var part = string.Format(
                     CultureInfo.InvariantCulture,
-                    Format,
+                    FormatMask,
                     padding,
                     logLevel,
                     eventId.Id,
                     exception);
+
+                part = MaskSensitiveValues(part);
 
                 parts.Add(part);
             }
 
             return string.Join(Environment.NewLine, parts);
         }
+
+        private string MaskSensitiveValues(string value)
+        {
+            const string mask = "****";
+
+            for (var index = 0; index < _config.SensitiveValues.Count; index++)
+            {
+                var sensitiveValue = _config.SensitiveValues[index];
+
+                value = value.Replace(sensitiveValue, mask, StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            return value;
+        }
+
+        /// <summary>
+        /// Returns the string format mask used to generate a log message.
+        /// </summary>
+        /// <remarks>The format values are:
+        /// <ul>
+        ///     <li>0: Padding</li>
+        ///     <li>1: Level</li>
+        ///     <li>2: Event Id</li>
+        ///     <li>3: Message</li>
+        /// </ul>
+        /// </remarks>
+        protected virtual string FormatMask { get; } = "{0}{1} [{2}]: {3}";
     }
 }

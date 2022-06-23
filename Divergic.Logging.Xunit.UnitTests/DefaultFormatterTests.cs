@@ -18,6 +18,60 @@
         }
 
         [Theory]
+        [InlineData(null, "this message", "this message")]
+        [InlineData("secret", "this message", "this message")]
+        [InlineData("secret", "this secret message", "this **** message")]
+        public void FormatHidesSensitiveDataInException(string? sensitiveValue, string message, string expected)
+        {
+            var config = new LoggingConfig();
+            var scopeLevel = 1;
+            var categoryName = Guid.NewGuid().ToString();
+            var logLevel = LogLevel.Information;
+            var eventId = Model.Create<EventId>();
+            var logMessage = Guid.NewGuid().ToString();
+            var exception = new InvalidOperationException(message);
+
+            if (sensitiveValue != null)
+            {
+                config.SensitiveValues.Add(sensitiveValue);
+            }
+
+            var sut = new DefaultFormatter(config);
+
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, logMessage, exception);
+
+            actual.Should().Contain(expected);
+
+            if (sensitiveValue != null)
+            {
+                actual.Should().NotContain(sensitiveValue);
+            }
+        }
+
+        [Theory]
+        [InlineData(null, "this message", "this message")]
+        [InlineData("secret", "this secret message", "this **** message")]
+        public void FormatHidesSensitiveDataInMessage(string? sensitiveValue, string message, string expected)
+        {
+            var config = new LoggingConfig();
+            var scopeLevel = 1;
+            var categoryName = Guid.NewGuid().ToString();
+            var logLevel = LogLevel.Information;
+            var eventId = Model.Create<EventId>();
+
+            if (sensitiveValue != null)
+            {
+                config.SensitiveValues.Add(sensitiveValue);
+            }
+
+            var sut = new DefaultFormatter(config);
+
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, null);
+
+            actual.Should().Be($"   Information [{eventId.Id}]: {expected}");
+        }
+
+        [Theory]
         [InlineData(null, false)]
         [InlineData("", false)]
         [InlineData("  ", false)]
@@ -30,7 +84,7 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             Exception? exception = exceptionExists
@@ -39,7 +93,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
 
             actual.Should().NotStartWith(Environment.NewLine);
             actual.Should().NotEndWith(Environment.NewLine);
@@ -57,7 +111,9 @@
             }
             else if (exception != null)
             {
-                actual.Should().Be($"   Information [{eventId.Id}]: stuff{Environment.NewLine}   Information [{eventId.Id}]: {exception}");
+                actual.Should()
+                    .Be(
+                        $"   Information [{eventId.Id}]: stuff{Environment.NewLine}   Information [{eventId.Id}]: {exception}");
             }
             else
             {
@@ -73,13 +129,13 @@
         {
             var config = new LoggingConfig().Set(x => x.ScopePaddingSpaces = 2);
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, null);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, null);
 
             actual.Should().BeEmpty();
         }
@@ -89,7 +145,7 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
@@ -97,7 +153,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(actual);
 
@@ -109,7 +165,7 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
@@ -117,7 +173,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(actual);
 
@@ -138,11 +194,11 @@
             var scopeLevel = 1;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, null);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, null);
 
             _output.WriteLine(actual);
 
@@ -154,7 +210,7 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
@@ -162,7 +218,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(actual);
 
@@ -174,14 +230,14 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, null);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, null);
 
             _output.WriteLine(actual);
 
@@ -193,7 +249,7 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
@@ -201,11 +257,11 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(actual);
 
-            actual.Should().NotContain(name);
+            actual.Should().NotContain(categoryName);
         }
 
         [Theory]
@@ -216,7 +272,7 @@
         {
             var config = new LoggingConfig();
             var padding = new string(' ', config.ScopePaddingSpaces * scopeLevel);
-            var name = Guid.NewGuid().ToString();
+            var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
             var message = Guid.NewGuid().ToString();
@@ -224,7 +280,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(actual);
 

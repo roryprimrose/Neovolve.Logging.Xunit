@@ -1,31 +1,30 @@
 # Introduction
 
-Divergic.Logging.Xunit is a NuGet package that returns an ```ILogger``` or ```ILogger<T>``` that wraps around the ```ITestOutputHelper``` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
+Divergic.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<T>` that wraps around the `ITestOutputHelper` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
 
 [![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/roryprimrose/Divergic.Logging.Xunit/blob/master/LICENSE)&nbsp;[![Nuget](https://img.shields.io/nuget/v/Divergic.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Divergic.Logging.Xunit.svg)](https://www.nuget.org/packages/Divergic.Logging.Xunit)&nbsp;[![Actions Status](https://github.com/roryprimrose/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/roryprimrose/Divergic.Logging.Xunit/actions)
 
-## Contents
+- [Installation](#installation)
+- [Usage](#usage)
+- [Output Formatting](#output-formatting)
+- [Inspection](#inspection)
+- [Configured LoggerFactory](#configured-loggerfactory)
+- [Existing Loggers](#existing-loggers)
+- [Sensitive Values](#sensitive-values)
+- [Configuration](#configuration)
+- [Supporters](#supporters)
 
-[Installation][1]  
-[Usage][2]  
-[Output Formatting][3]  
-[Inspection][4]  
-[Configured LoggerFactory][5]  
-[Existing Loggers][6]  
-[Configuration][7]  
-[Supporters][8]  
-
-# Installation
+## Installation
 
 Run the following in the NuGet command line or visit the [NuGet package page](https://nuget.org/packages/Divergic.Logging.Xunit).
 
-```Install-Package Divergic.Logging.Xunit```
+`Install-Package Divergic.Logging.Xunit`
 
 [Back to top][0]
 
-# Usage
+## Usage
 
-The common usage of this package is to call the `BuildLogger` extension method on the xUnit ```ITestOutputHelper```.
+The common usage of this package is to call the `BuildLogger` extension method on the xUnit `ITestOutputHelper`.
 
 Consider the following example of a class to test.
 
@@ -91,7 +90,7 @@ This would output the following in the test results.
 Information [0]: Hey, we did something
 ```
 
-Support for ```ILogger<T>``` is there using the ```BuildLoggerFor<T>``` extension method.
+Support for `ILogger<T>` is there using the `BuildLoggerFor<T>` extension method.
 
 ```csharp
 public class MyClassTests
@@ -152,16 +151,16 @@ The `BuildLogger` and `BuildLoggerFor<T>` extension methods along with the `Logg
 
 [Back to top][0]
 
-# Output Formatting
+## Output Formatting
 
-The default formatting to the xUnit test results may not be what you want. You can define your ```ILogFormatter``` class to control how the output looks.
+The default formatting to the xUnit test results may not be what you want. You can define your own `ILogFormatter` class to control how the output looks. There is a configurable formatter for standard messages and another configurable formatter for scope start and end messages.
 
 ```csharp
 public class MyFormatter : ILogFormatter
 {
     public string Format(
         int scopeLevel,
-        string name,
+        string categoryName,
         LogLevel logLevel,
         EventId eventId,
         string message,
@@ -176,9 +175,9 @@ public class MyFormatter : ILogFormatter
 
         builder.Append($"{logLevel} ");
 
-        if (!string.IsNullOrEmpty(name))
+        if (!string.IsNullOrEmpty(categoryName))
         {
-            builder.Append($"{name} ");
+            builder.Append($"{categoryName} ");
         }
 
         if (eventId.Id != 0)
@@ -211,7 +210,7 @@ public class MyConfig : LoggingConfig
 }
 ```
 
-The custom ```ILogFormatter``` is defined on a ```LoggingConfig``` class that can be provided when creating a logger. The ```MyConfig.Current``` property above is there provide a clean way to share the config across test classes.
+The custom `ILogFormatter` is defined on a `LoggingConfig` class that can be provided when creating a logger. The `MyConfig.Current` property above is there provide a clean way to share the config across test classes.
 
 ```csharp
 using System;
@@ -244,13 +243,15 @@ public class MyClassTests
 }
 ```
 
+In the same way the format of start and end scope messages can be formatted by providing a custom formatter on `LoggingConfig.ScopeFormatter`.
+
 [Back to top][0]
 
-# Inspection
+## Inspection
 
 Using this library makes it really easy to output log messages from your code as part of the test results. You may want to also inspect the log messages written as part of the test assertions as well. 
 
-The ```BuildLogger``` and ```BuildLoggerFor<T>``` extension methods support this by returning a ```ICacheLogger``` or ```ICacheLogger<T>``` respectively. The cache logger is a wrapper around the created logger and exposes all the log entries written by the test.
+The `BuildLogger` and `BuildLoggerFor<T>` extension methods support this by returning a `ICacheLogger` or `ICacheLogger<T>` respectively. The cache logger is a wrapper around the created logger and exposes all the log entries written by the test.
 
 ```csharp
 using System;
@@ -284,7 +285,7 @@ public class MyClassTests
 }
 ```
 
-Perhaps you don't want to use the xUnit ```ITestOutputHelper``` but still want to use the ```ICacheLogger``` to run assertions over log messages written by the class under test. You can do this by creating a ```CacheLogger``` or ```CacheLogger<T>``` directly.
+Perhaps you don't want to use the xUnit `ITestOutputHelper` but still want to use the `ICacheLogger` to run assertions over log messages written by the class under test. You can do this by creating a `CacheLogger` or `CacheLogger<T>` directly.
 
 ```csharp
 using System;
@@ -313,9 +314,9 @@ public class MyClassTests
 
 [Back to top][0]
 
-# Configured LoggerFactory
+## Configured LoggerFactory
 
-You may have an integration or acceptance test that requires additional configuration to the log providers on ```ILoggerFactory``` while also supporting the logging out to xUnit test results. You can do this by create a factory that is already configured with xUnit support.
+You may have an integration or acceptance test that requires additional configuration to the log providers on `ILoggerFactory` while also supporting the logging out to xUnit test results. You can do this by create a factory that is already configured with xUnit support.
 
 ```csharp
 using System;
@@ -354,9 +355,9 @@ public class MyClassTests
 
 [Back to top][0]
 
-# Existing Loggers
+## Existing Loggers
 
-Already have an existing logger and want the above cache support? Got you covered there too using the ```WithCache()``` method.
+Already have an existing logger and want the above cache support? Got you covered there too using the `WithCache()` method.
 
 ```csharp
 using System;
@@ -388,7 +389,7 @@ public class MyClassTests
 }
 ```
 
-The ```WithCache()``` also supports ```ILogger<T>```.
+The `WithCache()` also supports `ILogger<T>`.
 
 ```csharp
 using System;
@@ -422,17 +423,99 @@ public class MyClassTests
 
 [Back to top][0]
 
-# Configuration
+## Sensitive Values
+The `LoggingConfig` class exposes a `SensitiveValues` property that holds a collection of strings. All sensitive values found in a log message or a start/end scope message will be masked out.
 
-Logging configuration can be controled by using a ```LoggingConfig``` class as indicated in the [Output Formatting][3] section above. The following are the configuration options that can be set.
+```csharp
+public class ScopeScenarioTests : LoggingTestsBase<ScopeScenarioTests>
+{
+    private static readonly LoggingConfig _config = new LoggingConfig().Set(x => x.SensitiveValues.Add("secret"));
 
-**Formatter**: Defines a custom formatting for rendering log messages to xUnit test output.
+    public ScopeScenarioTests(ITestOutputHelper output) : base(output, _config)
+    {
+    }
+
+    [Fact]
+    public void TestOutputWritesScopeBoundariesUsingObjectsWithSecret()
+    {
+        Logger.LogCritical("Writing critical message with secret");
+        Logger.LogDebug("Writing debug message with secret");
+        Logger.LogError("Writing error message with secret");
+        Logger.LogInformation("Writing information message with secret");
+        Logger.LogTrace("Writing trace message with secret");
+        Logger.LogWarning("Writing warning message with secret");
+
+        var firstPerson = Model.Create<StructuredData>().Set(x => x.Email = "secret");
+
+        using (Logger.BeginScope(firstPerson))
+        {
+            Logger.LogInformation("Inside first scope with secret");
+
+            var secondPerson = Model.Create<StructuredData>().Set(x => x.FirstName = "secret");
+
+            using (Logger.BeginScope(secondPerson))
+            {
+                Logger.LogInformation("Inside second scope with secret");
+            }
+
+            Logger.LogInformation("After second scope with secret");
+        }
+
+        Logger.LogInformation("After first scope with secret");
+    }
+```
+
+The above test will render the following to the test output.
+
+```
+Critical [0]: Writing critical message with ****
+Debug [0]: Writing debug message with ****
+Error [0]: Writing error message with ****
+Information [0]: Writing information message with ****
+Trace [0]: Writing trace message with ****
+Warning [0]: Writing warning message with ****
+<Scope 1>
+   Scope data: 
+   {
+     "DateOfBirth": "1972-10-07T16:35:31.2039449Z",
+     "Email": "****",
+     "FirstName": "Amos",
+     "LastName": "Burton"
+   }
+   Information [0]: Inside first scope with ****
+      <Scope 2>
+      Scope data: 
+      {
+        "DateOfBirth": "1953-07-04T06:55:31.2333376Z",
+        "Email": "james.holden@rocinante.space",
+        "FirstName": "****",
+        "LastName": "Holden"
+      }
+      Information [0]: Inside second scope with ****
+   </Scope 2>
+   Information [0]: After second scope with ****
+</Scope 1>
+Information [0]: After first scope with ****
+```
+
+
+[Back to top][0]
+
+## Configuration
+
+Logging configuration can be controled by using a `LoggingConfig` class as indicated in the [Output Formatting][3] section above. The following are the configuration options that can be set.
+
+**Formatter**: Defines a custom formatter for rendering log messages to xUnit test output.
+
+**ScopeFormatter**: Defines a custom formatter for rendering start and end scope messages to xUnit test output.
 
 **IgnoreTestBoundaryException**: Defines whether exceptions thrown while logging outside of the test execution will be ignored.
 
 **LogLevel**: Defines the minimum log level that will be written to the test output. This helps to limit the noise in test output when set to higher levels. Defaults to `LogLevel.Trace`.
 
 **ScopePaddingSpaces**: Defines the number of spaces to use for indenting scopes.
+
+**SensitiveValues**: Defines a collection of sensitive values that will be masked in the test output logging.
 
 [Back to top][0]
 

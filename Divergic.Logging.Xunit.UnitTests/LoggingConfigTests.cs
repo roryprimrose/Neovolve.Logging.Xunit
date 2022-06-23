@@ -15,6 +15,14 @@
         }
 
         [Fact]
+        public void CreatesWithDefaultScopeFormatter()
+        {
+            var sut = new LoggingConfig();
+
+            sut.ScopeFormatter.Should().BeOfType<DefaultScopeFormatter>();
+        }
+
+        [Fact]
         public void CreatesWithIgnoreTestBoundaryExceptionAsFalse()
         {
             var sut = new LoggingConfig();

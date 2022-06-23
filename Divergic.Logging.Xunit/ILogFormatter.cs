@@ -13,7 +13,7 @@
         ///     Formats the log message with the specified values.
         /// </summary>
         /// <param name="scopeLevel">The number of active logging scopes.</param>
-        /// <param name="name">The logger name.</param>
+        /// <param name="categoryName">The logger name.</param>
         /// <param name="logLevel">The log level.</param>
         /// <param name="eventId">The event id.</param>
         /// <param name="message">The log message.</param>
@@ -21,7 +21,7 @@
         /// <returns>The formatted log message.</returns>
         string Format(
             int scopeLevel,
-            string name,
+            string categoryName,
             LogLevel logLevel,
             EventId eventId,
             string message,

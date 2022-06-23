@@ -1,6 +1,7 @@
 ﻿namespace Divergic.Logging.Xunit
 {
     using System;
+    using System.Collections.ObjectModel;
     using Microsoft.Extensions.Logging;
 
     /// <summary>
@@ -10,6 +11,7 @@
     public class LoggingConfig
     {
         private ILogFormatter _formatter;
+        private ILogFormatter _scopeFormatter;
 
         /// <summary>
         ///     Initializes a new instance of the <see cref="LoggingConfig" /> class.
@@ -17,6 +19,7 @@
         public LoggingConfig()
         {
             _formatter = new DefaultFormatter(this);
+            _scopeFormatter = new DefaultScopeFormatter(this);
         }
 
         /// <summary>
@@ -40,8 +43,23 @@
         public LogLevel LogLevel { get; set; } = LogLevel.Trace;
 
         /// <summary>
+        ///     Gets or sets a custom formatting for rendering scope beginning and end messages to xUnit test output.
+        /// </summary>
+        public ILogFormatter ScopeFormatter
+        {
+            get => _scopeFormatter;
+            set =>
+                _scopeFormatter = value ?? throw new ArgumentNullException(nameof(value));
+        }
+
+        /// <summary>
         ///     Identifies the number of spaces to use for indenting scopes.
         /// </summary>
         public int ScopePaddingSpaces { get; set; } = 3;
+
+        /// <summary>
+        ///     Gets the set of sensitive values that should be filtered out when writing log messages.
+        /// </summary>
+        public Collection<string> SensitiveValues { get; } = new();
     }
 }

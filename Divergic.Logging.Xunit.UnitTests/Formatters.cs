@@ -8,7 +8,7 @@ namespace Divergic.Logging.Xunit.UnitTests
         // This an example message formatter.
         public static string MyCustomFormatter(
             int scopeLevel,
-            string name,
+            string categoryName,
             LogLevel logLevel,
             EventId eventId,
             string message,
@@ -16,7 +16,7 @@ namespace Divergic.Logging.Xunit.UnitTests
         {
             var formatter = new CustomFormatter();
 
-            return formatter.Format(scopeLevel, name, logLevel, eventId, message, exception);
+            return formatter.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
         }
     }
 }

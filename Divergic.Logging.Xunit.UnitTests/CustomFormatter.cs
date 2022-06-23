@@ -8,7 +8,7 @@ namespace Divergic.Logging.Xunit.UnitTests
     {
         public string Format(
             int scopeLevel,
-            string name,
+            string categoryName,
             LogLevel logLevel,
             EventId eventId,
             string message,
@@ -23,9 +23,9 @@ namespace Divergic.Logging.Xunit.UnitTests
 
             sb.Append($"{GetShortLogLevelString(logLevel)} ");
 
-            if (!string.IsNullOrEmpty(name))
+            if (!string.IsNullOrEmpty(categoryName))
             {
-                sb.Append($"{name} ");
+                sb.Append($"{categoryName} ");
             }
 
             if (eventId.Id != 0)
