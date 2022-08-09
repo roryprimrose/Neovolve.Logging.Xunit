@@ -71,7 +71,7 @@
             {
                 var sensitiveValue = _config.SensitiveValues[index];
 
-                value = value.Replace(sensitiveValue, mask, StringComparison.InvariantCultureIgnoreCase);
+                value = value.Replace(sensitiveValue, mask);
             }
 
             return value;
