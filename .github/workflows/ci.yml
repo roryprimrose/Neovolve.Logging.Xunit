@@ -43,11 +43,6 @@ jobs:
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
-    - name: Setup dotnet v3.1
-      uses: actions/setup-dotnet@v2.1.0
-      with:
-        dotnet-version: '3.1.x' # SDK Version to use.
-        
     - name: Setup dotnet v6.0
       uses: actions/setup-dotnet@v2.1.0
       with:

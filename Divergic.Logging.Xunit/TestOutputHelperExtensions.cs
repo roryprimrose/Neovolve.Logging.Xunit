@@ -1,4 +1,5 @@
-﻿namespace Xunit.Abstractions
+﻿// ReSharper disable once CheckNamespace
+namespace Xunit.Abstractions
 {
     using System;
     using System.Runtime.CompilerServices;
@@ -132,10 +133,6 @@
         ///     Builds a logger factory from the specified test output helper.
         /// </summary>
         /// <param name="output">The test output helper.</param>
-        /// <param name="memberName">
-        ///     The member to create the logger for. This is automatically populated using <see cref="CallerMemberNameAttribute" />
-        ///     .
-        /// </param>
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ILoggerFactory BuildLoggerFactory(
@@ -149,10 +146,6 @@
         /// </summary>
         /// <param name="output">The test output helper.</param>
         /// <param name="logLevel">The minimum log level to output.</param>
-        /// <param name="memberName">
-        ///     The member to create the logger for. This is automatically populated using <see cref="CallerMemberNameAttribute" />
-        ///     .
-        /// </param>
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ILoggerFactory BuildLoggerFactory(
@@ -172,10 +165,6 @@
         /// </summary>
         /// <param name="output">The test output helper.</param>
         /// <param name="config">Optional logging configuration.</param>
-        /// <param name="memberName">
-        ///     The member to create the logger for. This is automatically populated using <see cref="CallerMemberNameAttribute" />
-        ///     .
-        /// </param>
         /// <returns>The logger factory.</returns>
         /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
         public static ILoggerFactory BuildLoggerFactory(
