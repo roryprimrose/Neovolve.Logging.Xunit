@@ -1,4 +1,5 @@
-﻿namespace Microsoft.Extensions.Logging
+﻿// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.Logging
 {
     using System;
     using Divergic.Logging.Xunit;

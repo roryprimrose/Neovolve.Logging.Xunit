@@ -13,7 +13,7 @@
         private readonly string _nullFormatted = "[null]";
 
         /// <inheritdoc />
-        public abstract IDisposable BeginScope<TState>(TState state);
+        public abstract IDisposable? BeginScope<TState>(TState state) where TState : notnull;
 
         /// <inheritdoc />
         public abstract bool IsEnabled(LogLevel logLevel);
