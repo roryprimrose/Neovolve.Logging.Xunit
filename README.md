@@ -12,7 +12,6 @@ Divergic.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<
 - [Existing Loggers](#existing-loggers)
 - [Sensitive Values](#sensitive-values)
 - [Configuration](#configuration)
-- [Supporters](#supporters)
 
 ## Installation
 
@@ -24,7 +23,7 @@ Run the following in the NuGet command line or visit the [NuGet package page](ht
 
 ## Usage
 
-The common usage of this package is to call the `BuildLogger` extension method on the xUnit `ITestOutputHelper`.
+The common usage of this package is to call the `BuildLogger<T>` extension method on the xUnit `ITestOutputHelper`.
 
 Consider the following example of a class to test.
 
@@ -36,7 +35,7 @@ public class MyClass
 {
     private readonly ILogger _logger;
 
-    public MyClass(ILogger logger)
+    public MyClass(ILogger<MyClass> logger)
     {
         _logger = logger;
     }
@@ -50,47 +49,7 @@ public class MyClass
 }
 ```
 
-Call `BuildLogger` on `ITestOutputHelper` to generate the `ILogger` that we can inject into the class being tested.
-
-```csharp
-using System;
-using FluentAssertions;
-using Microsoft.Extensions.Logging;
-using Xunit;
-using Xunit.Abstractions;
-
-public class MyClassTests
-{
-    private readonly ITestOutputHelper _output;
-
-    public MyClassTests(ITestOutputHelper output)
-    {
-        _output = output;
-    }
-
-    [Fact]
-    public void DoSomethingReturnsValue()
-    {
-        using var logger = _output.BuildLogger();
-
-        var sut = new MyClass(logger);
-
-        var actual = sut.DoSomething();
-
-        // The xUnit test output should now include the log message from MyClass.DoSomething()
-
-        actual.Should().NotBeNullOrWhiteSpace();
-    }
-}
-```
-
-This would output the following in the test results.
-
-```
-Information [0]: Hey, we did something
-```
-
-Support for `ILogger<T>` is there using the `BuildLoggerFor<T>` extension method.
+Call `BuildLoggerFor<T>()` on `ITestOutputHelper` to generate the `ILogger<T>` to inject into the class being tested.
 
 ```csharp
 public class MyClassTests
@@ -118,12 +77,20 @@ public class MyClassTests
 }
 ```
 
+This would output the following in the test results.
+
+```
+Information [0]: Hey, we did something
+```
+
+Similarly, using the `BuildLogger()` extension method will return an `ILogger` configured with xUnit test output.
+
 The above examples inline the declaration of the logger with `using var` to ensure that the logger instance (and internal `ILoggerFactory`) is disposed. 
 
 You can avoid having to build the logger instance in each unit test method by deriving the test class from either `LoggingTestsBase` or `LoggingTestsBase<T>`. These classes provide the implementation to build the logger and dispose it. They also provide access to the `ITestOutputHelper` instance for writing directly to the test output.
 
 ```csharp
-public class MyClassTests : LoggingTestsBase
+public class MyClassTests : LoggingTestsBase<MyClass>
 {
     public MyClassTests(ITestOutputHelper output) : base(output, LogLevel.Information)
     {
@@ -318,6 +285,8 @@ public class MyClassTests
 
 You may have an integration or acceptance test that requires additional configuration to the log providers on `ILoggerFactory` while also supporting the logging out to xUnit test results. You can do this by create a factory that is already configured with xUnit support.
 
+You can get an xUnit configured `ILoggerFactory` by calling `output.BuildLoggerFactory()`.
+
 ```csharp
 using System;
 using Divergic.Logging.Xunit;
@@ -332,7 +301,7 @@ public class MyClassTests
 
     public MyClassTests(ITestOutputHelper output)
     {
-        var factory = LogFactory.Create(output);
+        var factory = output.BuildLoggerFactory();
 
         // call factory.AddConsole or other provider extension method
 
@@ -352,6 +321,8 @@ public class MyClassTests
     }
 }
 ```
+
+The `BuildLoggerFactory` extension methods provide overloads to set the logging level or define [logging configuration][7].
 
 [Back to top][0]
 
@@ -516,12 +487,6 @@ Logging configuration can be controled by using a `LoggingConfig` class as indic
 **ScopePaddingSpaces**: Defines the number of spaces to use for indenting scopes.
 
 **SensitiveValues**: Defines a collection of sensitive values that will be masked in the test output logging.
-
-[Back to top][0]
-
-## Supporters
-
-This project is supported by [JetBrains](https://www.jetbrains.com/?from=ModelBuilder)
 
 [Back to top][0]
 
