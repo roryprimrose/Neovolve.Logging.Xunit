@@ -45,7 +45,7 @@
         }
 
         /// <inheritdoc />
-        public override IDisposable BeginScope<TState>(TState state)
+        public override IDisposable? BeginScope<TState>(TState state)
         {
             var scope = _logger?.BeginScope(state) ?? NoopDisposable.Instance;
 

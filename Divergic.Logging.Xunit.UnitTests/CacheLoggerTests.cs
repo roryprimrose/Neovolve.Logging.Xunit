@@ -235,13 +235,13 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void LogDoesLogsRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNotNullTest(string data)
+        public void LogDoesLogsRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNotNullTest(string? data)
         {
             const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
-            string Formatter(string message, Exception? error) => data;
+            string Formatter(string message, Exception? error) => data!;
 
             var source = Substitute.For<ILogger>();
 
@@ -282,12 +282,12 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void LogDoesNotLogRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNullTest(string data)
+        public void LogDoesNotLogRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNullTest(string? data)
         {
             const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
-            string Formatter(string message, Exception? error) => data;
+            string Formatter(string message, Exception? error) => data!;
 
             var source = Substitute.For<ILogger>();
 

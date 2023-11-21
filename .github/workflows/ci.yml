@@ -19,37 +19,32 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v3.0.2
+      uses: actions/checkout@v4.1.1
       with:
         fetch-depth: 0
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.9.13
+      uses: gittools/actions/gitversion/setup@v0.10.2
       with:
           versionSpec: '5.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.9.13
+      uses: gittools/actions/gitversion/execute@v0.10.2
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
 
     - name: Update project version
-      uses: roryprimrose/set-vs-sdk-project-version@v1.0.5
+      uses: roryprimrose/set-vs-sdk-project-version@v1.0.6
       with:
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
-    - name: Setup dotnet v3.1
-      uses: actions/setup-dotnet@v2.1.0
-      with:
-        dotnet-version: '3.1.x' # SDK Version to use.
-        
     - name: Setup dotnet v6.0
-      uses: actions/setup-dotnet@v2.1.0
+      uses: actions/setup-dotnet@v3.2.0
       with:
         dotnet-version: '6.0.x' # SDK Version to use.
 
@@ -64,7 +59,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.1.9
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.2.0
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"

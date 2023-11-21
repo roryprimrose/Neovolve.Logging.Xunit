@@ -15,6 +15,40 @@
             _output = output;
         }
 
+        [Fact]
+        public void BuildLoggerFactoryReturnsILoggerFactory()
+        {
+            var factory = _output.BuildLoggerFactory();
+
+            factory.Should().BeAssignableTo<ILoggerFactory>();
+        }
+
+        [Fact]
+        public void BuildLoggerFactoryThrowsExceptionWithNullOutputT()
+        {
+            Action action = () => TestOutputHelperExtensions.BuildLoggerFactory(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void BuildLoggerFactoryWithConfigReturnsILoggerFactory()
+        {
+            var config = new LoggingConfig();
+
+            var factory = _output.BuildLoggerFactory(config);
+
+            factory.Should().BeAssignableTo<ILoggerFactory>();
+        }
+
+        [Fact]
+        public void BuildLoggerFactoryWithLogLevelReturnsILoggerFactory()
+        {
+            var factory = _output.BuildLoggerFactory(LogLevel.Error);
+
+            factory.Should().BeAssignableTo<ILoggerFactory>();
+        }
+
         [Theory]
         [ClassData(typeof(LogLevelDataSet))]
         public void BuildLoggerForTLogsAccordingToLogLevel(LogLevel configuredLevel, LogLevel logLevel, bool isEnabled)
@@ -98,15 +132,7 @@
         }
 
         [Fact]
-        public void BuildLoggerThrowsExceptionWithNullOutputT()
-        {
-            Action action = () => TestOutputHelperExtensions.BuildLogger(null!);
-
-            action.Should().Throw<ArgumentNullException>();
-        }
-
-        [Fact]
-        public void BuildReturnsILogger()
+        public void BuildLoggerReturnsILogger()
         {
             var logger = _output.BuildLogger();
 
@@ -118,7 +144,7 @@
         }
 
         [Fact]
-        public void BuildReturnsUsableLogger()
+        public void BuildLoggerReturnsUsableLogger()
         {
             var logger = _output.BuildLogger();
 
@@ -128,7 +154,15 @@
         }
 
         [Fact]
-        public void BuildWithLoggingConfigReturnsUsableLogger()
+        public void BuildLoggerThrowsExceptionWithNullOutputT()
+        {
+            Action action = () => TestOutputHelperExtensions.BuildLogger(null!);
+
+            action.Should().Throw<ArgumentNullException>();
+        }
+
+        [Fact]
+        public void BuildLoggerWithLoggingConfigReturnsUsableLogger()
         {
             var config = new LoggingConfig();
 

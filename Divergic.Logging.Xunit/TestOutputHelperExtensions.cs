@@ -1,4 +1,5 @@
-﻿namespace Xunit.Abstractions
+﻿// ReSharper disable once CheckNamespace
+namespace Xunit.Abstractions
 {
     using System;
     using System.Runtime.CompilerServices;
@@ -127,5 +128,56 @@
 
             return logger.WithCache(factory);
         }
+        
+        /// <summary>
+        ///     Builds a logger factory from the specified test output helper.
+        /// </summary>
+        /// <param name="output">The test output helper.</param>
+        /// <returns>The logger factory.</returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ILoggerFactory BuildLoggerFactory(
+            this ITestOutputHelper output)
+        {
+            return BuildLoggerFactory(output, null);
+        }
+
+        /// <summary>
+        ///     Builds a logger factory from the specified test output helper.
+        /// </summary>
+        /// <param name="output">The test output helper.</param>
+        /// <param name="logLevel">The minimum log level to output.</param>
+        /// <returns>The logger factory.</returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ILoggerFactory BuildLoggerFactory(
+            this ITestOutputHelper output,
+            LogLevel logLevel)
+        {
+            var config = new LoggingConfig
+            {
+                LogLevel = logLevel
+            };
+
+            return BuildLoggerFactory(output, config);
+        }
+
+        /// <summary>
+        ///     Builds a logger factory from the specified test output helper.
+        /// </summary>
+        /// <param name="output">The test output helper.</param>
+        /// <param name="config">Optional logging configuration.</param>
+        /// <returns>The logger factory.</returns>
+        /// <exception cref="ArgumentNullException">The <paramref name="output" /> is <c>null</c>.</exception>
+        public static ILoggerFactory BuildLoggerFactory(
+            this ITestOutputHelper output,
+            LoggingConfig? config)
+        {
+            output = output ?? throw new ArgumentNullException(nameof(output));
+
+            // Do not use the using keyword here because the factory will be disposed before the cache logger is finished with it
+            var factory = LogFactory.Create(output, config);
+
+            return factory;
+        }
+
     }
 }

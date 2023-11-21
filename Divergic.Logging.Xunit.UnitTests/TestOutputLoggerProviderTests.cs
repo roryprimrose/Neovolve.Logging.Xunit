@@ -22,14 +22,14 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void CreateLoggerThrowsExceptionWithInvalidCategoryNameTest(string categoryName)
+        public void CreateLoggerThrowsExceptionWithInvalidCategoryNameTest(string? categoryName)
         {
             var output = Substitute.For<ITestOutputHelper>();
 
             using var sut = new TestOutputLoggerProvider(output);
 
             // ReSharper disable once AccessToDisposedClosure
-            Action action = () => sut.CreateLogger(categoryName);
+            Action action = () => sut.CreateLogger(categoryName!);
 
             action.Should().Throw<ArgumentException>();
         }
