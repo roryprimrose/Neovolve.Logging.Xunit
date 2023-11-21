@@ -79,7 +79,7 @@
 
             var task = new Task(async () =>
             {
-                await Task.Delay(0).ConfigureAwait(false);
+                await Task.Delay(0);
 
                 sut.LogCritical("message2");
             });
@@ -198,12 +198,12 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void ThrowsExceptionWhenCreatedWithInvalidCategoryNameTest(string categoryName)
+        public void ThrowsExceptionWhenCreatedWithInvalidCategoryNameTest(string? categoryName)
         {
             var output = Substitute.For<ITestOutputHelper>();
 
             // ReSharper disable once ObjectCreationAsStatement
-            Action action = () => new TestOutputLogger(categoryName, output);
+            Action action = () => new TestOutputLogger(categoryName!, output);
 
             action.Should().Throw<ArgumentException>();
         }

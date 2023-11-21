@@ -71,7 +71,7 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void TestOutputWritesMessagesUsingScopesWithoutState(string scopeState)
+        public void TestOutputWritesMessagesUsingScopesWithoutState(string? scopeState)
         {
             Logger.LogCritical("Writing critical message");
             Logger.LogDebug("Writing debug message");
@@ -80,11 +80,11 @@
             Logger.LogTrace("Writing trace message");
             Logger.LogWarning("Writing warning message");
 
-            using (Logger.BeginScope((object) scopeState))
+            using (Logger.BeginScope((object) scopeState!))
             {
                 Logger.LogInformation("Inside first scope");
 
-                using (Logger.BeginScope((object) scopeState))
+                using (Logger.BeginScope((object) scopeState!))
                 {
                     Logger.LogInformation("Inside second scope");
                 }
@@ -195,7 +195,7 @@
                         return Task.CompletedTask;
                     })).ToList();
 
-            await Task.WhenAll(tasks).ConfigureAwait(false);
+            await Task.WhenAll(tasks);
 
             Task StartOnDefaultScheduler(Func<Task> asyncFunc)
             {

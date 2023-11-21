@@ -80,7 +80,7 @@
         [InlineData("", true)]
         [InlineData("  ", true)]
         [InlineData("stuff", true)]
-        public void FormatIncludesNewLineBetweenMessageAndException(string message, bool exceptionExists)
+        public void FormatIncludesNewLineBetweenMessageAndException(string? message, bool exceptionExists)
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
@@ -93,7 +93,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, exception);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message!, exception);
 
             actual.Should().NotStartWith(Environment.NewLine);
             actual.Should().NotEndWith(Environment.NewLine);
@@ -125,7 +125,7 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void FormatReturnsEmptyWhenMessageIsNullEmptyOrWhiteSpace(string message)
+        public void FormatReturnsEmptyWhenMessageIsNullEmptyOrWhiteSpace(string? message)
         {
             var config = new LoggingConfig().Set(x => x.ScopePaddingSpaces = 2);
             var scopeLevel = 1;
@@ -135,7 +135,7 @@
 
             var sut = new DefaultFormatter(config);
 
-            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message, null);
+            var actual = sut.Format(scopeLevel, categoryName, logLevel, eventId, message!, null);
 
             actual.Should().BeEmpty();
         }
