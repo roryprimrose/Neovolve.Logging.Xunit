@@ -108,7 +108,7 @@ jobs:
 
     steps:
     - name: Download packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: packages
       
@@ -129,12 +129,12 @@ jobs:
     steps:
     
     - name: Download packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: packages
       
     - name: Download version
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: version
 
