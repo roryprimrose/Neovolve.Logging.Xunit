@@ -79,13 +79,13 @@ jobs:
       
     - name: Resolve project name
       shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=Divergic.Logging.Xunit" -Encoding utf8
       
     - name: Pack
-      run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v4
       with:
         name: packages
         path: staging
@@ -95,7 +95,7 @@ jobs:
       run: |
         echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > version.txt
     - name: Upload version
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: version
         path: version.txt
@@ -108,7 +108,7 @@ jobs:
 
     steps:
     - name: Download packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: packages
       
@@ -129,12 +129,12 @@ jobs:
     steps:
     
     - name: Download packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: packages
       
     - name: Download version
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: version
 
@@ -146,7 +146,7 @@ jobs:
     
     - name: Resolve project name
       shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=Divergic.Logging.Xunit" -Encoding utf8
       
     - name: Setup nuget
       uses: nuget/setup-nuget@v1
@@ -177,8 +177,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_path: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
     
     - name: Upload release asset for symbol package
@@ -188,6 +188,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_path: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_content_type: application/zip
