@@ -9,9 +9,9 @@
 
 		<Title>ILogger for xUnit</Title>
 		<Authors>rprimrose</Authors>
-		<Company>Divergic Ptd Ltd</Company>
+		<Company>Neovolve</Company>
 		<Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
-		<Copyright>Copyright © Divergic Pty Ltd 2018</Copyright>
+		<Copyright>Copyright © Neovolve 2018</Copyright>
 		<IncludeSymbols>true</IncludeSymbols>
 		<NeutralLanguage>en-US</NeutralLanguage>
 		<PackageProjectUrl>https://github.com/roryprimrose/Neovolve.Logging.Xunit</PackageProjectUrl>
