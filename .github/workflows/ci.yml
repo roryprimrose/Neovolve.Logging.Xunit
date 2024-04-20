@@ -79,7 +79,7 @@ jobs:
       
     - name: Resolve project name
       shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$('Divergic.Logging.Xunit'.substring('Divergic.Logging.Xunit'.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Pack
       run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
@@ -146,7 +146,7 @@ jobs:
     
     - name: Resolve project name
       shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$('Divergic.Logging.Xunit'.substring('Divergic.Logging.Xunit'.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Setup nuget
       uses: nuget/setup-nuget@v1
