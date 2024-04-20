@@ -85,7 +85,7 @@ jobs:
       run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
-      uses: actions/upload-artifact@master
+      uses: actions/upload-artifact@v4
       with:
         name: packages
         path: staging
@@ -95,7 +95,7 @@ jobs:
       run: |
         echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > version.txt
     - name: Upload version
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: version
         path: version.txt
@@ -108,7 +108,7 @@ jobs:
 
     steps:
     - name: Download packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: packages
       
@@ -129,12 +129,12 @@ jobs:
     steps:
     
     - name: Download packages
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: packages
       
     - name: Download version
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: version
 
