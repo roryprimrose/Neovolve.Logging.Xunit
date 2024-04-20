@@ -44,7 +44,7 @@ jobs:
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
     - name: Setup dotnet v6.0
-      uses: actions/setup-dotnet@v3.2.0
+      uses: actions/setup-dotnet@v4.0.0
       with:
         dotnet-version: '6.0.x' # SDK Version to use.
 
@@ -76,13 +76,13 @@ jobs:
         minimum_coverage: 75
       # Don't run on fork or dependabot builds
       if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
-      
+         
     - name: Resolve project name
       shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=Divergic.Logging.Xunit" -Encoding utf8
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Pack
-      run: dotnet pack "./Divergic.Logging.Xunit/Divergic.Logging.Xunit.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@v4
@@ -113,7 +113,7 @@ jobs:
         name: packages
       
     - name: Setup nuget
-      uses: nuget/setup-nuget@v1
+      uses: nuget/setup-nuget@v2
 
     - name: Publish to MyGet.org
       env: 
@@ -146,10 +146,10 @@ jobs:
     
     - name: Resolve project name
       shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=Divergic.Logging.Xunit" -Encoding utf8
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Setup nuget
-      uses: nuget/setup-nuget@v1
+      uses: nuget/setup-nuget@v2
       
     - name: Publish to GitHub
       run: nuget push *.*.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
@@ -177,8 +177,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.nupkg
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
     
     - name: Upload release asset for symbol package
@@ -188,6 +188,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: Divergic.Logging.Xunit.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_content_type: application/zip

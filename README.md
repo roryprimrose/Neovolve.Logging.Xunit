@@ -1,12 +1,8 @@
-# Package rename
+﻿# Introduction
 
-Note: This package is being renamed to [Neovolve.Logging.Xunit](https://nuget.org/packages/Neovolve.Logging.Xunit).
+Neovolve.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<T>` that wraps around the `ITestOutputHelper` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
 
-# Introduction
-
-Divergic.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<T>` that wraps around the `ITestOutputHelper` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
-
-[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/roryprimrose/Divergic.Logging.Xunit/blob/master/LICENSE)&nbsp;[![Nuget](https://img.shields.io/nuget/v/Divergic.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Divergic.Logging.Xunit.svg)](https://www.nuget.org/packages/Divergic.Logging.Xunit)&nbsp;[![Actions Status](https://github.com/roryprimrose/Divergic.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/roryprimrose/Divergic.Logging.Xunit/actions)
+[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/roryprimrose/Neovolve.Logging.Xunit/blob/master/LICENSE)&nbsp;[![Nuget](https://img.shields.io/nuget/v/Neovolve.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.Logging.Xunit.svg)](https://www.nuget.org/packages/Neovolve.Logging.Xunit)&nbsp;[![Actions Status](https://github.com/roryprimrose/Neovolve.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/roryprimrose/Neovolve.Logging.Xunit/actions)
 
 - [Installation](#installation)
 - [Usage](#usage)
@@ -19,9 +15,9 @@ Divergic.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<
 
 ## Installation
 
-Run the following in the NuGet command line or visit the [NuGet package page](https://nuget.org/packages/Divergic.Logging.Xunit).
+Run the following in the NuGet command line or visit the [NuGet package page](https://nuget.org/packages/Neovolve.Logging.Xunit).
 
-`Install-Package Divergic.Logging.Xunit`
+`Install-Package Neovolve.Logging.Xunit`
 
 [Back to top][0]
 
@@ -226,7 +222,7 @@ The `BuildLogger` and `BuildLoggerFor<T>` extension methods support this by retu
 
 ```csharp
 using System;
-using Divergic.Logging.Xunit;
+using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -260,7 +256,7 @@ Perhaps you don't want to use the xUnit `ITestOutputHelper` but still want to us
 
 ```csharp
 using System;
-using Divergic.Logging.Xunit;
+using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -293,7 +289,7 @@ You can get an xUnit configured `ILoggerFactory` by calling `output.BuildLoggerF
 
 ```csharp
 using System;
-using Divergic.Logging.Xunit;
+using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
@@ -336,7 +332,7 @@ Already have an existing logger and want the above cache support? Got you covere
 
 ```csharp
 using System;
-using Divergic.Logging.Xunit;
+using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
@@ -368,7 +364,7 @@ The `WithCache()` also supports `ILogger<T>`.
 
 ```csharp
 using System;
-using Divergic.Logging.Xunit;
+using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using NSubstitute;
