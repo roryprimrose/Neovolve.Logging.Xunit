@@ -1,3 +1,7 @@
+# Package rename
+
+Note: This package is being renamed to [Neovolve.Logging.Xunit](https://nuget.org/packages/Neovolve.Logging.Xunit).
+
 # Introduction
 
 Divergic.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<T>` that wraps around the `ITestOutputHelper` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
