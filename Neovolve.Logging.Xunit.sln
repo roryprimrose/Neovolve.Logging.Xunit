@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.156
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neovolve.Logging.Xunit", "Neovolve.Logging.Xunit\Neovolve.Logging.Xunit.csproj", "{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neovolve.Logging.Xunit.UnitTests", "Neovolve.Logging.Xunit.UnitTests\Neovolve.Logging.Xunit.UnitTests.csproj", "{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{78B2ADC7-6CDE-4DEA-88E5-CE0C3F5D4FD8}"
+	ProjectSection(SolutionItems) = preProject
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+		Solution Items\Application.ruleset = Solution Items\Application.ruleset
+		GitVersion.yml = GitVersion.yml
+		LICENSE = LICENSE
+		README.md = README.md
+		Solution Items\UnitTest.ruleset = Solution Items\UnitTest.ruleset
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{68003956-8AC1-4F2D-B00C-564FDB93D639}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{8597A24D-ACFB-4347-BB82-BCDC82872EE6}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D2D06F55-B34D-40D8-B8F6-A82C9F0B0E90}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{8597A24D-ACFB-4347-BB82-BCDC82872EE6} = {68003956-8AC1-4F2D-B00C-564FDB93D639}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {2FA63CE2-FAD0-4D94-B8F7-60C98D836222}
+	EndGlobalSection
+EndGlobal
