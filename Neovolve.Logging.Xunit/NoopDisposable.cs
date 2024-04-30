@@ -4,7 +4,7 @@
 
     internal class NoopDisposable : IDisposable
     {
-        public static readonly NoopDisposable Instance = new NoopDisposable();
+        public static readonly NoopDisposable Instance = new();
 
         public void Dispose()
         {

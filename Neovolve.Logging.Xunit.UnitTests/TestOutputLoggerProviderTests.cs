@@ -22,7 +22,7 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void CreateLoggerThrowsExceptionWithInvalidCategoryNameTest(string? categoryName)
+        public void CreateLoggerThrowsExceptionWithInvalidCategoryName(string? categoryName)
         {
             var output = Substitute.For<ITestOutputHelper>();
 
