@@ -3,7 +3,6 @@
     using System;
     using System.Collections.Concurrent;
     using System.Collections.Generic;
-    using System.Collections.ObjectModel;
     using System.Linq;
     using System.Threading;
     using Microsoft.Extensions.Logging;
@@ -14,11 +13,10 @@
     /// </summary>
     public class CacheLogger : FilterLogger, ICacheLogger
     {
-        private static readonly AsyncLocal<ConcurrentStack<CacheScope>> _scopes =
-            new AsyncLocal<ConcurrentStack<CacheScope>>();
+        private static readonly AsyncLocal<ConcurrentStack<CacheScope>> _scopes = new();
 
         private readonly ILoggerFactory? _factory;
-        private readonly IList<LogEntry> _logEntries = new List<LogEntry>();
+        private readonly ConcurrentStack<LogEntry> _logEntries = new();
         private readonly ILogger? _logger;
 
         /// <summary>
@@ -103,7 +101,7 @@
                 message,
                 Scopes.Select(s => s.State).ToArray());
 
-            _logEntries.Add(entry);
+            _logEntries.Push(entry);
 
             _logger?.Log(logLevel, eventId, state, exception, formatter);
         }
@@ -116,7 +114,7 @@
         /// <summary>
         ///     Gets the cached log entries.
         /// </summary>
-        public IReadOnlyCollection<LogEntry> Entries => new ReadOnlyCollection<LogEntry>(_logEntries);
+        public IReadOnlyCollection<LogEntry> Entries => _logEntries.Reverse().ToList();
 
         /// <summary>
         ///     Gets the last entry logged.
@@ -125,14 +123,12 @@
         {
             get
             {
-                var count = _logEntries.Count;
-
-                if (count == 0)
+                if (_logEntries.TryPeek(out var value))
                 {
-                    return null;
+                    return value;
                 }
-
-                return _logEntries[count - 1];
+                
+                return null;
             }
         }
 
@@ -144,7 +140,7 @@
 
                 if (scopes == null)
                 {
-                    scopes = new ConcurrentStack<CacheScope>();
+                    scopes = new();
 
                     _scopes.Value = scopes;
                 }

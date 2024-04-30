@@ -1,7 +1,9 @@
 ﻿namespace Neovolve.Logging.Xunit.UnitTests
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
+    using System.Threading.Tasks;
     using FluentAssertions;
     using global::Xunit;
     using Microsoft.Extensions.Logging;
@@ -28,7 +30,7 @@
 
             var logger = Substitute.For<ILogger>();
 
-            logger.BeginScope(state).Returns((IDisposable) null!);
+            logger.BeginScope(state).Returns((IDisposable)null!);
 
             using var sut = new CacheLogger(logger);
 
@@ -88,10 +90,27 @@
             factory.Received().Dispose();
         }
 
+        [Fact]
+        public void EntriesReturnsRecordsEntriesInOrder()
+        {
+            using var sut = new CacheLogger();
+
+            sut.LogInformation("first");
+            sut.LogInformation("second");
+            sut.LogInformation("third");
+
+            var entries = sut.Entries.ToList();
+
+            entries.Should().HaveCount(3);
+            entries[0].Message.Should().Be("first");
+            entries[1].Message.Should().Be("second");
+            entries[2].Message.Should().Be("third");
+        }
+
         [Theory]
         [InlineData(true)]
         [InlineData(false)]
-        public void IsEnabledReturnsSourceLoggerIsEnabledTest(bool expected)
+        public void IsEnabledReturnsSourceLoggerIsEnabled(bool expected)
         {
             const LogLevel level = LogLevel.Error;
 
@@ -144,7 +163,7 @@
             var logger = Substitute.For<ILogger>();
 
             logger.IsEnabled(Arg.Any<LogLevel>()).Returns(true);
-            logger.BeginScope(state).Returns((IDisposable) null!);
+            logger.BeginScope(state).Returns((IDisposable)null!);
 
             using var sut = new CacheLogger(logger);
 
@@ -208,7 +227,7 @@
         [InlineData(LogLevel.None)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]
-        public void LogCachesLogMessageTest(LogLevel logLevel)
+        public void LogCachesLogMessage(LogLevel logLevel)
         {
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
@@ -231,11 +250,40 @@
             entry.Message.Should().Be(data);
         }
 
+        [Fact]
+        public async Task LogCanCacheLogMessagesFromMultipleThreads()
+        {
+            const int count = 1000;
+            var tasks = new List<Task>(count);
+            var eventId = Model.Create<EventId>();
+            var state = Guid.NewGuid().ToString();
+            var data = Guid.NewGuid().ToString();
+            var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
+            string Formatter(string message, Exception? error) => data;
+
+            using var sut = new CacheLogger();
+
+            for (var index = 0; index < count; index++)
+            {
+                var task = Task.Run(async () =>
+                {
+                    await Task.Delay(100);
+                    sut.Log(LogLevel.Error, eventId, state, exception, Formatter);
+                });
+
+                tasks.Add(task);
+            }
+
+            await Task.WhenAll(tasks);
+
+            sut.Entries.Should().HaveCount(count);
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void LogDoesLogsRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNotNullTest(string? data)
+        public void LogDoesLogsRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNotNull(string? data)
         {
             const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();
@@ -282,7 +330,7 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData("  ")]
-        public void LogDoesNotLogRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNullTest(string? data)
+        public void LogDoesNotLogRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNull(string? data)
         {
             const LogLevel logLevel = LogLevel.Error;
             var eventId = Model.Create<EventId>();

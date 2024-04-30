@@ -57,7 +57,7 @@
                 case LogLevel.Error: return "Error";
                 case LogLevel.Critical: return "Crit ";
                 case LogLevel.None: return "None ";
-                default: throw new Exception("invalid");
+                default: throw new("invalid");
             }
         }
     }

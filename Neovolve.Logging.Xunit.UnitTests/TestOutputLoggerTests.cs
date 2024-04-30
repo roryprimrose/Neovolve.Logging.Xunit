@@ -52,7 +52,7 @@
 
         [Theory]
         [ClassData(typeof(LogLevelDataSet))]
-        public void IsEnabledReturnsBasedOnConfiguredLevelTest(LogLevel configuredLevel, LogLevel logLevel,
+        public void IsEnabledReturnsBasedOnConfiguredLevel(LogLevel configuredLevel, LogLevel logLevel,
             bool isEnabled)
         {
             var categoryName = Guid.NewGuid().ToString();
@@ -114,7 +114,7 @@
         }
 
         [Fact]
-        public void LogWritesExceptionTest()
+        public void LogWritesException()
         {
             var logLevel = LogLevel.Information;
             var eventId = Model.Create<EventId>();
@@ -142,7 +142,7 @@
         [InlineData(LogLevel.Information)]
         [InlineData(LogLevel.Trace)]
         [InlineData(LogLevel.Warning)]
-        public void LogWritesLogLevelToOutputTest(LogLevel logLevel)
+        public void LogWritesLogLevelToOutput(LogLevel logLevel)
         {
             var eventId = Model.Create<EventId>();
             var state = Guid.NewGuid().ToString();
@@ -198,7 +198,7 @@
         [InlineData(null)]
         [InlineData("")]
         [InlineData(" ")]
-        public void ThrowsExceptionWhenCreatedWithInvalidCategoryNameTest(string? categoryName)
+        public void ThrowsExceptionWhenCreatedWithInvalidCategoryName(string? categoryName)
         {
             var output = Substitute.For<ITestOutputHelper>();
 

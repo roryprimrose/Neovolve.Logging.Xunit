@@ -13,8 +13,7 @@
     /// </summary>
     public class TestOutputLogger : FilterLogger
     {
-        private static readonly AsyncLocal<ConcurrentStack<ScopeWriter>> _scopes =
-            new AsyncLocal<ConcurrentStack<ScopeWriter>>();
+        private static readonly AsyncLocal<ConcurrentStack<ScopeWriter>> _scopes = new();
 
         private readonly LoggingConfig _config;
         private readonly string _categoryName;
@@ -101,7 +100,7 @@
 
                 if (scopes == null)
                 {
-                    scopes = new ConcurrentStack<ScopeWriter>();
+                    scopes = new();
 
                     _scopes.Value = scopes;
                 }
