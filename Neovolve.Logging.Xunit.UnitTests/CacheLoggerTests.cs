@@ -272,7 +272,7 @@
             entry.EventId.Should().Be(eventId);
             entry.Exception.Should().Be(exception);
             entry.LogLevel.Should().Be(logLevel);
-            sut.Last.State.Should().ContainKey("State").WhoseValue.Should().Be(state);
+            sut.Last!.State.Should().ContainKey("State").WhoseValue.Should().Be(state);
             entry.Message.Should().Be(data);
         }
 
