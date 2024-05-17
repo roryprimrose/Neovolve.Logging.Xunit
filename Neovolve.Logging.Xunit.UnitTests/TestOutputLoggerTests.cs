@@ -31,7 +31,7 @@
 
             actual.Should().NotBeNull();
 
-            Action action = () => actual.Dispose();
+            var action = () => actual.Dispose();
 
             action.Should().NotThrow();
         }
@@ -73,7 +73,7 @@
         {
             // This test should not fail the test runner
             var categoryName = Guid.NewGuid().ToString();
-            var config = new LoggingConfig {IgnoreTestBoundaryException = true};
+            var config = new LoggingConfig { IgnoreTestBoundaryException = true };
 
             var sut = new TestOutputLogger(categoryName, _output, config);
 
@@ -179,7 +179,7 @@
             string Formatter(string logState, Exception? error) => message;
 
             var formatter = Substitute.For<ILogFormatter>();
-            var config = new LoggingConfig {Formatter = formatter};
+            var config = new LoggingConfig { Formatter = formatter };
 
             formatter.Format(0, categoryName, logLevel, eventId, message, exception).Returns(expected);
 
@@ -235,7 +235,7 @@
 
             var sut = new TestOutputLogger(categoryName, output, config);
 
-            Action action = () => sut.LogInformation(message);
+            var action = () => sut.LogInformation(message);
 
             action.Should().NotThrow();
         }
@@ -256,7 +256,7 @@
 
             var sut = new TestOutputLogger(categoryName, output, config);
 
-            Action action = () => sut.LogInformation(message);
+            var action = () => sut.LogInformation(message);
 
             action.Should().Throw<InvalidOperationException>();
         }

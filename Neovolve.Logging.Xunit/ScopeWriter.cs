@@ -43,7 +43,7 @@
             {
                 // Add the padding to the structured data
                 var structuredLines =
-                    _structuredStateData.Split(new[] {Environment.NewLine}, StringSplitOptions.RemoveEmptyEntries);
+                    _structuredStateData.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
 
                 WriteLog(_depth + 1, "Scope data: ");
 
@@ -54,16 +54,6 @@
             }
         }
 
-        private void WriteLog(int depth, string message)
-        {
-            var formattedMessage = _config.ScopeFormatter.Format(depth, _category, LogLevel.Information, 0, message, null);
-
-            _output.WriteLine(formattedMessage);
-
-            // Write the message to the output window
-            Trace.WriteLine(formattedMessage);
-        }
-
         public void Dispose()
         {
             var scopeStartMessage = BuildScopeStateMessage(true);
@@ -72,7 +62,7 @@
 
             _onScopeEnd.Invoke();
         }
-        
+
         private string BuildScopeStateMessage(bool isScopeEnd)
         {
             var endScopeMarker = isScopeEnd ? "/" : string.Empty;
@@ -124,6 +114,17 @@
 
                 _scopeMessage = defaultScopeMessage;
             }
+        }
+
+        private void WriteLog(int depth, string message)
+        {
+            var formattedMessage =
+                _config.ScopeFormatter.Format(depth, _category, LogLevel.Information, 0, message, null);
+
+            _output.WriteLine(formattedMessage);
+
+            // Write the message to the output window
+            Trace.WriteLine(formattedMessage);
         }
     }
 }

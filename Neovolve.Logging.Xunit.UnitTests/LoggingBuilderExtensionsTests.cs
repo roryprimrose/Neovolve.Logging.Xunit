@@ -54,7 +54,7 @@
         {
             ILoggingBuilder builder = null!;
 
-            Action action = () => builder.AddXunit(_output);
+            var action = () => builder.AddXunit(_output);
 
             action.Should().Throw<ArgumentNullException>();
         }
@@ -64,7 +64,7 @@
         {
             var builder = Substitute.For<ILoggingBuilder>();
 
-            Action action = () => builder.AddXunit(null!);
+            var action = () => builder.AddXunit(null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

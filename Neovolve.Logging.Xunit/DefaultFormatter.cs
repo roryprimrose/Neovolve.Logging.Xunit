@@ -78,15 +78,16 @@
         }
 
         /// <summary>
-        /// Returns the string format mask used to generate a log message.
+        ///     Returns the string format mask used to generate a log message.
         /// </summary>
-        /// <remarks>The format values are:
-        /// <ul>
-        ///     <li>0: Padding</li>
-        ///     <li>1: Level</li>
-        ///     <li>2: Event Id</li>
-        ///     <li>3: Message</li>
-        /// </ul>
+        /// <remarks>
+        ///     The format values are:
+        ///     <ul>
+        ///         <li>0: Padding</li>
+        ///         <li>1: Level</li>
+        ///         <li>2: Event Id</li>
+        ///         <li>3: Message</li>
+        ///     </ul>
         /// </remarks>
         protected virtual string FormatMask { get; } = "{0}{1} [{2}]: {3}";
     }

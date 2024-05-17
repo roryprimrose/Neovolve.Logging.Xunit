@@ -14,5 +14,6 @@ public class StructuredData
 
     public string LastName { get; set; } = string.Empty;
 }
+
 // ReSharper restore once ClassNeverInstantiated.Local
 // ReSharper restore UnusedMember.Local

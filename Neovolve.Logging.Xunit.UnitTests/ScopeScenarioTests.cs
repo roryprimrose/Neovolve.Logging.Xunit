@@ -80,11 +80,11 @@
             Logger.LogTrace("Writing trace message");
             Logger.LogWarning("Writing warning message");
 
-            using (Logger.BeginScope((object) scopeState!))
+            using (Logger.BeginScope((object)scopeState!))
             {
                 Logger.LogInformation("Inside first scope");
 
-                using (Logger.BeginScope((object) scopeState!))
+                using (Logger.BeginScope((object)scopeState!))
                 {
                     Logger.LogInformation("Inside second scope");
                 }

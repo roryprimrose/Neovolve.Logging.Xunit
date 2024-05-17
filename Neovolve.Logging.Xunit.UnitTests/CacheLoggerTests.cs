@@ -108,7 +108,7 @@
             entry.State.Should().NotBeNull();
 
             var data = ((IEnumerable<KeyValuePair<string, object>>)entry.State).ToList();
-            
+
             data.Should().NotBeNull();
             data.Should().ContainKey("First").WhoseValue.Should().Be(first);
             data.Should().ContainKey("Second").WhoseValue.Should().Be(second);

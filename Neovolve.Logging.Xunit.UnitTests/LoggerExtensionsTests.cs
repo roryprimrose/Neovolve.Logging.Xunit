@@ -5,7 +5,7 @@
     using global::Xunit;
     using Microsoft.Extensions.Logging;
     using NSubstitute;
-    using LoggerExtensions = Xunit.LoggerExtensions;
+    using LoggerExtensions = LoggerExtensions;
 
     public class LoggerExtensionsTests
     {
