@@ -27,7 +27,7 @@
         [Fact]
         public void CreateThrowsExceptionWithNullOutput()
         {
-            Action action = () =>
+            var action = () =>
             {
                 using (LogFactory.Create(null!))
                 {

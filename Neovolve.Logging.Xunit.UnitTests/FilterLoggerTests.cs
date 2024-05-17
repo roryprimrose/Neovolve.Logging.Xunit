@@ -49,7 +49,7 @@
 
             var sut = new IsEnabledWrapper();
 
-            Action action = () => sut.Log(LogLevel.Critical, default, state, exception, null!);
+            var action = () => sut.Log(LogLevel.Critical, default, state, exception, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }

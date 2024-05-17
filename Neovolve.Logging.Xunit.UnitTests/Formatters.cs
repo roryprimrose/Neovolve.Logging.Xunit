@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.Extensions.Logging;
-
-namespace Neovolve.Logging.Xunit.UnitTests
+﻿namespace Neovolve.Logging.Xunit.UnitTests
 {
+    using System;
+    using Microsoft.Extensions.Logging;
+
     internal static class Formatters
     {
         // This an example message formatter.

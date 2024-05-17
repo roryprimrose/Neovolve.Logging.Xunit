@@ -26,7 +26,7 @@
         {
             var output = Substitute.For<ITestOutputHelper>();
 
-            var sut = (ILoggerFactory) null!;
+            var sut = (ILoggerFactory)null!;
 
             Action action = () => sut.AddXunit(output);
 
