@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.156
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Neovolve.Logging.Xunit", "Neovolve.Logging.Xunit\Neovolve.Logging.Xunit.csproj", "{2F7C39EF-7EDE-40CA-B475-5C3789718D0D}"
 EndProject
@@ -12,8 +12,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		.gitattributes = .gitattributes
 		.gitignore = .gitignore
 		Solution Items\Application.ruleset = Solution Items\Application.ruleset
+		Directory.Packages.props = Directory.Packages.props
 		GitVersion.yml = GitVersion.yml
 		LICENSE = LICENSE
+		NuGet.config = NuGet.config
 		README.md = README.md
 		Solution Items\UnitTest.ruleset = Solution Items\UnitTest.ruleset
 	EndProjectSection
