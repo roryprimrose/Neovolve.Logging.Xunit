@@ -24,13 +24,13 @@ jobs:
         fetch-depth: 0
 
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v0.10.2
+      uses: gittools/actions/gitversion/setup@v1.1.1
       with:
           versionSpec: '5.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v0.10.2
+      uses: gittools/actions/gitversion/execute@v1.1.1
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
@@ -59,7 +59,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.2.0
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.0
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
@@ -113,7 +113,7 @@ jobs:
         name: packages
       
     - name: Setup nuget
-      uses: nuget/setup-nuget@v2
+      uses: nuget/setup-nuget@v3
 
     - name: Publish to MyGet.org
       env: 
@@ -149,7 +149,7 @@ jobs:
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Setup nuget
-      uses: nuget/setup-nuget@v2
+      uses: nuget/setup-nuget@v3
       
     - name: Publish to GitHub
       run: nuget push *.*.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
