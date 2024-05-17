@@ -72,6 +72,7 @@
             using var sut = new CacheLogger();
 
             // ReSharper disable once AccessToDisposedClosure
+            // ReSharper disable once DisposeOnUsingVariable
             var action = () => sut.Dispose();
 
             action.Should().NotThrow();
@@ -85,6 +86,7 @@
 
             using var sut = new CacheLogger(logger, factory);
 
+            // ReSharper disable once DisposeOnUsingVariable
             sut.Dispose();
 
             factory.Received().Dispose();
@@ -294,6 +296,8 @@
                 var task = Task.Run(async () =>
                 {
                     await Task.Delay(100);
+
+                    // ReSharper disable once AccessToDisposedClosure
                     sut.Log(LogLevel.Error, eventId, state, exception, Formatter);
                 });
 
@@ -457,6 +461,18 @@
         }
 
         [Fact]
+        public void LogIgnoresLogWrittenEventWhenNotReferenced()
+        {
+            using var sut = new CacheLogger();
+
+            // ReSharper disable once AccessToDisposedClosure
+            var action = () => sut.Log(LogLevel.Information, new EventId(), "Test", null,
+                (state, _) => state.ToString());
+
+            action.Should().NotThrow();
+        }
+
+        [Fact]
         public void LogIgnoresNullFormattedMessage()
         {
             var exception = new TimeoutException();
@@ -468,6 +484,27 @@
             sut.Count.Should().Be(1);
             sut.Last!.Exception.Should().Be(exception);
             sut.Last.Message.Should().BeEmpty();
+        }
+
+        [Fact]
+        public void LogRaisesLogWrittenEvent()
+        {
+            using var sut = new CacheLogger();
+
+            var eventRaised = false;
+
+            sut.LogWritten += (source, logEvent) =>
+            {
+                // ReSharper disable once AccessToDisposedClosure
+                source.Should().Be(sut);
+                logEvent.Should().NotBeNull();
+
+                eventRaised = true;
+            };
+
+            sut.Log(LogLevel.Information, new EventId(), "Test", null, (state, _) => state.ToString());
+
+            eventRaised.Should().BeTrue();
         }
 
         [Fact]
