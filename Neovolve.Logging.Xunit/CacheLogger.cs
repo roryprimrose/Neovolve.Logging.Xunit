@@ -42,6 +42,12 @@
             _factory = factory;
         }
 
+
+        /// <summary>
+        ///     Occurs when a log entry is written.
+        /// </summary>
+        public event EventHandler<LogEntry>? LogWritten;
+
         /// <inheritdoc />
         public override IDisposable? BeginScope<TState>(TState state)
         {
@@ -104,6 +110,8 @@
             _logEntries.Push(entry);
 
             _logger?.Log(logLevel, eventId, state, exception, formatter);
+
+            LogWritten?.Invoke(this, entry);
         }
 
         /// <summary>

@@ -26,7 +26,7 @@
 
             var sut = new IsEnabledWrapper();
 
-            sut.Log(LogLevel.Critical, default, state, null, (data, ex) => "[null]");
+            sut.Log(LogLevel.Critical, default, state, null, (_, _) => "[null]");
 
             sut.LogWritten.Should().BeFalse();
         }
@@ -36,7 +36,7 @@
         {
             var sut = new IsEnabledWrapper();
 
-            sut.Log(LogLevel.Critical, default, string.Empty, null, (data, ex) => string.Empty);
+            sut.Log(LogLevel.Critical, default, string.Empty, null, (_, _) => string.Empty);
 
             sut.LogWritten.Should().BeFalse();
         }
@@ -62,7 +62,7 @@
 
             var sut = new IsEnabledWrapper();
 
-            sut.Log(LogLevel.Critical, default, state, exception, (data, ex) => string.Empty);
+            sut.Log(LogLevel.Critical, default, state, exception, (_, _) => string.Empty);
 
             sut.LogWritten.Should().BeTrue();
         }
@@ -76,7 +76,7 @@
 
             var sut = new MessageWrapper();
 
-            sut.Log(LogLevel.Critical, default, state, exception, (data, ex) => message);
+            sut.Log(LogLevel.Critical, default, state, exception, (_, _) => message);
 
             sut.Message.Should().Be(message);
         }

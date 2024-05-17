@@ -279,6 +279,8 @@ public class MyClassTests
 }
 ```
 
+The `CacheLogger` class also supports a `LogWritten` event where `LogEntry` is provided in the event arguments.
+
 [Back to top][0]
 
 ## Configured LoggerFactory
