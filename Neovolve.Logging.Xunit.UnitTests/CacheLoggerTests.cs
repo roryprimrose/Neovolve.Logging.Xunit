@@ -72,7 +72,7 @@
             using var sut = new CacheLogger();
 
             // ReSharper disable once AccessToDisposedClosure
-            Action action = () => sut.Dispose();
+            var action = () => sut.Dispose();
 
             action.Should().NotThrow();
         }
@@ -88,6 +88,32 @@
             sut.Dispose();
 
             factory.Received().Dispose();
+        }
+
+        [Fact]
+        public void EntriesRecordsLogStateInformation()
+        {
+            using var sut = new CacheLogger();
+
+            var first = Guid.NewGuid();
+            var second = Guid.NewGuid().ToString();
+            var third = Environment.TickCount;
+            var format = "This {First} value is not the same as {Second}. We are also interested in {Third}.";
+
+            sut.LogInformation(format,
+                first, second, third);
+
+            var entry = sut.Last!;
+
+            entry.State.Should().NotBeNull();
+
+            var data = ((IEnumerable<KeyValuePair<string, object>>)entry.State).ToList();
+            
+            data.Should().NotBeNull();
+            data.Should().ContainKey("First").WhoseValue.Should().Be(first);
+            data.Should().ContainKey("Second").WhoseValue.Should().Be(second);
+            data.Should().ContainKey("Third").WhoseValue.Should().Be(third);
+            data.Should().ContainKey("{OriginalFormat}").WhoseValue.Should().Be(format);
         }
 
         [Fact]
@@ -215,7 +241,7 @@
             sut.Last!.EventId.Should().Be(eventId);
             sut.Last.Exception.Should().Be(exception);
             sut.Last.LogLevel.Should().Be(logLevel);
-            sut.Last.State.Should().Be(state);
+            sut.Last.State.Should().ContainKey("State").WhoseValue.Should().Be(state);
             sut.Last.Message.Should().Be(data);
         }
 
@@ -246,7 +272,7 @@
             entry.EventId.Should().Be(eventId);
             entry.Exception.Should().Be(exception);
             entry.LogLevel.Should().Be(logLevel);
-            entry.State.Should().Be(state);
+            sut.Last.State.Should().ContainKey("State").WhoseValue.Should().Be(state);
             entry.Message.Should().Be(data);
         }
 
@@ -478,7 +504,7 @@
             using var sut = new CacheLogger(logger);
 
             // ReSharper disable once AccessToDisposedClosure
-            Action action = () => sut.Log(logLevel, eventId, state, exception, null!);
+            var action = () => sut.Log(logLevel, eventId, state, exception, null!);
 
             action.Should().Throw<ArgumentNullException>();
         }
