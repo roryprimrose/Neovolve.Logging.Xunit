@@ -14,9 +14,9 @@
     public class TestOutputLogger : FilterLogger
     {
         private static readonly AsyncLocal<ConcurrentStack<ScopeWriter>> _scopes = new();
+        private readonly string _categoryName;
 
         private readonly LoggingConfig _config;
-        private readonly string _categoryName;
         private readonly ITestOutputHelper _output;
 
         /// <summary>
@@ -33,7 +33,7 @@
             {
                 throw new ArgumentException("No name value has been supplied", nameof(categoryName));
             }
-            
+
             _categoryName = categoryName;
             _output = output ?? throw new ArgumentNullException(nameof(output));
             _config = config ?? new LoggingConfig();
@@ -42,7 +42,8 @@
         /// <inheritdoc />
         public override IDisposable BeginScope<TState>(TState state)
         {
-            var scopeWriter = new ScopeWriter(_output, state, Scopes.Count, _categoryName, () => Scopes.TryPop(out _), _config);
+            var scopeWriter = new ScopeWriter(_output, state, Scopes.Count, _categoryName, () => Scopes.TryPop(out _),
+                _config);
 
             Scopes.Push(scopeWriter);
 
@@ -84,7 +85,8 @@
 
         private void WriteLog(LogLevel logLevel, EventId eventId, string message, Exception? exception)
         {
-            var formattedMessage = _config.Formatter.Format(Scopes.Count, _categoryName, logLevel, eventId, message, exception);
+            var formattedMessage =
+                _config.Formatter.Format(Scopes.Count, _categoryName, logLevel, eventId, message, exception);
 
             _output.WriteLine(formattedMessage);
 

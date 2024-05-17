@@ -29,11 +29,36 @@
         {
             LogLevel = logLevel;
             EventId = eventId;
-            State = state;
+            State = ParseState(state);
             Exception = exception;
             Message = message;
             Scopes = scopes;
         }
+
+        private static IDictionary<string, object?> ParseState(object? state)
+        {
+            var data = new Dictionary<string, object?>();
+
+            if (state == null)
+            {
+                return data;
+            }
+
+            if (state is IReadOnlyList<KeyValuePair<string, object?>> source)
+            {
+                foreach (var pair in source)
+                {
+                    data[pair.Key] = pair.Value;
+                }
+            }
+            else
+            {
+                data["State"] = state;
+            }
+
+            return data;
+        }
+
 
         /// <summary>
         ///     Gets the event id of the entry.
@@ -63,6 +88,6 @@
         /// <summary>
         ///     Gets the state of the entry.
         /// </summary>
-        public object? State { get; }
+        public IDictionary<string, object?> State { get; }
     }
 }
