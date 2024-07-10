@@ -8,7 +8,7 @@
 		<!-- Direct dependencies -->
 		
 		<PackageVersion Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-		<PackageVersion Include="System.Text.Json" Version="7.0.0" />
+		<PackageVersion Include="System.Text.Json" Version="8.0.4" />
 		<PackageVersion Include="Xunit.Abstractions" Version="2.0.3" />
 
 		<PackageVersion Include="NSubstitute" Version="5.1.0" />
