@@ -120,6 +120,9 @@ jobs:
         name: packages
         path: .
       
+    - name: List files
+      run: ls
+
     - name: Setup nuget
       uses: nuget/setup-nuget@v2
 
