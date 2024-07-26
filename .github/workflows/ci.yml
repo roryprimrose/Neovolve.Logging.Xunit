@@ -158,8 +158,8 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
+    # Only run on pushes which should only be on the base repository and only where the branch is main or is a version tagged build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
 
     steps:
     
