@@ -131,9 +131,6 @@ jobs:
       with:
         name: packages
       
-    - name: List files
-      run: ls
-
     - name: Setup nuget
       uses: nuget/setup-nuget@v2
 
@@ -189,13 +186,21 @@ jobs:
     - name: Setup nuget
       uses: nuget/setup-nuget@v2
       
-    - name: Publish to GitHub
-      run: nuget push *.*.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+    - name: Publish package to GitHub
+      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
-    - name: Publish to NuGet.org
+    - name: Publish signed package to GitHub
+      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+
+    - name: Publish package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+
+    - name: Publish signed package to NuGet.org
+      env: 
+        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
     - name: Create release
       id: create_release
@@ -209,7 +214,6 @@ jobs:
         prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
     
     - name: Upload release asset for package
-      id: upload-release-asset-package
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -220,7 +224,6 @@ jobs:
         asset_content_type: application/zip
     
     - name: Upload release asset for symbol package
-      id: upload-release-asset-symbolpackage
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -228,4 +231,24 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_content_type: application/zip
+        
+    - name: Upload release asset for signed package
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.nupkg
+        asset_content_type: application/zip
+    
+    - name: Upload release asset for signed symbol package
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_content_type: application/zip
