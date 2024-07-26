@@ -22,7 +22,11 @@ jobs:
       uses: actions/checkout@v4.1.4
       with:
         fetch-depth: 0
-
+   
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v1.1.1
       with:
@@ -79,10 +83,6 @@ jobs:
         minimum_coverage: 75
       # Don't run on fork or dependabot builds
       if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
-         
-    - name: Resolve project name
-      shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Pack
       run: dotnet pack -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
@@ -109,7 +109,11 @@ jobs:
     # Only run on pushes which should only be on the base repository
     if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
 
-    steps:
+    steps:   
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Download packages
       uses: actions/download-artifact@v4
       with:
