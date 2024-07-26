@@ -1,0 +1,4 @@
+﻿<Project>
+	<Import Project="./compiler.props" />
+	<Import Project="./package.props" />
+</Project>

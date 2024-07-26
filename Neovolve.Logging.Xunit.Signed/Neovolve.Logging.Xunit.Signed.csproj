@@ -1,15 +1,26 @@
-﻿<Project ToolsVersion="Current">
-	<Import Project="..\Neovolve.Logging.Xunit\Neovolve.Logging.Xunit.csproj" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<SignAssembly>true</SignAssembly>
-		<AssemblyOriginatorKeyFile>Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
+		<TargetFramework>netstandard2.0</TargetFramework>
 	</PropertyGroup>
 
 	<PropertyGroup>
-		<FileUpgradeFlags></FileUpgradeFlags>
-		<UpgradeBackupLocation></UpgradeBackupLocation>
-		<OldToolsVersion>2.0</OldToolsVersion>
+		<!--<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>-->
 	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="../Neovolve.Logging.Xunit/**/*.cs" Exclude="../Neovolve.Logging.Xunit/**/obj/**/*.cs;../Neovolve.Logging.Xunit/**/bin/**/*.cs" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Neovolve.Logging.Xunit.Signed.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="Xunit.Abstractions" />
+	</ItemGroup>
 
 </Project>

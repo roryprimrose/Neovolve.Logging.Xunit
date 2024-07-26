@@ -1,0 +1,8 @@
+<Project>
+	<PropertyGroup>
+		<CodeAnalysisRuleSet>../Solution Items/Application.ruleset</CodeAnalysisRuleSet>
+		<LangVersion>latest</LangVersion>
+		<Nullable>enable</Nullable>
+		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+	</PropertyGroup>
+</Project>
