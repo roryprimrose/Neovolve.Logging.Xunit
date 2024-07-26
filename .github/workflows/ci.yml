@@ -118,7 +118,6 @@ jobs:
       uses: actions/download-artifact@v4
       with:
         name: packages
-        path: .
       
     - name: List files
       run: ls
@@ -129,12 +128,12 @@ jobs:
     - name: Publish package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: nuget push ${{ env.projectName }}.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       
     - name: Publish signed package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: nuget push ${{ env.projectName }}.*.Signed.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
