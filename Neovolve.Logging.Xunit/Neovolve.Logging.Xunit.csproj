@@ -14,4 +14,8 @@
 		<PackageReference Include="Xunit.Abstractions" />
 	</ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neovolve.Logging.Xunit.UnitTests" />
+  </ItemGroup>
+
 </Project>
