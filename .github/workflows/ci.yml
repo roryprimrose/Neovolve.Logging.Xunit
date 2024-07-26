@@ -19,18 +19,22 @@ jobs:
     steps:
 
     - name: Checkout
-      uses: actions/checkout@v4.1.4
+      uses: actions/checkout@v4.1.7
       with:
         fetch-depth: 0
-
+   
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v1.1.1
+      uses: gittools/actions/gitversion/setup@v3.0.0
       with:
           versionSpec: '5.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v1.1.1
+      uses: gittools/actions/gitversion/execute@v3.0.0
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
@@ -44,9 +48,12 @@ jobs:
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
     - name: Setup dotnet v6.0
-      uses: actions/setup-dotnet@v4.0.0
+      uses: actions/setup-dotnet@v4.0.1
       with:
         dotnet-version: '6.0.x' # SDK Version to use.
+
+    - name: Download snk file
+      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > ./Neovolve.Logging.Xunit.Signed/Neovolve.Logging.Xunit.snk
 
     - name: Restore
       run: dotnet restore
@@ -59,7 +66,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.0
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.8
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
@@ -76,13 +83,9 @@ jobs:
         minimum_coverage: 75
       # Don't run on fork or dependabot builds
       if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
-         
-    - name: Resolve project name
-      shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Pack
-      run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@v4
@@ -106,32 +109,11 @@ jobs:
     # Only run on pushes which should only be on the base repository
     if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
 
-    steps:
-    - name: Download packages
-      uses: actions/download-artifact@v4
-      with:
-        name: packages
-      
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v2
+    steps:   
 
-    - name: Publish to MyGet.org
-      env: 
-        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
-      
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
-
-    steps:
-    
-    - name: Download packages
-      uses: actions/download-artifact@v4
-      with:
-        name: packages
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Download version
       uses: actions/download-artifact@v4
@@ -144,20 +126,81 @@ jobs:
         value=`cat version.txt`
         echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
     
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+      
+    - name: Setup nuget
+      uses: nuget/setup-nuget@v2
+
+    - name: Download version
+      uses: actions/download-artifact@v4
+      with:
+        name: version
+
+    - name: Read version
+      shell: bash
+      run: |
+        value=`cat version.txt`
+        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+    
+    - name: Publish package to MyGet.org
+      env: 
+        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
+      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      
+    - name: Publish signed package to MyGet.org
+      env: 
+        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
+      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
+
+    steps:
+    
     - name: Resolve project name
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
+    - name: Download version
+      uses: actions/download-artifact@v4
+      with:
+        name: version
+
+    - name: Read version
+      shell: bash
+      run: |
+        value=`cat version.txt`
+        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+    
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+      
     - name: Setup nuget
       uses: nuget/setup-nuget@v2
       
-    - name: Publish to GitHub
-      run: nuget push *.*.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+    - name: Publish package to GitHub
+      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
-    - name: Publish to NuGet.org
+    - name: Publish signed package to GitHub
+      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+
+    - name: Publish package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push *.*.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+
+    - name: Publish signed package to NuGet.org
+      env: 
+        NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
+      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
     - name: Create release
       id: create_release
@@ -171,7 +214,6 @@ jobs:
         prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
     
     - name: Upload release asset for package
-      id: upload-release-asset-package
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -182,7 +224,6 @@ jobs:
         asset_content_type: application/zip
     
     - name: Upload release asset for symbol package
-      id: upload-release-asset-symbolpackage
       uses: actions/upload-release-asset@v1.0.2
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -190,4 +231,24 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_content_type: application/zip
+        
+    - name: Upload release asset for signed package
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.nupkg
+        asset_content_type: application/zip
+    
+    - name: Upload release asset for signed symbol package
+      uses: actions/upload-release-asset@v1.0.2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg
         asset_content_type: application/zip
