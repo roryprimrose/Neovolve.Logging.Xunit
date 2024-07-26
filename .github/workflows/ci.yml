@@ -110,43 +110,10 @@ jobs:
     if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
 
     steps:   
+
     - name: Resolve project name
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
-      
-    - name: Download packages
-      uses: actions/download-artifact@v4
-      with:
-        name: packages
-      
-    - name: List files
-      run: ls
-
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v2
-
-    - name: Publish package to MyGet.org
-      env: 
-        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
-      
-    - name: Publish signed package to MyGet.org
-      env: 
-        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.*.Signed.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
-      
-  release:
-    needs: build
-    runs-on: ubuntu-latest
-    # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
-
-    steps:
-    
-    - name: Download packages
-      uses: actions/download-artifact@v4
-      with:
-        name: packages
       
     - name: Download version
       uses: actions/download-artifact@v4
@@ -159,9 +126,65 @@ jobs:
         value=`cat version.txt`
         echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
     
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+      
+    - name: List files
+      run: ls
+
+    - name: Setup nuget
+      uses: nuget/setup-nuget@v2
+
+    - name: Download version
+      uses: actions/download-artifact@v4
+      with:
+        name: version
+
+    - name: Read version
+      shell: bash
+      run: |
+        value=`cat version.txt`
+        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+    
+    - name: Publish package to MyGet.org
+      env: 
+        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
+      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      
+    - name: Publish signed package to MyGet.org
+      env: 
+        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
+      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    # Only run on pushes which should only be on the base repository and only where the branch is master or is a version tagged build
+    if: github.event_name == 'push' && (github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
+
+    steps:
+    
     - name: Resolve project name
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
+    - name: Download version
+      uses: actions/download-artifact@v4
+      with:
+        name: version
+
+    - name: Read version
+      shell: bash
+      run: |
+        value=`cat version.txt`
+        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+    
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
       
     - name: Setup nuget
       uses: nuget/setup-nuget@v2
