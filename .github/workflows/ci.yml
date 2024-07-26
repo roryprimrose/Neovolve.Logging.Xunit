@@ -121,7 +121,7 @@ jobs:
     - name: Publish to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: nuget push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package -Verbosity detailed
       
   release:
     needs: build
