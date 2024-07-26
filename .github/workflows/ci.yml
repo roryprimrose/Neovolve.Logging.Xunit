@@ -48,6 +48,9 @@ jobs:
       with:
         dotnet-version: '6.0.x' # SDK Version to use.
 
+    - name: Download snk file
+      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > ./Neovolve.Logging.Xunit.Signed/Neovolve.Logging.Xunit.snk
+
     - name: Restore
       run: dotnet restore
 
@@ -82,7 +85,7 @@ jobs:
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Pack
-      run: dotnet pack "./${{ env.projectName }}/${{ env.projectName }}.csproj" -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@v4

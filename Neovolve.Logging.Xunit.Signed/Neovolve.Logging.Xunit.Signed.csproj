@@ -1,0 +1,15 @@
+﻿<Project ToolsVersion="Current">
+	<Import Project="..\Neovolve.Logging.Xunit\Neovolve.Logging.Xunit.csproj" />
+	<PropertyGroup>
+		<TargetFrameworks>netstandard2.0</TargetFrameworks>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<FileUpgradeFlags></FileUpgradeFlags>
+		<UpgradeBackupLocation></UpgradeBackupLocation>
+		<OldToolsVersion>2.0</OldToolsVersion>
+	</PropertyGroup>
+
+</Project>

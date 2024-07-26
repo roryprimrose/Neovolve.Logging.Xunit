@@ -1,29 +1,25 @@
 <Project>
-	<!-- Central Package Management: https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management  -->
-	<PropertyGroup>
-		<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
-		<CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
-	</PropertyGroup>
-	<ItemGroup Label="Package Versions used by this repository">
-		<!-- Direct dependencies -->
-		
-		<PackageVersion Include="Microsoft.Extensions.Logging" Version="7.0.0" />
-		<PackageVersion Include="System.Text.Json" Version="7.0.0" />
-		<PackageVersion Include="Xunit.Abstractions" Version="2.0.3" />
-
-		<PackageVersion Include="NSubstitute" Version="5.1.0" />
-		<PackageVersion Include="ModelBuilder" Version="8.6.0" />
-		<PackageVersion Include="FluentAssertions" Version="6.12.0" />
-		<PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.9.0" />
-		<PackageVersion Include="xunit" Version="2.8.0" />
-		<PackageVersion Include="xunit.runner.visualstudio" Version="2.8.0" PrivateAssets="All"
-		                IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-		<PackageVersion Include="coverlet.msbuild" Version="6.0.2" PrivateAssets="All"
-		                IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-		<!-- Overrides -->
-	</ItemGroup>
-	<ItemGroup Label="Global Package References, added to every project">
-		<GlobalPackageVersion Include="ReferenceTrimmer" Version="3.1.22" PrivateAssets="All" />
-		<GlobalPackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" PrivateAssets="All" />
-	</ItemGroup>
+  <!-- Central Package Management: https://learn.microsoft.com/en-us/nuget/consume-packages/Central-Package-Management  -->
+  <PropertyGroup>
+    <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+    <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
+  </PropertyGroup>
+  <ItemGroup Label="Package Versions used by this repository">
+    <!-- Direct dependencies -->
+    <PackageVersion Include="Microsoft.Extensions.Logging" Version="8.0.0" />
+    <PackageVersion Include="System.Text.Json" Version="8.0.4" />
+    <PackageVersion Include="Xunit.Abstractions" Version="2.0.3" />
+    <PackageVersion Include="NSubstitute" Version="5.1.0" />
+    <PackageVersion Include="ModelBuilder" Version="8.6.0" />
+    <PackageVersion Include="FluentAssertions" Version="6.12.0" />
+    <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.10.0" />
+    <PackageVersion Include="xunit" Version="2.9.0" />
+    <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageVersion Include="coverlet.msbuild" Version="6.0.2" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <!-- Overrides -->
+  </ItemGroup>
+  <ItemGroup Label="Global Package References, added to every project">
+    <GlobalPackageVersion Include="ReferenceTrimmer" Version="3.1.22" PrivateAssets="All" />
+    <GlobalPackageVersion Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="8.0.0" PrivateAssets="All" />
+  </ItemGroup>
 </Project>

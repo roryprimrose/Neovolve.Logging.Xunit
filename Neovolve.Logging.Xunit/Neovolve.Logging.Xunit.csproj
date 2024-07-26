@@ -21,6 +21,7 @@
 		<Version>1.0.0-alpha</Version>
 		<IncludeSymbols>true</IncludeSymbols>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<IsPackable>true</IsPackable>
 	</PropertyGroup>
 
 	<ItemGroup>
