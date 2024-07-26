@@ -118,10 +118,15 @@ jobs:
     - name: Setup nuget
       uses: nuget/setup-nuget@v2
 
-    - name: Publish to MyGet.org
+    - name: Publish package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push *.*.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package -Verbosity detailed
+      run: nuget push ${env:GITHUB_REPOSITORY}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      
+    - name: Publish signed package to MyGet.org
+      env: 
+        MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
+      run: nuget push ${env:GITHUB_REPOSITORY}.Signed.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
