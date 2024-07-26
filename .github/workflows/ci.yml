@@ -42,6 +42,7 @@ jobs:
     - name: Update project version
       uses: roryprimrose/set-vs-sdk-project-version@v1.0.6
       with:
+        projectFilter: 'package.props'
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
