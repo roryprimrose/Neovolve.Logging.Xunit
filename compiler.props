@@ -5,4 +5,8 @@
 		<Nullable>enable</Nullable>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
+
+	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
+		<NoWarn>$(NoWarn);CA1806;CA1305</NoWarn>
+	</PropertyGroup>	
 </Project>

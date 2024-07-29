@@ -18,15 +18,15 @@ jobs:
 
     steps:
 
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Checkout
       uses: actions/checkout@v4.1.7
       with:
         fetch-depth: 0
    
-    - name: Resolve project name
-      shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
-      
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
       with:
@@ -54,7 +54,7 @@ jobs:
         dotnet-version: '6.0.x' # SDK Version to use.
 
     - name: Download snk file
-      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > ./Neovolve.Logging.Xunit.Signed/Neovolve.Logging.Xunit.snk
+      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > Neovolve.Logging.Xunit.snk
 
     - name: Restore
       run: dotnet restore
