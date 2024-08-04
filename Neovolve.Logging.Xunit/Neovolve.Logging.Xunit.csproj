@@ -1,32 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<CodeAnalysisRuleSet>..\Solution Items\Application.ruleset</CodeAnalysisRuleSet>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-
-		<Title>ILogger for xUnit</Title>
-		<Authors>rprimrose</Authors>
-		<Company>Neovolve</Company>
-		<Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
-		<Copyright>Copyright © Neovolve 2018</Copyright>
-		<IncludeSymbols>true</IncludeSymbols>
-		<NeutralLanguage>en-US</NeutralLanguage>
-		<PackageProjectUrl>https://github.com/roryprimrose/Neovolve.Logging.Xunit</PackageProjectUrl>
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<RepositoryUrl>https://github.com/roryprimrose/Neovolve.Logging.Xunit</RepositoryUrl>
-		<PackageTags>xUnit;Logging</PackageTags>
-		<Version>1.0.0-alpha</Version>
-		<IncludeSymbols>true</IncludeSymbols>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<TargetFramework>netstandard2.0</TargetFramework>
 		<IsPackable>true</IsPackable>
 	</PropertyGroup>
-
-	<ItemGroup>
-		<None Include="..\README.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
 
 	<PropertyGroup Condition="'$(Configuration)'=='Release'">
 		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Neovolve.Logging.Xunit.xml</DocumentationFile>
@@ -37,5 +14,9 @@
 		<PackageReference Include="System.Text.Json" />
 		<PackageReference Include="Xunit.Abstractions" />
 	</ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="Neovolve.Logging.Xunit.UnitTests" />
+  </ItemGroup>
 
 </Project>

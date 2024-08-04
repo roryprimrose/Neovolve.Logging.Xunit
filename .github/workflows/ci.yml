@@ -18,15 +18,15 @@ jobs:
 
     steps:
 
+    - name: Resolve project name
+      shell: pwsh
+      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
+      
     - name: Checkout
       uses: actions/checkout@v4.1.7
       with:
         fetch-depth: 0
    
-    - name: Resolve project name
-      shell: pwsh
-      run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
-      
     - name: Install GitVersion
       uses: gittools/actions/gitversion/setup@v3.0.0
       with:
@@ -42,6 +42,7 @@ jobs:
     - name: Update project version
       uses: roryprimrose/set-vs-sdk-project-version@v1.0.6
       with:
+        projectFilter: 'package.props'
         version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
@@ -53,7 +54,7 @@ jobs:
         dotnet-version: '6.0.x' # SDK Version to use.
 
     - name: Download snk file
-      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > ./Neovolve.Logging.Xunit.Signed/Neovolve.Logging.Xunit.snk
+      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > Neovolve.Logging.Xunit.snk
 
     - name: Restore
       run: dotnet restore
@@ -107,8 +108,8 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # Only run on pushes which should only be on the base repository
-    if: github.event_name == 'push' && github.actor != 'dependabot[bot]'
-
+    if: (github.event_name == 'push' || github.event_name == 'pull_request') && github.actor != 'dependabot[bot]'
+    
     steps:   
 
     - name: Resolve project name
@@ -159,7 +160,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     # Only run on pushes which should only be on the base repository and only where the branch is main or is a version tagged build
-    if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
+    if: (github.event_name == 'push' || github.event_name == 'pull_request') && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')) && github.actor != 'dependabot[bot]'
 
     steps:
     

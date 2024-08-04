@@ -1,15 +1,28 @@
-﻿<Project ToolsVersion="Current">
-	<Import Project="..\Neovolve.Logging.Xunit\Neovolve.Logging.Xunit.csproj" />
-	<PropertyGroup>
-		<TargetFrameworks>netstandard2.0</TargetFrameworks>
-		<SignAssembly>true</SignAssembly>
-		<AssemblyOriginatorKeyFile>Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
-	</PropertyGroup>
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<FileUpgradeFlags></FileUpgradeFlags>
-		<UpgradeBackupLocation></UpgradeBackupLocation>
-		<OldToolsVersion>2.0</OldToolsVersion>
+		<TargetFramework>netstandard2.0</TargetFramework>
+		<IsPackable>true</IsPackable>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>../Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="../Neovolve.Logging.Xunit/**/*.cs" Exclude="../Neovolve.Logging.Xunit/**/obj/**/*.cs;../Neovolve.Logging.Xunit/**/bin/**/*.cs" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(Configuration)'=='Release'">
+		<DocumentationFile>bin\$(Configuration)\$(TargetFramework)\Neovolve.Logging.Xunit.Signed.xml</DocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Microsoft.Extensions.Logging" />
+		<PackageReference Include="System.Text.Json" />
+		<PackageReference Include="Xunit.Abstractions" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<InternalsVisibleTo Include="Neovolve.Logging.Xunit.Signed.UnitTests, PublicKey=0024000004800000940000000602000000240000525341310004000001000100dd30790ca0897e79e1ece18ca15de9ed79e9ae54164385aef9dee6d9b8f2fd9ec278ce7308b21cd594ae655e6f4954c7fa1972b61ad3f6eee16550fd3f0ee9b5ba848661fb809e7cef7bc5d2ebdc7068eee4e04bc8f91ff5b08c01a932dc4d54a9cc79bce320268bbcc11a6a62587c7da81d7f374030d4ce7d63ec6f7835bfca" />
+	</ItemGroup>
 
 </Project>

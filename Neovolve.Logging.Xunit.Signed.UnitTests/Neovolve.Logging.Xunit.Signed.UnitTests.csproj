@@ -1,7 +1,9 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFrameworks>net8.0</TargetFrameworks>
+		<SignAssembly>true</SignAssembly>
+		<AssemblyOriginatorKeyFile>../Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -18,7 +20,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<ProjectReference Include="..\Neovolve.Logging.Xunit\Neovolve.Logging.Xunit.csproj" />
+		<Compile Include="../Neovolve.Logging.Xunit.UnitTests/**/*.cs" Exclude="../Neovolve.Logging.Xunit.UnitTests/**/obj/**/*.cs;../Neovolve.Logging.Xunit.UnitTests/**/bin/**/*.cs" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\Neovolve.Logging.Xunit.Signed\Neovolve.Logging.Xunit.Signed.csproj" />
 	</ItemGroup>
 
 </Project>

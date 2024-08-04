@@ -1,0 +1,19 @@
+<Project>
+	<PropertyGroup>
+		<Title>ILogger for xUnit</Title>
+		<Authors>rprimrose</Authors>
+		<Company>Neovolve</Company>
+		<Description>This library provides Microsoft.Extensions.Logging support for Xunit.</Description>
+		<Copyright>Copyright © Neovolve 2018</Copyright>
+		<IncludeSymbols>true</IncludeSymbols>
+		<NeutralLanguage>en-US</NeutralLanguage>
+		<PackageProjectUrl>https://github.com/roryprimrose/Neovolve.Logging.Xunit</PackageProjectUrl>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<RepositoryUrl>https://github.com/roryprimrose/Neovolve.Logging.Xunit</RepositoryUrl>
+		<PackageTags>xUnit;Logging</PackageTags>
+		<Version>1.0.0-alpha</Version>
+		<IncludeSymbols>true</IncludeSymbols>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+	</PropertyGroup>
+
+</Project>
