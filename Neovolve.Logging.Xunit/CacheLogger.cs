@@ -61,6 +61,12 @@
         }
 
         /// <inheritdoc />
+        public void ClearEntries()
+        {
+            _logEntries.Clear();
+        }
+
+        /// <inheritdoc />
         public void Dispose()
         {
             Dispose(true);

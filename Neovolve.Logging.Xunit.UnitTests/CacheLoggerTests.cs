@@ -79,6 +79,21 @@
         }
 
         [Fact]
+        public void ClearEntriesResetsStoredData()
+        {
+            using var sut = new CacheLogger();
+
+            sut.LogInformation("first");
+            sut.LogInformation("second");
+            sut.LogInformation("third");
+            sut.ClearEntries();
+
+            sut.Count.Should().Be(0);
+            sut.Entries.Should().BeEmpty();
+            sut.Last.Should().BeNull();
+        }
+
+        [Fact]
         public void DisposeCallsDisposeOnFactory()
         {
             var logger = Substitute.For<ILogger>();
@@ -119,6 +134,28 @@
         }
 
         [Fact]
+        public void EntriesReturnsRecordsEntriesAfterBeingCleared()
+        {
+            using var sut = new CacheLogger();
+
+            sut.LogInformation("first");
+            sut.LogInformation("second");
+            sut.LogInformation("third");
+            sut.ClearEntries();
+            sut.LogInformation("first");
+            sut.LogInformation("second");
+            sut.LogInformation("third");
+
+            var entries = sut.Entries.ToList();
+
+            entries.Should().HaveCount(3);
+            entries[0].Message.Should().Be("first");
+            entries[1].Message.Should().Be("second");
+            entries[2].Message.Should().Be("third");
+            sut.Last!.Message.Should().Be("third");
+        }
+
+        [Fact]
         public void EntriesReturnsRecordsEntriesInOrder()
         {
             using var sut = new CacheLogger();
@@ -133,6 +170,7 @@
             entries[0].Message.Should().Be("first");
             entries[1].Message.Should().Be("second");
             entries[2].Message.Should().Be("third");
+            sut.Last!.Message.Should().Be("third");
         }
 
         [Theory]
