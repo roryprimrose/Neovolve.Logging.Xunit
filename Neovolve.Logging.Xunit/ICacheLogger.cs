@@ -11,6 +11,11 @@
     public interface ICacheLogger : ILogger, IDisposable
     {
         /// <summary>
+        ///     Clears all recorded log entries.
+        /// </summary>
+        void ClearEntries();
+
+        /// <summary>
         ///     Gets the number of cache entries recorded.
         /// </summary>
         int Count { get; }
