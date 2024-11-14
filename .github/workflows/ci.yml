@@ -67,7 +67,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.3.8
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
