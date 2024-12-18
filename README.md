@@ -2,6 +2,9 @@
 
 Neovolve.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<T>` that wraps around the `ITestOutputHelper` supplied by xUnit. xUnit uses this helper to write log messages to the test output of each test execution. This means that any log messages from classes being tested will end up in the xUnit test result output.
 
+> NOTE
+> The packages `Neovolve.Logging.Xunit` and `Neovolve.Logging.Xunit.Signed` target xUnit v2. Use `Neovolve.Logging.Xunit.v3` or `Neovolve.Logging.Xunit.Signed.v3` if you want to target xUnit v3.
+
 [![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/roryprimrose/Neovolve.Logging.Xunit/blob/master/LICENSE)&nbsp;[![Actions Status](https://github.com/roryprimrose/Neovolve.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/roryprimrose/Neovolve.Logging.Xunit/actions)
 
 Neovolve.Logging.Xunit  
