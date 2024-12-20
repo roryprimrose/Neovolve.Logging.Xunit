@@ -71,6 +71,7 @@
         public void LogIgnoresTestBoundaryFailure()
         {
             // This test should not fail the test runner
+            var cancellationToken = TestContext.Current.CancellationToken;
             var categoryName = Guid.NewGuid().ToString();
             var config = new LoggingConfig { IgnoreTestBoundaryException = true };
 
@@ -78,10 +79,10 @@
 
             var task = new Task(async () =>
             {
-                await Task.Delay(0);
+                await Task.Delay(0, cancellationToken);
 
                 sut.LogCritical("message2");
-            });
+            }, cancellationToken);
 
             task.Start();
         }
@@ -130,8 +131,7 @@
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
-            output.Received()
-                .WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
+            output.Received().WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
         }
 
         [Theory]

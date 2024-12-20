@@ -319,6 +319,7 @@
         [Fact]
         public async Task LogCanCacheLogMessagesFromMultipleThreads()
         {
+            var cancellationToken = TestContext.Current.CancellationToken;
             const int count = 1000;
             var tasks = new List<Task>(count);
             var eventId = Model.Create<EventId>();
@@ -333,11 +334,11 @@
             {
                 var task = Task.Run(async () =>
                 {
-                    await Task.Delay(100);
+                    await Task.Delay(100, cancellationToken);
 
                     // ReSharper disable once AccessToDisposedClosure
                     sut.Log(LogLevel.Error, eventId, state, exception, Formatter);
-                });
+                }, cancellationToken);
 
                 tasks.Add(task);
             }

@@ -1,5 +1,12 @@
 <Project>
-	<ItemGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' != 'Debug' AND '$(IsPackable)' == 'True' ">
+		<EnablePackageValidation>true</EnablePackageValidation>
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup Condition=" '$(Configuration)' != 'Debug' AND '$(IsPackable)' == 'True' ">
 		<None Include="../README.md" Pack="true" PackagePath="\" />
 	</ItemGroup>
+	
 </Project>

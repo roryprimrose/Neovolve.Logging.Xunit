@@ -3,7 +3,6 @@
 		<CodeAnalysisRuleSet>../Solution Items/Application.ruleset</CodeAnalysisRuleSet>
 		<LangVersion>latest</LangVersion>
 		<Nullable>enable</Nullable>
-    	<RuntimeIdentifiers>win-x86</RuntimeIdentifiers>
 		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
 	</PropertyGroup>
 
