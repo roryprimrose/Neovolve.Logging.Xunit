@@ -4,7 +4,7 @@
     using System.Collections.Concurrent;
     using System.Diagnostics;
     using System.Threading;
-    using global::Xunit.Abstractions;
+    using global::Xunit;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

@@ -4,7 +4,7 @@
     using System.Diagnostics;
     using System.Globalization;
     using System.Text.Json;
-    using global::Xunit.Abstractions;
+    using global::Xunit;
     using Microsoft.Extensions.Logging;
 
     internal class ScopeWriter : IDisposable

@@ -71,7 +71,11 @@
             {
                 var sensitiveValue = _config.SensitiveValues[index];
 
+#if NET472
                 value = value.Replace(sensitiveValue, mask);
+#else
+                value = value.Replace(sensitiveValue, mask, StringComparison.CurrentCultureIgnoreCase);
+#endif
             }
 
             return value;

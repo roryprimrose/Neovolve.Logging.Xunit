@@ -3,7 +3,6 @@
     using System;
     using FluentAssertions;
     using global::Xunit;
-    using global::Xunit.Abstractions;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
     using NSubstitute;

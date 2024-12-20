@@ -5,7 +5,6 @@
     using System.Threading.Tasks;
     using FluentAssertions;
     using global::Xunit;
-    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
     using ModelBuilder;
     using NSubstitute;

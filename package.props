@@ -1,5 +1,6 @@
 <Project>
 	<PropertyGroup>
+		<Id>$(Id).v3</Id>
 		<Title>ILogger for xUnit</Title>
 		<Authors>rprimrose</Authors>
 		<Company>Neovolve</Company>

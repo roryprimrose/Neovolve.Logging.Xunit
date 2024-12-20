@@ -1,7 +1,6 @@
 ﻿namespace Neovolve.Logging.Xunit.UnitTests
 {
     using global::Xunit;
-    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
 
     public class ScenarioTests : LoggingTestsBase

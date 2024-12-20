@@ -1,6 +1,6 @@
 ﻿// ReSharper disable once CheckNamespace
 
-namespace Xunit.Abstractions
+namespace Xunit
 {
     using System;
     using System.Runtime.CompilerServices;

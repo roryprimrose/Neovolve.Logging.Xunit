@@ -1,7 +1,7 @@
 ﻿namespace Neovolve.Logging.Xunit
 {
     using System;
-    using global::Xunit.Abstractions;
+    using global::Xunit;
     using Microsoft.Extensions.Logging;
 
     /// <summary>

@@ -5,7 +5,6 @@
     using System.Threading;
     using System.Threading.Tasks;
     using global::Xunit;
-    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
     using ModelBuilder;
 

@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFramework>netstandard2.0</TargetFramework>
+		<TargetFrameworks>net472;net6.0</TargetFrameworks>
 		<IsPackable>true</IsPackable>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>../Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
@@ -18,7 +18,7 @@
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging" />
 		<PackageReference Include="System.Text.Json" />
-		<PackageReference Include="Xunit.Abstractions" />
+		<PackageReference Include="xunit.v3.core" />
 	</ItemGroup>
 
 	<ItemGroup>

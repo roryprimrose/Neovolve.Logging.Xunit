@@ -1,14 +1,14 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
-		<TargetFrameworks>net8.0</TargetFrameworks>
+		<TargetFrameworks>net472;net6.0</TargetFrameworks>
+		<OutputType>Exe</OutputType>
 		<SignAssembly>true</SignAssembly>
 		<AssemblyOriginatorKeyFile>../Neovolve.Logging.Xunit.snk</AssemblyOriginatorKeyFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.NET.Test.Sdk" />
-		<PackageReference Include="xunit" />
 		<PackageReference Include="xunit.runner.visualstudio">
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -16,7 +16,6 @@
 		<PackageReference Include="ModelBuilder" />
 		<PackageReference Include="NSubstitute" />
 		<PackageReference Include="FluentAssertions" />
-		<PackageReference Include="coverlet.msbuild" />
 	</ItemGroup>
 
 	<ItemGroup>

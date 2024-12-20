@@ -194,7 +194,7 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
+using Xunit;
 
 public class MyClassTests
 {
@@ -236,7 +236,7 @@ using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
+using Xunit;
 
 public class MyClassTests
 {
@@ -305,7 +305,7 @@ using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
+using Xunit;
 
 public class MyClassTests
 {
