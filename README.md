@@ -10,6 +10,7 @@ Neovolve.Logging.Xunit
 Neovolve.Logging.Xunit.Signed  
 [![Nuget](https://img.shields.io/nuget/v/Neovolve.Logging.Xunit.Signed.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.Logging.Xunit.Signed.svg)](https://www.nuget.org/packages/Neovolve.Logging.Xunit.Signed)
 
+Beta builds are available on [MyGet](https://www.myget.org/feed/Packages/neovolve).
 - [Installation](#installation)
 - [Usage](#usage)
 - [Output Formatting](#output-formatting)
