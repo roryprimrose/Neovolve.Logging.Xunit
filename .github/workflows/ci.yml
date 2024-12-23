@@ -240,8 +240,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.v3.Signed.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.v3.Signed.${{ env.NuGetVersionV2 }}.nupkg
+        asset_path: ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.nupkg
+        asset_name: ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.nupkg
         asset_content_type: application/zip
     
     - name: Upload release asset for signed symbol package
