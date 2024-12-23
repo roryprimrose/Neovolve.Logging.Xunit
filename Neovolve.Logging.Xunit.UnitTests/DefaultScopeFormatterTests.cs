@@ -4,7 +4,6 @@
     using FluentAssertions;
     using global::Xunit;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
 
     public class DefaultScopeFormatterTests
     {
@@ -22,7 +21,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
 
             var sut = new DefaultScopeFormatter(config);
@@ -41,7 +40,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 

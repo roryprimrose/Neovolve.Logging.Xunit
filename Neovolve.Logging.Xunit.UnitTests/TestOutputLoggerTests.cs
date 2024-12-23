@@ -6,7 +6,6 @@
     using FluentAssertions;
     using global::Xunit;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
     using NSubstitute;
 
     public class TestOutputLoggerTests
@@ -91,7 +90,7 @@
         public void LogUsesDefaultFormatterWhenConfigIsNull()
         {
             var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             string Formatter(string logState, Exception? error) => message;
@@ -117,7 +116,7 @@
         public void LogWritesException()
         {
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -131,7 +130,8 @@
             sut.Log(logLevel, eventId, state, exception, Formatter);
 
             output.Received(1).WriteLine(Arg.Any<string>());
-            output.Received().WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
+            output.Received()
+                .WriteLine(Arg.Is<string>(x => x.Contains(exception.ToString(), StringComparison.OrdinalIgnoreCase)));
         }
 
         [Theory]
@@ -143,7 +143,7 @@
         [InlineData(LogLevel.Warning)]
         public void LogWritesLogLevelToOutput(LogLevel logLevel)
         {
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             string Formatter(string logState, Exception? error) => message;
@@ -169,7 +169,7 @@
         public void LogWritesMessageUsingSpecifiedLineFormatter()
         {
             var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -267,7 +267,7 @@
         public void WritesScopeMessagesUsingFormatter(string? sensitiveValue, string state, string expected)
         {
             var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var categoryName = Guid.NewGuid().ToString();
             string Formatter(string logState, Exception? error) => message;
@@ -297,13 +297,16 @@
         public void WritesScopeMessagesWithStructuredDataUsingFormatter()
         {
             var logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var sensitiveValue = Guid.NewGuid().ToString();
             var categoryName = Guid.NewGuid().ToString();
-            var config = new LoggingConfig().Set(x => x.SensitiveValues.Add(sensitiveValue));
+            var config = new LoggingConfig();
 
-            var state = Model.Create<StructuredData>().Set(x => x.FirstName += " " + sensitiveValue);
+            config.SensitiveValues.Add(sensitiveValue);
+
+            var state = StructuredData.BuildData();
+            state.FirstName += " " + sensitiveValue;
 
             var output = Substitute.For<ITestOutputHelper>();
 

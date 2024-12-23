@@ -5,7 +5,6 @@
     using FluentAssertions;
     using global::Xunit;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
 
     public class LogEntryTests
     {
@@ -13,7 +12,7 @@
         public void ReturnsConstructorValuesInProperties()
         {
             var level = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
@@ -32,7 +31,7 @@
         public void StateReturnsEmptyWhenStateValueIsNull()
         {
             var level = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             object? state = null;
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
@@ -47,7 +46,7 @@
         public void StateReturnsStateAsEntryWhenNotExpectedType()
         {
             var level = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             object? state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
@@ -62,7 +61,7 @@
         public void StateReturnsStateAsStrongTypeWhenExpectedType()
         {
             var level = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var first = Guid.NewGuid();
             var second = Guid.NewGuid().ToString();
             var third = Environment.TickCount;

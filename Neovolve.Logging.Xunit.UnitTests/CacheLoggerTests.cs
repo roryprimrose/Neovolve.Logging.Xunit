@@ -7,7 +7,6 @@
     using FluentAssertions;
     using global::Xunit;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
     using NSubstitute;
 
     public class CacheLoggerTests
@@ -246,7 +245,7 @@
         public void LastReturnsLastLogEntry()
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var otherState = Guid.NewGuid().ToString();
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
@@ -268,7 +267,7 @@
         public void LastReturnsLogEntry()
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -295,7 +294,7 @@
         [InlineData(LogLevel.Warning)]
         public void LogCachesLogMessage(LogLevel logLevel)
         {
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -322,7 +321,7 @@
             var cancellationToken = TestContext.Current.CancellationToken;
             const int count = 1000;
             var tasks = new List<Task>(count);
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -355,7 +354,7 @@
         public void LogDoesLogsRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNotNull(string? data)
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
             string Formatter(string message, Exception? error) => data!;
@@ -377,7 +376,7 @@
         public void LogDoesLogsRecordWhenFormatterReturnsMessageAndExceptionIsNull()
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             string Formatter(string message, Exception? error) => data;
@@ -402,7 +401,7 @@
         public void LogDoesNotLogRecordWhenFormatterReturnsEmptyMessageAndExceptionIsNull(string? data)
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             string Formatter(string message, Exception? error) => data!;
 
@@ -428,7 +427,7 @@
         public void LogDoesNotLogRecordWhenIsEnabledReturnsFalse()
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -550,7 +549,7 @@
         public void LogSendsLogToLogger()
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var data = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
@@ -571,7 +570,7 @@
         public void LogThrowsExceptionWithNullFormatter()
         {
             const LogLevel logLevel = LogLevel.Error;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var state = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
