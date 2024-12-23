@@ -4,9 +4,7 @@
     using System.Globalization;
     using FluentAssertions;
     using global::Xunit;
-    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
 
     public class DefaultFormatterTests
     {
@@ -27,7 +25,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var logMessage = Guid.NewGuid().ToString();
             var exception = new InvalidOperationException(message);
 
@@ -57,7 +55,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
 
             if (sensitiveValue != null)
             {
@@ -86,7 +84,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             Exception? exception = exceptionExists
                 ? new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString())
                 : null;
@@ -127,11 +125,11 @@
         [InlineData("  ")]
         public void FormatReturnsEmptyWhenMessageIsNullEmptyOrWhiteSpace(string? message)
         {
-            var config = new LoggingConfig().Set(x => x.ScopePaddingSpaces = 2);
+            var config = new LoggingConfig { ScopePaddingSpaces = 2 };
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
 
             var sut = new DefaultFormatter(config);
 
@@ -147,7 +145,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
@@ -167,7 +165,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
@@ -192,7 +190,7 @@
         {
             var config = new LoggingConfig();
             var scopeLevel = 1;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var categoryName = Guid.NewGuid().ToString();
 
@@ -212,7 +210,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
@@ -232,7 +230,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
 
             var sut = new DefaultFormatter(config);
@@ -251,7 +249,7 @@
             var scopeLevel = 1;
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 
@@ -274,7 +272,7 @@
             var padding = new string(' ', config.ScopePaddingSpaces * scopeLevel);
             var categoryName = Guid.NewGuid().ToString();
             var logLevel = LogLevel.Information;
-            var eventId = Model.Create<EventId>();
+            var eventId = new EventId(Environment.TickCount, Guid.NewGuid().ToString());
             var message = Guid.NewGuid().ToString();
             var exception = new ArgumentNullException(Guid.NewGuid().ToString(), Guid.NewGuid().ToString());
 

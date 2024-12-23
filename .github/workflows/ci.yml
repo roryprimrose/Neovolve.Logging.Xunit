@@ -63,11 +63,11 @@ jobs:
       run: dotnet build -c Release --no-restore
     
     - name: Test
-      run: dotnet test -c Release --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+      run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage"
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.1
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.2
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
@@ -149,12 +149,12 @@ jobs:
     - name: Publish package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       
     - name: Publish signed package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
@@ -188,20 +188,20 @@ jobs:
       uses: nuget/setup-nuget@v2
       
     - name: Publish package to GitHub
-      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish signed package to GitHub
-      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
     - name: Publish signed package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
 
     - name: Create release
       id: create_release
@@ -220,8 +220,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.nupkg
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.v3.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.v3.nupkg
         asset_content_type: application/zip
     
     - name: Upload release asset for symbol package
@@ -230,8 +230,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_path: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.v3.symbols.nupkg
+        asset_name: ${{ env.projectName }}.${{ env.NuGetVersionV2 }}.v3.symbols.nupkg
         asset_content_type: application/zip
         
     - name: Upload release asset for signed package
@@ -240,8 +240,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.nupkg
+        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.v3.nupkg
+        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.v3.nupkg
         asset_content_type: application/zip
     
     - name: Upload release asset for signed symbol package
@@ -250,6 +250,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.symbols.nupkg
+        asset_path: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.v3.symbols.nupkg
+        asset_name: ${{ env.projectName }}.Signed.${{ env.NuGetVersionV2 }}.v3.symbols.nupkg
         asset_content_type: application/zip

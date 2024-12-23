@@ -1,5 +1,6 @@
 <Project>
 	<PropertyGroup>
+		<PackageId>$(MSBuildProjectName).v3</PackageId>
 		<Title>ILogger for xUnit</Title>
 		<Authors>rprimrose</Authors>
 		<Company>Neovolve</Company>

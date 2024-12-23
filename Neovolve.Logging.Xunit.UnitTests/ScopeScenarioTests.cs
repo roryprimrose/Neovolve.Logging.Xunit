@@ -5,16 +5,15 @@
     using System.Threading;
     using System.Threading.Tasks;
     using global::Xunit;
-    using global::Xunit.Abstractions;
     using Microsoft.Extensions.Logging;
-    using ModelBuilder;
 
     public class ScopeScenarioTests : LoggingTestsBase<ScopeScenarioTests>
     {
-        private static readonly LoggingConfig _config = new LoggingConfig().Set(x => x.SensitiveValues.Add("secret"));
+        private static readonly LoggingConfig _config = new LoggingConfig();
 
         public ScopeScenarioTests(ITestOutputHelper output) : base(output, _config)
         {
+            _config.SensitiveValues.Add("secret");
         }
 
         [Fact]
@@ -105,13 +104,13 @@
             Logger.LogTrace("Writing trace message");
             Logger.LogWarning("Writing warning message");
 
-            var firstPerson = Model.Create<StructuredData>();
+            var firstPerson = StructuredData.BuildData();
 
             using (Logger.BeginScope(firstPerson))
             {
                 Logger.LogInformation("Inside first scope");
 
-                var secondPerson = Model.Create<StructuredData>();
+                var secondPerson = StructuredData.BuildData();
 
                 using (Logger.BeginScope(secondPerson))
                 {
@@ -134,13 +133,16 @@
             Logger.LogTrace("Writing trace message with secret");
             Logger.LogWarning("Writing warning message with secret");
 
-            var firstPerson = Model.Create<StructuredData>().Set(x => x.Email = "secret");
+            var firstPerson = StructuredData.BuildData();
+
+            firstPerson.Email = "secret";
 
             using (Logger.BeginScope(firstPerson))
             {
                 Logger.LogInformation("Inside first scope with secret");
 
-                var secondPerson = Model.Create<StructuredData>().Set(x => x.FirstName = "secret");
+                var secondPerson = StructuredData.BuildData();
+                secondPerson.FirstName = "secret";
 
                 using (Logger.BeginScope(secondPerson))
                 {

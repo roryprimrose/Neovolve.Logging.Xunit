@@ -16,6 +16,7 @@ Neovolve.Logging.Xunit
 Neovolve.Logging.Xunit.Signed  
 [![Nuget](https://img.shields.io/nuget/v/Neovolve.Logging.Xunit.Signed.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.Logging.Xunit.Signed.svg)](https://www.nuget.org/packages/Neovolve.Logging.Xunit.Signed)
 
+Beta builds are available on [MyGet](https://www.myget.org/feed/Packages/neovolve).
 - [Installation](#installation)
   - [Using xUnit v3](#using-xunit-v3)
   - [Using xUnit v2](#using-xunit-v2)
@@ -216,7 +217,7 @@ using System;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
+using Xunit;
 
 public class MyClassTests
 {
@@ -258,7 +259,7 @@ using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
+using Xunit;
 
 public class MyClassTests
 {
@@ -327,7 +328,7 @@ using Neovolve.Logging.Xunit;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 using Xunit;
-using Xunit.Abstractions;
+using Xunit;
 
 public class MyClassTests
 {

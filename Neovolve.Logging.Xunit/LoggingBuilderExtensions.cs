@@ -4,7 +4,7 @@ namespace Microsoft.Extensions.Logging
 {
     using System;
     using Neovolve.Logging.Xunit;
-    using Xunit.Abstractions;
+    using Xunit;
 
     /// <summary>
     ///     The <see cref="LoggingBuilderExtensions" />
