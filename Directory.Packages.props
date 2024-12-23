@@ -6,6 +6,7 @@
   </PropertyGroup>
   <ItemGroup Label="Package Versions used by this repository">
     <!-- Direct dependencies -->
+    <PackageVersion Include="coverlet.collector" Version="6.0.2" />
     <PackageVersion Include="Microsoft.Extensions.Logging" Version="9.0.0" />
     <PackageVersion Include="System.Text.Json" Version="9.0.0" />
     <PackageVersion Include="NSubstitute" Version="5.3.0" />
@@ -14,7 +15,6 @@
     <PackageVersion Include="xunit.v3" Version="1.0.0" />
     <PackageVersion Include="xunit.v3.extensibility.core" Version="1.0.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.0.0" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
-    <PackageVersion Include="coverlet.msbuild" Version="6.0.2" PrivateAssets="All" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <!-- Overrides -->
   </ItemGroup>
   <ItemGroup Label="Global Package References, added to every project">
