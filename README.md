@@ -4,6 +4,12 @@ Neovolve.Logging.Xunit is a NuGet package that returns an `ILogger` or `ILogger<
 
 [![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/roryprimrose/Neovolve.Logging.Xunit/blob/master/LICENSE)&nbsp;[![Actions Status](https://github.com/roryprimrose/Neovolve.Logging.Xunit/workflows/CI/badge.svg)](https://github.com/roryprimrose/Neovolve.Logging.Xunit/actions)
 
+Neovolve.Logging.Xunit.v3  
+[![Nuget](https://img.shields.io/nuget/v/Neovolve.Logging.Xunit.v3.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.Logging.Xunit.v3.svg)](https://www.nuget.org/packages/Neovolve.Logging.Xunit.v3)
+
+Neovolve.Logging.Xunit.Signed.v3  
+[![Nuget](https://img.shields.io/nuget/v/Neovolve.Logging.Xunit.Signed.v3.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.Logging.Xunit.Signed.v3.svg)](https://www.nuget.org/packages/Neovolve.Logging.Xunit.v3.Signed)
+
 Neovolve.Logging.Xunit  
 [![Nuget](https://img.shields.io/nuget/v/Neovolve.Logging.Xunit.svg)&nbsp;![Nuget](https://img.shields.io/nuget/dt/Neovolve.Logging.Xunit.svg)](https://www.nuget.org/packages/Neovolve.Logging.Xunit)
 
@@ -12,6 +18,8 @@ Neovolve.Logging.Xunit.Signed
 
 Beta builds are available on [MyGet](https://www.myget.org/feed/Packages/neovolve).
 - [Installation](#installation)
+  - [Using xUnit v3](#using-xunit-v3)
+  - [Using xUnit v2](#using-xunit-v2)
 - [Usage](#usage)
 - [Output Formatting](#output-formatting)
 - [Inspection](#inspection)
@@ -21,6 +29,20 @@ Beta builds are available on [MyGet](https://www.myget.org/feed/Packages/neovolv
 - [Configuration](#configuration)
 
 ## Installation
+
+### Using xUnit v3
+
+Run the following in the NuGet command line or visit the [NuGet package page](https://nuget.org/packages/Neovolve.Logging.Xunit.v3).
+
+`Install-Package Neovolve.Logging.Xunit.v3`
+
+If you need a strong named version of this library, run the following in the NuGet command line or visit the [NuGet package page](https://nuget.org/packages/Neovolve.Logging.Xunit.Signed.v3).
+
+`Install-Package Neovolve.Logging.Xunit.Signed.v3`
+
+[Back to top][0]
+
+### Using xUnit v2
 
 Run the following in the NuGet command line or visit the [NuGet package page](https://nuget.org/packages/Neovolve.Logging.Xunit).
 
