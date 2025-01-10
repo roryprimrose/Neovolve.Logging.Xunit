@@ -61,10 +61,10 @@ jobs:
     - name: Verify Mono Installation
       run: mono --version
 
-    - name: Setup dotnet v6.x
-      uses: actions/setup-dotnet@v4.2.0
-      with:
-        dotnet-version: '6.x' # SDK Version to use.
+    # - name: Setup dotnet v6.x
+    #   uses: actions/setup-dotnet@v4.2.0
+    #   with:
+    #     dotnet-version: '6.x' # SDK Version to use.
 
     - name: Download snk file
       run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > Neovolve.Logging.Xunit.snk
