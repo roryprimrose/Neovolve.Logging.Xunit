@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
 
@@ -48,13 +48,16 @@ jobs:
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
-    - name: Setup dotnet v9.0
-      uses: actions/setup-dotnet@v4.1.0
+    - name: Setup dotnet v6.x
+      uses: actions/setup-dotnet@v4.2.0
       with:
-        dotnet-version: '9.0.x' # SDK Version to use.
-
+        dotnet-version: '6.x' # SDK Version to use.
+    
     - name: Download snk file
-      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > Neovolve.Logging.Xunit.snk
+      shell: pwsh
+      run: |
+        $snkFileContent = "${{ secrets.SNK_FILE }}"
+        [System.IO.File]::WriteAllBytes("Neovolve.Logging.Xunit.snk", [System.Convert]::FromBase64String($snkFileContent))
 
     - name: Restore
       run: dotnet restore
@@ -67,7 +70,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.2
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
@@ -86,23 +89,23 @@ jobs:
       if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
       
     - name: Pack
-      run: dotnet pack -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack -c Release --no-build --include-symbols -o "${{ github.workspace }}/staging"
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@v4
       with:
         name: packages
-        path: staging
+        path: "${{ github.workspace }}/staging"
     
     - shell: bash
       name: Write version
       run: |
-        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > version.txt
+        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > "${{ github.workspace }}/version.txt"
     - name: Upload version
       uses: actions/upload-artifact@v4
       with:
         name: version
-        path: version.txt
+        path: "${{ github.workspace }}/version.txt"
 
   publish:
     needs: build
@@ -116,25 +119,16 @@ jobs:
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
-    - name: Download version
-      uses: actions/download-artifact@v4
+    - name: Setup dotnet v9.x
+      uses: actions/setup-dotnet@v4.2.0
       with:
-        name: version
-
-    - name: Read version
-      shell: bash
-      run: |
-        value=`cat version.txt`
-        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+        dotnet-version: '9.x' # SDK Version to use.
     
     - name: Download packages
       uses: actions/download-artifact@v4
       with:
         name: packages
       
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v2
-
     - name: Download version
       uses: actions/download-artifact@v4
       with:
@@ -149,12 +143,12 @@ jobs:
     - name: Publish package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
       
     - name: Publish signed package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
@@ -168,6 +162,16 @@ jobs:
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
+    - name: Setup dotnet v9.x
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: '9.x' # SDK Version to use.
+    
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+      
     - name: Download version
       uses: actions/download-artifact@v4
       with:
@@ -179,29 +183,21 @@ jobs:
         value=`cat version.txt`
         echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
     
-    - name: Download packages
-      uses: actions/download-artifact@v4
-      with:
-        name: packages
-      
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v2
-      
     - name: Publish package to GitHub
-      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish signed package to GitHub
-      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Publish signed package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Create release
       id: create_release
