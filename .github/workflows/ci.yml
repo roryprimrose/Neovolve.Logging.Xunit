@@ -14,7 +14,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
 
@@ -47,27 +47,17 @@ jobs:
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
-
-    # Install mono in order to run net472 along with net6.0    
-    - name: Install Mono
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y gnupg ca-certificates
-        sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 3FA7E0328081BFF6A14DA29AA6A19B38D3D831EF
-        echo "deb [arch=amd64] https://download.mono-project.com/repo/ubuntu stable-focal main" | sudo tee /etc/apt/sources.list.d/mono-official-stable.list
-        sudo apt-get update
-        sudo apt-get install -y mono-complete
-
-    - name: Verify Mono Installation
-      run: mono --version
-
-    # - name: Setup dotnet v6.x
-    #   uses: actions/setup-dotnet@v4.2.0
-    #   with:
-    #     dotnet-version: '6.x' # SDK Version to use.
-
+        
+    - name: Setup dotnet v6.x
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: '6.x' # SDK Version to use.
+    
     - name: Download snk file
-      run: echo "${{ secrets.SNK_FILE }}" | base64 --decode > Neovolve.Logging.Xunit.snk
+      shell: pwsh
+      run: |
+        $snkFileContent = "${{ secrets.SNK_FILE }}"
+        [System.IO.File]::WriteAllBytes("Neovolve.Logging.Xunit.snk", [System.Convert]::FromBase64String($snkFileContent))
 
     - name: Restore
       run: dotnet restore
