@@ -89,7 +89,7 @@ jobs:
       if: github.event_name == 'pull_request' && github.repository == github.event.pull_request.head.repo.full_name && github.actor != 'dependabot[bot]'
       
     - name: Pack
-      run: dotnet pack -c Release --no-build --include-symbols -o $GITHUB_WORKSPACE/staging
+      run: dotnet pack -c Release --no-build --include-symbols -o "${{ github.workspace }}/staging"
 
     - name: Publish build artifacts
       uses: actions/upload-artifact@v4
@@ -100,12 +100,12 @@ jobs:
     - shell: bash
       name: Write version
       run: |
-        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > $GITHUB_WORKSPACE/version.txt
+        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > "${{ github.workspace }}/version.txt"
     - name: Upload version
       uses: actions/upload-artifact@v4
       with:
         name: version
-        path: $GITHUB_WORKSPACE/version.txt
+        path: "${{ github.workspace }}/version.txt"
 
   publish:
     needs: build
