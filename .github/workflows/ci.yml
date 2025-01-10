@@ -119,25 +119,16 @@ jobs:
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
-    - name: Download version
-      uses: actions/download-artifact@v4
+    - name: Setup dotnet v9.x
+      uses: actions/setup-dotnet@v4.2.0
       with:
-        name: version
-
-    - name: Read version
-      shell: bash
-      run: |
-        value=`cat version.txt`
-        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+        dotnet-version: '9.x' # SDK Version to use.
     
     - name: Download packages
       uses: actions/download-artifact@v4
       with:
         name: packages
       
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v2
-
     - name: Download version
       uses: actions/download-artifact@v4
       with:
@@ -152,12 +143,12 @@ jobs:
     - name: Publish package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
       
     - name: Publish signed package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $MYGET_APIKEY -source https://www.myget.org/F/neovolve/api/v2/package
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
@@ -171,6 +162,16 @@ jobs:
       shell: pwsh
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
+    - name: Setup dotnet v9.x
+      uses: actions/setup-dotnet@v4.2.0
+      with:
+        dotnet-version: '9.x' # SDK Version to use.
+    
+    - name: Download packages
+      uses: actions/download-artifact@v4
+      with:
+        name: packages
+      
     - name: Download version
       uses: actions/download-artifact@v4
       with:
@@ -182,29 +183,21 @@ jobs:
         value=`cat version.txt`
         echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
     
-    - name: Download packages
-      uses: actions/download-artifact@v4
-      with:
-        name: packages
-      
-    - name: Setup nuget
-      uses: nuget/setup-nuget@v2
-      
     - name: Publish package to GitHub
-      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish signed package to GitHub
-      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg ${{ secrets.GITHUB_TOKEN }} -source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Publish signed package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg $NUGET_APIKEY -source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Create release
       id: create_release
