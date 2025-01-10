@@ -49,12 +49,12 @@ jobs:
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
     - name: Setup dotnet v6.x
-      uses: actions/setup-dotnet@v4.1.0
+      uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: '6.x' # SDK Version to use.
 
     - name: Setup dotnet v9.x
-      uses: actions/setup-dotnet@v4.1.0
+      uses: actions/setup-dotnet@v4.2.0
       with:
         dotnet-version: '9.x' # SDK Version to use.
 
@@ -72,7 +72,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.2
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
