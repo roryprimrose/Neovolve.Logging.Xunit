@@ -95,17 +95,17 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: packages
-        path: staging
+        path: $GITHUB_WORKSPACE/staging
     
     - shell: bash
       name: Write version
       run: |
-        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > version.txt
+        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > $GITHUB_WORKSPACE/version.txt
     - name: Upload version
       uses: actions/upload-artifact@v4
       with:
         name: version
-        path: version.txt
+        path: $GITHUB_WORKSPACE/version.txt
 
   publish:
     needs: build
