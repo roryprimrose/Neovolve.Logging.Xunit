@@ -95,7 +95,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: packages
-        path: $GITHUB_WORKSPACE/staging
+        path: "${{ github.workspace }}/staging"
     
     - shell: bash
       name: Write version
