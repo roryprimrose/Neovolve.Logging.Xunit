@@ -312,7 +312,46 @@ public class MyClassTests
 }
 ```
 
-The `CacheLogger` class also supports a `LogWritten` event where `LogEntry` is provided in the event arguments.
+The `ICacheLogger` interface also supports a `LogWritten` event where `LogEntry` is provided in the event arguments.
+
+```csharp
+using System;
+using Neovolve.Logging.Xunit;
+using FluentAssertions;
+using Microsoft.Extensions.Logging;
+using Xunit;
+
+public class MyClassTests
+{
+    private readonly ITestOutputHelper _output;
+
+    public MyClassTests(ITestOutputHelper output)
+    {
+        _output = output;
+    }
+
+    [Fact]
+    public void DoSomethingLogsExpectedMessage()
+    {
+        using var logger = _output.BuildLogger();
+
+        var loggedEntry = null as LogEntry;
+
+        logger.LogWritten += (source, entry) =>
+        {
+            loggedEntry = entry;
+        };
+
+        var sut = new MyClass(logger);
+
+        sut.DoSomething();
+
+        loggedEntry.Should().NotBeNull();
+        loggedEntry.LogLevel.Should().Be(LogLevel.Information);
+        loggedEntry.Message.Should().Be("Hey, we did something");
+    }
+}
+```
 
 [Back to top][0]
 
