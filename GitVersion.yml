@@ -1,6 +1,8 @@
 mode: ContinuousDeployment
 branches:
   main:
+    regex: ^main$
     label: beta
   hotfix:
+    regex: ^hotfix(es)?[/-]
     label: useBranchName
