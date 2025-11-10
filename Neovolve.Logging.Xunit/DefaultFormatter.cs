@@ -35,7 +35,7 @@
             var padding = new string(' ', scopeLevel * _config.ScopePaddingSpaces);
             var parts = new List<string>(2);
 
-            if (string.IsNullOrWhiteSpace(message) == false)
+            if (!string.IsNullOrWhiteSpace(message))
             {
                 var part = string.Format(CultureInfo.InvariantCulture, FormatMask, padding, logLevel, eventId.Id,
                     message);
