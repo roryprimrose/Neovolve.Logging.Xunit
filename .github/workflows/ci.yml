@@ -42,7 +42,7 @@ jobs:
       uses: roryprimrose/set-vs-sdk-project-version@v1.0.6
       with:
         projectFilter: 'package.props'
-        version: ${{ steps.gitversion.outputs.NuGetVersionV2 }}
+        version: ${{ steps.gitversion.outputs.SemVer }}
         assemblyVersion: ${{ steps.gitversion.outputs.AssemblySemVer }}
         fileVersion: ${{ steps.gitversion.outputs.MajorMinorPatch }}
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
@@ -104,7 +104,7 @@ jobs:
     - shell: bash
       name: Write version
       run: |
-        echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > "${{ github.workspace }}/version.txt"
+        echo '${{ steps.gitversion.outputs.SemVer }}' > "${{ github.workspace }}/version.txt"
     - name: Upload version
       uses: actions/upload-artifact@v5.0.0
       with:
@@ -142,17 +142,17 @@ jobs:
       shell: bash
       run: |
         value=`cat version.txt`
-        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+        echo SemVer=$(echo $value) >> $GITHUB_ENV 
     
     - name: Publish package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.SemVer }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
       
     - name: Publish signed package to MyGet.org
       env: 
         MYGET_APIKEY: ${{ secrets.MYGET_APIKEY }}
-      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.SemVer }}.symbols.nupkg --api-key $MYGET_APIKEY --source https://www.myget.org/F/neovolve/api/v2/package
       
   release:
     needs: build
@@ -185,33 +185,33 @@ jobs:
       shell: bash
       run: |
         value=`cat version.txt`
-        echo NuGetVersionV2=$(echo $value) >> $GITHUB_ENV 
+        echo SemVer=$(echo $value) >> $GITHUB_ENV 
     
     - name: Publish package to GitHub
-      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.SemVer }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish signed package to GitHub
-      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.SemVer }}.symbols.nupkg --api-key ${{ secrets.GITHUB_TOKEN }} --source "https://nuget.pkg.github.com/roryprimrose/index.json"
 
     - name: Publish package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.projectName }}.v3.${{ env.SemVer }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Publish signed package to NuGet.org
       env: 
         NUGET_APIKEY: ${{ secrets.NUGET_APIKEY }}
-      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
+      run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.SemVer }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Create release
       uses: softprops/action-gh-release@v2.2.1
       with:
-        tag_name: ${{ env.NuGetVersionV2 }}
-        name: Release ${{ env.NuGetVersionV2 }}
+        tag_name: ${{ env.SemVer }}
+        name: Release ${{ env.SemVer }}
         draft: false
-        prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
+        prerelease: ${{ contains(env.SemVer, 'beta') }}
         files: |
-          ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.nupkg
-          ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
-          ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.nupkg
-          ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
+          ${{ env.projectName }}.v3.${{ env.SemVer }}.nupkg
+          ${{ env.projectName }}.v3.${{ env.SemVer }}.symbols.nupkg
+          ${{ env.projectName }}.Signed.v3.${{ env.SemVer }}.nupkg
+          ${{ env.projectName }}.Signed.v3.${{ env.SemVer }}.symbols.nupkg
