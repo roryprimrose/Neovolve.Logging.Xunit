@@ -23,18 +23,18 @@ jobs:
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Checkout
-      uses: actions/checkout@v4.2.2
+      uses: actions/checkout@v5.0.0
       with:
         fetch-depth: 0
    
     - name: Install GitVersion
-      uses: gittools/actions/gitversion/setup@v3.1.1
+      uses: gittools/actions/gitversion/setup@v4.2.0
       with:
           versionSpec: '5.x'
     
     - name: Use GitVersion
       id: gitversion # step id used as reference for output values
-      uses: gittools/actions/gitversion/execute@v3.1.1
+      uses: gittools/actions/gitversion/execute@v4.2.0
       with:
         useConfigFile: true
         configFilePath: ./GitVersion.yml
@@ -49,12 +49,12 @@ jobs:
         informationalVersion: ${{ steps.gitversion.outputs.InformationalVersion }}  
         
     - name: Setup dotnet v8.x
-      uses: actions/setup-dotnet@v4.2.0
+      uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '8.x' # SDK Version to use.
     
     - name: Setup dotnet v9.x
-      uses: actions/setup-dotnet@v4.2.0
+      uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '9.x' # SDK Version to use.
     
@@ -75,7 +75,7 @@ jobs:
 
     - name: Generate coverage report
       # run: reportgenerator -reports:**/coverage.cobertura.xml -targetdir:Report -reporttypes:HtmlInline_AzurePipelines;Cobertura
-      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.3
+      uses: danielpalme/ReportGenerator-GitHub-Action@5.4.18
       with:
         reports: "**/coverage*cobertura.xml"
         targetdir: "Report"
@@ -97,7 +97,7 @@ jobs:
       run: dotnet pack -c Release --no-build --include-symbols -o "${{ github.workspace }}/staging"
 
     - name: Publish build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: packages
         path: "${{ github.workspace }}/staging"
@@ -107,7 +107,7 @@ jobs:
       run: |
         echo '${{ steps.gitversion.outputs.NuGetVersionV2 }}' > "${{ github.workspace }}/version.txt"
     - name: Upload version
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5.0.0
       with:
         name: version
         path: "${{ github.workspace }}/version.txt"
@@ -125,17 +125,17 @@ jobs:
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Setup dotnet v9.x
-      uses: actions/setup-dotnet@v4.2.0
+      uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '9.x' # SDK Version to use.
     
     - name: Download packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6.0.0
       with:
         name: packages
       
     - name: Download version
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6.0.0
       with:
         name: version
 
@@ -168,17 +168,17 @@ jobs:
       run: Add-Content -Path ${env:GITHUB_ENV} "`nprojectName=$(${env:GITHUB_REPOSITORY}.substring(${env:GITHUB_REPOSITORY}.IndexOf('/') + 1))" -Encoding utf8
       
     - name: Setup dotnet v9.x
-      uses: actions/setup-dotnet@v4.2.0
+      uses: actions/setup-dotnet@v5.0.0
       with:
         dotnet-version: '9.x' # SDK Version to use.
     
     - name: Download packages
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6.0.0
       with:
         name: packages
       
     - name: Download version
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v6.0.0
       with:
         name: version
 
@@ -205,52 +205,14 @@ jobs:
       run: dotnet nuget push ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg --api-key $NUGET_APIKEY --source https://api.nuget.org/v3/index.json
 
     - name: Create release
-      id: create_release
-      uses: actions/create-release@v1.1.4
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v2.2.1
       with:
         tag_name: ${{ env.NuGetVersionV2 }}
-        release_name: Release ${{ env.NuGetVersionV2 }}
+        name: Release ${{ env.NuGetVersionV2 }}
         draft: false
         prerelease: ${{ contains(env.NuGetVersionV2, 'beta') }}
-    
-    - name: Upload release asset for package
-      uses: actions/upload-release-asset@v1.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.nupkg
-        asset_content_type: application/zip
-    
-    - name: Upload release asset for symbol package
-      uses: actions/upload-release-asset@v1.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_content_type: application/zip
-        
-    - name: Upload release asset for signed package
-      uses: actions/upload-release-asset@v1.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.nupkg
-        asset_name: ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.nupkg
-        asset_content_type: application/zip
-    
-    - name: Upload release asset for signed symbol package
-      uses: actions/upload-release-asset@v1.0.2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_name: ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
-        asset_content_type: application/zip
+        files: |
+          ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.nupkg
+          ${{ env.projectName }}.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
+          ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.nupkg
+          ${{ env.projectName }}.Signed.v3.${{ env.NuGetVersionV2 }}.symbols.nupkg
