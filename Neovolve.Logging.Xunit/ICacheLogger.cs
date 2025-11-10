@@ -11,6 +11,11 @@
     public interface ICacheLogger : ILogger, IDisposable
     {
         /// <summary>
+        ///     Occurs when a log entry is written.
+        /// </summary>
+        event EventHandler<LogEntry>? LogWritten;
+
+        /// <summary>
         ///     Clears all recorded log entries.
         /// </summary>
         void ClearEntries();

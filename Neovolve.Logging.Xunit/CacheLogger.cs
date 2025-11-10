@@ -42,7 +42,6 @@
             _factory = factory;
         }
 
-
         /// <summary>
         ///     Occurs when a log entry is written.
         /// </summary>
