@@ -17,6 +17,35 @@
             sut.Dispose();
         }
 
+        [Fact]
+        public void CreateLoggerReturnsCachedLoggerForSameCategoryName()
+        {
+            var categoryName = Guid.NewGuid().ToString();
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            using var sut = new TestOutputLoggerProvider(output);
+            var first = sut.CreateLogger(categoryName);
+            var second = sut.CreateLogger(categoryName);
+
+            first.Should().BeSameAs(second);
+        }
+
+        [Fact]
+        public void CreateLoggerReturnsDifferentLoggersForDifferentCategoryNames()
+        {
+            var firstCategory = Guid.NewGuid().ToString();
+            var secondCategory = Guid.NewGuid().ToString();
+
+            var output = Substitute.For<ITestOutputHelper>();
+
+            using var sut = new TestOutputLoggerProvider(output);
+            var first = sut.CreateLogger(firstCategory);
+            var second = sut.CreateLogger(secondCategory);
+
+            first.Should().NotBeSameAs(second);
+        }
+
         [Theory]
         [InlineData(null)]
         [InlineData("")]
@@ -58,6 +87,22 @@
             var actual = sut.CreateLogger(categoryName);
 
             actual.Should().BeOfType<TestOutputLogger>();
+        }
+
+        [Fact]
+        public void DisposeClearsCachedLoggers()
+        {
+            var categoryName = Guid.NewGuid().ToString();
+            var output = Substitute.For<ITestOutputHelper>();
+
+            var sut = new TestOutputLoggerProvider(output);
+            var firstLogger = sut.CreateLogger(categoryName);
+
+            sut.Dispose();
+
+            var secondLogger = sut.CreateLogger(categoryName);
+
+            secondLogger.Should().NotBeSameAs(firstLogger);
         }
 
         [Fact]
