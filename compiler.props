@@ -1,12 +1,13 @@
 <Project>
-	<PropertyGroup>
-		<CodeAnalysisRuleSet>../Solution Items/Application.ruleset</CodeAnalysisRuleSet>
-		<LangVersion>latest</LangVersion>
-		<Nullable>enable</Nullable>
-		<TreatWarningsAsErrors>True</TreatWarningsAsErrors>
-	</PropertyGroup>
+  <PropertyGroup>
+    <CodeAnalysisRuleSet>../Solution Items/Application.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
 
-	<PropertyGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
-		<NoWarn>$(NoWarn);CA1806;CA1305</NoWarn>
-	</PropertyGroup>	
+  <PropertyGroup Condition="$(MSBuildProjectName.EndsWith('Tests'))">
+    <NoWarn>$(NoWarn);CA1806;CA1305</NoWarn>
+  </PropertyGroup>
 </Project>

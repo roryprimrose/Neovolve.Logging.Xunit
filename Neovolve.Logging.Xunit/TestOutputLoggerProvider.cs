@@ -1,6 +1,7 @@
 ﻿namespace Neovolve.Logging.Xunit
 {
     using System;
+    using System.Collections.Concurrent;
     using global::Xunit;
     using Microsoft.Extensions.Logging;
 
@@ -11,6 +12,7 @@
     public sealed class TestOutputLoggerProvider : ILoggerProvider
     {
         private readonly LoggingConfig? _config;
+        private readonly ConcurrentDictionary<string, ILogger> _loggers = new();
         private readonly ITestOutputHelper _output;
 
         /// <summary>
@@ -34,13 +36,13 @@
                 throw new ArgumentException("No categoryName value has been supplied", nameof(categoryName));
             }
 
-            return new TestOutputLogger(categoryName, _output, _config);
+            return _loggers.GetOrAdd(categoryName, name => new TestOutputLogger(name, _output, _config));
         }
 
         /// <inheritdoc />
         public void Dispose()
         {
-            // no-op
+            _loggers.Clear();
         }
     }
 }

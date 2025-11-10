@@ -39,7 +39,7 @@
 
             WriteLog(_depth, scopeStartMessage);
 
-            if (string.IsNullOrWhiteSpace(_structuredStateData) == false)
+            if (!string.IsNullOrWhiteSpace(_structuredStateData))
             {
                 // Add the padding to the structured data
                 var structuredLines =

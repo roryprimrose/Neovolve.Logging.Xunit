@@ -106,7 +106,7 @@
 
             sut.LogInformation(message);
 
-            sut.LogWritten.Should().Be(shouldFilter == false);
+            sut.LogWritten.Should().Be(!shouldFilter);
         }
 
         private class IsEnabledWrapper : FilterLogger

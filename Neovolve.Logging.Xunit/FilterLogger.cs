@@ -28,7 +28,7 @@
         {
             formatter = formatter ?? throw new ArgumentNullException(nameof(formatter));
 
-            if (IsEnabled(logLevel) == false)
+            if (!IsEnabled(logLevel))
             {
                 return;
             }

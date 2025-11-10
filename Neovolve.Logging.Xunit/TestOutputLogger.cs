@@ -76,7 +76,7 @@
             }
             catch (InvalidOperationException)
             {
-                if (_config.IgnoreTestBoundaryException == false)
+                if (!_config.IgnoreTestBoundaryException)
                 {
                     throw;
                 }

@@ -183,19 +183,17 @@
         [Fact]
         public async Task UsingParallelTasks()
         {
-            var tasks = Enumerable.Range(0, 10).Select(
-                _ => StartOnDefaultScheduler(
-                    () =>
+            var tasks = Enumerable.Range(0, 10).Select(_ => StartOnDefaultScheduler(() =>
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    using (Logger.BeginScope("My scope data"))
                     {
-                        for (var i = 0; i < 100; i++)
-                        {
-                            using (Logger.BeginScope("My scope data"))
-                            {
-                            }
-                        }
+                    }
+                }
 
-                        return Task.CompletedTask;
-                    })).ToList();
+                return Task.CompletedTask;
+            })).ToList();
 
             await Task.WhenAll(tasks);
 
@@ -212,17 +210,15 @@
         [Fact]
         public void UsingThreads()
         {
-            var threads = Enumerable.Range(0, 10).Select(
-                _ => new Thread(
-                    () =>
+            var threads = Enumerable.Range(0, 10).Select(_ => new Thread(() =>
+            {
+                for (var i = 0; i < 100; i++)
+                {
+                    using (Logger.BeginScope("My scope data"))
                     {
-                        for (var i = 0; i < 100; i++)
-                        {
-                            using (Logger.BeginScope("My scope data"))
-                            {
-                            }
-                        }
-                    })).ToList();
+                    }
+                }
+            })).ToList();
 
             threads.ForEach(x => x.Start());
             threads.ForEach(x => x.Join());
