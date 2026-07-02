@@ -1,0 +1,24 @@
+name: Dependency Review
+
+# Reviews dependency changes on pull requests and fails the build if a pull
+# request introduces a dependency with a known vulnerability. Requires the
+# repository's Dependency Graph to be enabled (on by default for public repos).
+on:
+  pull_request:
+    branches:
+      - '**'
+
+permissions:
+  contents: read
+
+jobs:
+  dependency-review:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Dependency Review
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
