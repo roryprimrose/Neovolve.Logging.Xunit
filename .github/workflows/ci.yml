@@ -96,7 +96,7 @@ jobs:
       run: dotnet pack -c Release --no-build --include-symbols -o "${{ github.workspace }}/staging"
 
     - name: Publish build artifacts
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: packages
         path: "${{ github.workspace }}/staging"
@@ -106,7 +106,7 @@ jobs:
       run: |
         echo '${{ steps.gitversion.outputs.SemVer }}' > "${{ github.workspace }}/version.txt"
     - name: Upload version
-      uses: actions/upload-artifact@v5.0.0
+      uses: actions/upload-artifact@v6.0.0
       with:
         name: version
         path: "${{ github.workspace }}/version.txt"
